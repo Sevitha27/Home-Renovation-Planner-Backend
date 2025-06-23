@@ -1,4 +1,4 @@
 package com.lowes.entity;
 
-public class UserEntity {
+public class Project {
 }

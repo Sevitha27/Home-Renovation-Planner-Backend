@@ -1,4 +1,4 @@
 package com.lowes.entity;
 
-public class PhaseEntity {
+public class VendorReview {
 }
