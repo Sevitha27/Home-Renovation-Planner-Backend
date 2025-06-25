@@ -1,13 +1,14 @@
 package com.lowes.controller;
 
-import com.example.Home_Renovation.dto.request.PhaseMaterialRequest;
-import com.example.Home_Renovation.dto.response.PhaseMaterialResponse;
-import com.example.Home_Renovation.exception.ElementNotFoundException;
-import com.example.Home_Renovation.exception.EmptyException;
-import com.example.Home_Renovation.service.PhaseMaterialService;
+
+import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.exception.ElementNotFoundException;
+import com.lowes.exception.EmptyException;
+import com.lowes.service.PhaseMaterialService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,5 +79,21 @@ public class PhaseMaterialController {
             return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @DeleteMapping("/user/phase-materials/{phase-material-id}")
+    public ResponseEntity deletePhaseMaterialById(@PathVariable("phase-material-id") int id){
+        try{
+            PhaseMaterialResponse phaseMaterialResponse = phaseMaterialService.deletePhaseMaterialById(id);
+            return new ResponseEntity(phaseMaterialResponse, HttpStatus.OK);
+        }
+        catch(ElementNotFoundException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(Exception exception){
+            logger.error("Exception",exception);
+            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

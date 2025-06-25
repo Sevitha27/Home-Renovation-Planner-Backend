@@ -1,6 +1,7 @@
 package com.lowes.repository;
 
-import com.example.Home_Renovation.entity.PhaseMaterial;
+
+import com.lowes.entity.PhaseMaterial;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

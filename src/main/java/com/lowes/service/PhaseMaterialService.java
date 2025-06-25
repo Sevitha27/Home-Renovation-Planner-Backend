@@ -1,15 +1,16 @@
 package com.lowes.service;
 
-import com.example.Home_Renovation.convertor.PhaseMaterialConvertor;
-import com.example.Home_Renovation.dto.request.PhaseMaterialRequest;
-import com.example.Home_Renovation.dto.response.PhaseMaterialResponse;
-import com.example.Home_Renovation.entity.Material;
-import com.example.Home_Renovation.entity.Phase;
-import com.example.Home_Renovation.entity.PhaseMaterial;
-import com.example.Home_Renovation.exception.ElementNotFoundException;
-import com.example.Home_Renovation.exception.EmptyException;
-import com.example.Home_Renovation.repository.MaterialRepository;
-import com.example.Home_Renovation.repository.PhaseMaterialRepository;
+
+import com.lowes.convertor.PhaseMaterialConvertor;
+import com.lowes.dto.request.PhaseMaterialRequest;
+import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.entity.Material;
+import com.lowes.entity.Phase;
+import com.lowes.entity.PhaseMaterial;
+import com.lowes.exception.ElementNotFoundException;
+import com.lowes.exception.EmptyException;
+import com.lowes.repository.MaterialRepository;
+import com.lowes.repository.PhaseMaterialRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -89,13 +90,32 @@ public class PhaseMaterialService {
         }
         Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
         if(optionalPhaseMaterial.isEmpty()){
-            throw new ElementNotFoundException("Phase Element Not Found To Update Quantity");
+            throw new ElementNotFoundException("Phase Material Not Found To Update Quantity");
         }
         PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
         PhaseMaterialResponse phaseMaterialResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(updatedPhaseMaterial);
+        return phaseMaterialResponse;
+    }
+
+    @Transactional
+    public PhaseMaterialResponse deletePhaseMaterialById(int id){
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
+        if(optionalPhaseMaterial.isEmpty()){
+            throw new ElementNotFoundException("Phase Material Not Found To Delete It");
+        }
+        PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
+
+        Material material = phaseMaterial.getMaterial();
+        material.getPhaseMaterialList().remove(phaseMaterial);
+
+        Phase phase = phaseMaterial.getPhase();
+        phase.getPhaseMaterialList().remove(phaseMaterial);
+
+        phaseMaterialRepository.deleteById(id);
+        PhaseMaterialResponse phaseMaterialResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(phaseMaterial);
         return phaseMaterialResponse;
     }
 

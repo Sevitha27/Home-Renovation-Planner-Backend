@@ -1,11 +1,11 @@
 package com.lowes.controller;
 
-import com.example.Home_Renovation.dto.request.MaterialRequest;
-import com.example.Home_Renovation.dto.response.MaterialResponse;
-import com.example.Home_Renovation.entity.enums.RenovationType;
-import com.example.Home_Renovation.exception.ElementNotFoundException;
-import com.example.Home_Renovation.exception.EntityHasDependentChildrenException;
-import com.example.Home_Renovation.service.MaterialService;
+
+import com.lowes.dto.request.MaterialRequest;
+import com.lowes.dto.response.MaterialResponse;
+import com.lowes.entity.enums.RenovationType;
+import com.lowes.exception.ElementNotFoundException;
+import com.lowes.service.MaterialService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class MaterialController {
 
     Logger logger = LoggerFactory.getLogger(MaterialController.class);
 
-    @GetMapping("/all/materials/all")
+    @GetMapping("/all/materials")
     public ResponseEntity getAllMaterials(){
         try{
             List<MaterialResponse> materialResponseList = materialService.getAllMaterials();
@@ -100,10 +100,7 @@ public class MaterialController {
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
-        catch(EntityHasDependentChildrenException exception){
-            logger.error(exception.toString());
-            return new ResponseEntity(exception.getMessage(),HttpStatus.CONFLICT);
-        }
+
         catch(DataIntegrityViolationException exception){
             logger.error("Data Integrity Violation",exception);
             return new ResponseEntity("Data Integrity Violation: "+exception.getMessage(),HttpStatus.BAD_REQUEST);
@@ -125,10 +122,7 @@ public class MaterialController {
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
-        catch(EntityHasDependentChildrenException exception){
-            logger.error(exception.toString());
-            return new ResponseEntity(exception.getMessage(),HttpStatus.CONFLICT);
-        }
+
         catch(Exception exception){
             logger.error("Exception",exception);
             return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);

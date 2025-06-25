@@ -1,9 +1,10 @@
 package com.lowes.convertor;
 
-import com.example.Home_Renovation.dto.request.MaterialRequest;
-import com.example.Home_Renovation.dto.response.MaterialResponse;
-import com.example.Home_Renovation.entity.Material;
-import com.example.Home_Renovation.entity.PhaseMaterial;
+
+import com.lowes.dto.request.MaterialRequest;
+import com.lowes.dto.response.MaterialResponse;
+import com.lowes.entity.Material;
+import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class MaterialConvertor {
                                             .pricePerQuantity(material.getPricePerQuantity())
                                             .build();
 
-        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterial();
+        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
 
         if(phaseMaterialList!=null){
             for(PhaseMaterial phaseMaterial : phaseMaterialList){

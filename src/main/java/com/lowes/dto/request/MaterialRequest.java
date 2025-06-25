@@ -1,7 +1,8 @@
 package com.lowes.dto.request;
 
-import com.example.Home_Renovation.entity.enums.RenovationType;
-import com.example.Home_Renovation.entity.enums.Unit;
+
+import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.Unit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,9 +1,10 @@
 package com.lowes.convertor;
 
-import com.example.Home_Renovation.dto.request.PhaseMaterialRequest;
-import com.example.Home_Renovation.dto.response.PhaseMaterialResponse;
-import com.example.Home_Renovation.entity.Phase;
-import com.example.Home_Renovation.entity.PhaseMaterial;
+
+import com.lowes.dto.request.PhaseMaterialRequest;
+import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.entity.Phase;
+import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
 
 

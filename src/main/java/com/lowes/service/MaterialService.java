@@ -1,13 +1,14 @@
 package com.lowes.service;
 
-import com.example.Home_Renovation.convertor.MaterialConvertor;
-import com.example.Home_Renovation.dto.request.MaterialRequest;
-import com.example.Home_Renovation.dto.response.MaterialResponse;
-import com.example.Home_Renovation.entity.Material;
-import com.example.Home_Renovation.entity.enums.RenovationType;
-import com.example.Home_Renovation.exception.ElementNotFoundException;
-import com.example.Home_Renovation.exception.EntityHasDependentChildrenException;
-import com.example.Home_Renovation.repository.MaterialRepository;
+
+import com.lowes.convertor.MaterialConvertor;
+import com.lowes.dto.request.MaterialRequest;
+import com.lowes.dto.response.MaterialResponse;
+import com.lowes.entity.Material;
+import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.enums.RenovationType;
+import com.lowes.exception.ElementNotFoundException;
+import com.lowes.repository.MaterialRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,14 @@ public class MaterialService {
     public List<MaterialResponse> getAllMaterials(){
         List<Material> materialList = materialRepository.findAll();
         List<MaterialResponse> materialResponseList = new ArrayList<>();
-        for(Material material : materialList){
-            materialResponseList.add(MaterialConvertor.materialToMaterialResponse(material));
+        if(!materialList.isEmpty()){
+            for(Material material : materialList){
+                materialResponseList.add(MaterialConvertor.materialToMaterialResponse(material));
+            }
         }
         return materialResponseList;
     }
+
 
     public MaterialResponse getMaterialById(int id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
@@ -67,10 +71,6 @@ public class MaterialService {
         }
         Material existingMaterial = optionalMaterial.get();
 
-        if(!existingMaterial.getPhaseMaterialList().isEmpty()){
-            throw new EntityHasDependentChildrenException("Cannot Update The Requested Material As It Has Dependent Phase Materials");
-        }
-
         existingMaterial.setName(materialRequest.getName());
         existingMaterial.setUnit(materialRequest.getUnit());
         existingMaterial.setRenovationType(materialRequest.getRenovationType());
@@ -88,8 +88,13 @@ public class MaterialService {
             throw new ElementNotFoundException("Material Not Found To Delete");
         }
         Material material = optionalMaterial.get();
-        if(!material.getPhaseMaterialList().isEmpty()){
-            throw new EntityHasDependentChildrenException("Cannot Delete The Requested Material As It Has Dependent Phase Materials");
+
+        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
+
+        if(!phaseMaterialList.isEmpty()){
+            for(PhaseMaterial phaseMaterial : phaseMaterialList){
+                phaseMaterial.setMaterial(null);
+            }
         }
         materialRepository.deleteById(id);
         MaterialResponse materialResponse = MaterialConvertor.materialToMaterialResponse(material);
