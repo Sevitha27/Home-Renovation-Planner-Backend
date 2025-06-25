@@ -16,7 +16,7 @@ import java.util.UUID;
 public class Phase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @ManyToOne

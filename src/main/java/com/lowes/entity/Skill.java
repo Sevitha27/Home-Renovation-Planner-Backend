@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 public class Skill {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     private Number base_price;

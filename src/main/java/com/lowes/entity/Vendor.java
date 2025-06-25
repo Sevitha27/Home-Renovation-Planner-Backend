@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Vendor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     private String companyName;

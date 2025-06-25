@@ -21,8 +21,9 @@ import java.util.UUID;
 @Table(name = "users")
 @Entity
 public class User {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     private String name;

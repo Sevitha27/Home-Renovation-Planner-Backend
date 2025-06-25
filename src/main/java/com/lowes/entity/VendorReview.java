@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 public class VendorReview {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @ManyToOne
