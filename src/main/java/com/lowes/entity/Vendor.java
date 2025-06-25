@@ -1,5 +1,8 @@
 package com.lowes.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +23,10 @@ public class Vendor {
     private Long id;
 
     @ManyToMany(mappedBy = "vendors")
+    @JsonIgnore
     private List<User> users;
+
+    @OneToMany(mappedBy = "vendor",cascade = CascadeType.ALL)
+    @JsonManagedReference("vendor-phase")
+    private List<Phase> phases;
 }

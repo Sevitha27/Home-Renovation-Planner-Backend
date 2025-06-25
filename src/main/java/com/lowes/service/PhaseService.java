@@ -1,0 +1,106 @@
+package com.lowes.service;
+
+import com.lowes.dto.request.PhaseRequestDTO;
+import com.lowes.entity.Phase;
+import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.Project;
+import com.lowes.repository.PhaseRepository;
+import com.lowes.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PhaseService {
+
+    @Autowired
+    PhaseRepository phaseRepository;
+
+
+    public void createPhase(PhaseRequestDTO phaseRequestDTO) {
+        try {
+            Phase phase = new Phase();
+            phase.setPhaseType(phaseRequestDTO.getPhaseType());
+            phase.setDescription(phaseRequestDTO.getDescription());
+            phase.setStart_date(phaseRequestDTO.getStart_date());
+            phase.setEnd_date(phaseRequestDTO.getEnd_date());
+            phase.setVendor(phaseRequestDTO.getVendor());
+            phase.setProject(phaseRequestDTO.getProject());
+            phase.setPhaseName(phaseRequestDTO.getPhaseName());
+            phaseRepository.save(phase);
+        } catch (Exception e) {
+            System.out.println("Error:"+e.getMessage());
+        }
+
+    }
+
+    public Phase getPhaseById(Long id) {
+        return phaseRepository.findById(id).orElseThrow(()->new RuntimeException("Phase not found"));
+    }
+
+    public List<Phase> getPhasesByProject(Long projectId) {
+        return phaseRepository.findByProject_Id(projectId);
+    }
+
+    public Phase updatePhase(Long id, PhaseRequestDTO updatedPhase) {
+
+        Phase phase=phaseRepository.findById(id).orElseThrow(()->new RuntimeException("Phase not found"));
+
+        if (updatedPhase.getDescription() != null)
+            phase.setDescription(updatedPhase.getDescription());
+
+        if (updatedPhase.getPhaseStatus() != null)
+            phase.setPhaseStatus(updatedPhase.getPhaseStatus()
+            );
+
+        if (updatedPhase.getStart_date() != null)
+            phase.setStart_date(updatedPhase.getStart_date());
+
+        if (updatedPhase.getEnd_date() != null)
+            phase.setEnd_date(updatedPhase.getEnd_date());
+
+        if (updatedPhase.getPhaseType() != null)
+            phase.setPhaseType(updatedPhase.getPhaseType());
+
+        if (updatedPhase.getVendor() != null)
+            phase.setVendor(updatedPhase.getVendor());
+
+        if (updatedPhase.getProject() != null)
+            phase.setProject(updatedPhase.getProject());
+
+        if (updatedPhase.getPhaseName() != null)
+            phase.setPhaseName(updatedPhase.getPhaseName());
+
+        return phaseRepository.save(phase);
+    }
+
+    public void deletePhase(Long id) {
+        phaseRepository.delete(getPhaseById(id));
+    }
+
+    public void setVendorCostForPhase(Long vendorId, Long phaseId, Integer cost) {
+        Phase phase=phaseRepository.findById(phaseId).orElseThrow(()->new RuntimeException("Phase not found"));
+
+        if (phase.getVendor() == null || !phase.getVendor().getId().equals(vendorId)) {
+            throw new RuntimeException("Unauthorized: Vendor mismatch");
+        }
+        phase.setVendorCost(cost);
+
+        phaseRepository.save(phase);
+    }
+
+    public Integer calculateTotalCost(Long id) {
+        Phase phase=phaseRepository.findById(id).orElseThrow(()-> new RuntimeException("Phase not found"));
+        int materialCost=0;
+        if (phase.getPhaseMaterialList()!=null)
+        {
+            materialCost = phase.getPhaseMaterialList().stream()
+                    .mapToInt(pm -> pm.getCost() != null ? pm.getCost() : 0)
+                    .sum();
+        }
+        phase.setTotalPhaseCost(phase.getVendorCost()+materialCost);
+        phaseRepository.save(phase);
+        return phase.getTotalPhaseCost();
+    }
+}

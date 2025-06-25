@@ -1,6 +1,9 @@
 package com.lowes.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,6 +49,7 @@ public class User {
 
     // One-to-Many: A user owns many projects
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @JsonManagedReference("user-project")
     private List<Project> projects;
 
     @ManyToMany
@@ -54,6 +58,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "vendor_id")
     )
+    @JsonIgnore
     private List<Vendor> vendors;
 
     // One-to-Many: A user can write many reviews
