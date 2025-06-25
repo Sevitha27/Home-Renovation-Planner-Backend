@@ -2,12 +2,14 @@ package com.lowes.service;
 
 
 import com.lowes.convertor.MaterialConvertor;
-import com.lowes.dto.request.MaterialRequest;
-import com.lowes.dto.response.MaterialResponse;
+import com.lowes.dto.request.MaterialAdminRequest;
+import com.lowes.dto.response.MaterialAdminResponse;
+import com.lowes.dto.response.MaterialUserResponse;
 import com.lowes.entity.Material;
 import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.enums.RenovationType;
 import com.lowes.exception.ElementNotFoundException;
+import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,82 +24,123 @@ import java.util.Optional;
 public class MaterialService {
     private final MaterialRepository materialRepository;
 
-    public List<MaterialResponse> getAllMaterials(){
-        List<Material> materialList = materialRepository.findAll();
-        List<MaterialResponse> materialResponseList = new ArrayList<>();
+    public List<MaterialAdminResponse> getAllMaterials(RenovationType renovationType, Boolean deleted){
+
+        List<Material> materialList;
+        if(renovationType!=null && deleted!=null){
+            materialList = materialRepository.findByRenovationTypeAndDeleted(renovationType,deleted);
+
+        }
+        else if(renovationType!=null){
+            materialList = materialRepository.findByRenovationType(renovationType);
+        }
+        else if(deleted!=null){
+            materialList = materialRepository.findByDeleted(deleted);
+        }
+        else{
+            materialList = materialRepository.findAll();
+        }
+        List<MaterialAdminResponse> materialAdminResponseList = new ArrayList<>();
         if(!materialList.isEmpty()){
             for(Material material : materialList){
-                materialResponseList.add(MaterialConvertor.materialToMaterialResponse(material));
+                materialAdminResponseList.add(MaterialConvertor.materialToMaterialAdminResponse(material));
             }
         }
-        return materialResponseList;
+        return materialAdminResponseList;
+    }
+
+    public List<MaterialUserResponse> getExistingMaterials(RenovationType renovationType){
+
+        List<Material> materialList;
+
+        if(renovationType!=null){
+            materialList = materialRepository.findByRenovationTypeAndDeleted(renovationType,false);
+        }
+        else{
+            materialList = materialRepository.findByDeleted(false);
+        }
+        List<MaterialUserResponse> materialUserResponseList = new ArrayList<>();
+        if(!materialList.isEmpty()){
+            for(Material material : materialList){
+                materialUserResponseList.add(MaterialConvertor.materialToMaterialUserResponse(material));
+            }
+        }
+        return materialUserResponseList;
     }
 
 
-    public MaterialResponse getMaterialById(int id){
+    public MaterialAdminResponse getMaterialById(int id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
         }
         Material material = optionalMaterial.get();
-        MaterialResponse materialResponse = MaterialConvertor.materialToMaterialResponse(material);
-        return materialResponse;
+        MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(material);
+        return materialAdminResponse;
     }
 
 
-    public List<MaterialResponse> getMaterialsByRenovationType(RenovationType renovationType){
-        List<Material> materialList = materialRepository.findByRenovationType(renovationType);
-        List<MaterialResponse> materialResponseList = new ArrayList<>();
-        for(Material material : materialList){
-            materialResponseList.add(MaterialConvertor.materialToMaterialResponse(material));
-        }
-        return materialResponseList;
 
-    }
 
     @Transactional
-    public MaterialResponse addMaterial(MaterialRequest materialRequest){
-        Material material = MaterialConvertor.materialRequestToMaterial(materialRequest);
+    public MaterialAdminResponse addMaterial(MaterialAdminRequest materialAdminRequest){
+        Material material = MaterialConvertor.materialAdminRequestToMaterial(materialAdminRequest);
         Material savedMaterial = materialRepository.save(material);
-        MaterialResponse materialResponse = MaterialConvertor.materialToMaterialResponse(savedMaterial);
-        return materialResponse;
+        MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(savedMaterial);
+        return materialAdminResponse;
     }
 
     @Transactional
-    public MaterialResponse updateMaterialById(int id, MaterialRequest materialRequest){
+    public MaterialAdminResponse updateMaterialById(int id, MaterialAdminRequest materialAdminRequest){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
         }
         Material existingMaterial = optionalMaterial.get();
 
-        existingMaterial.setName(materialRequest.getName());
-        existingMaterial.setUnit(materialRequest.getUnit());
-        existingMaterial.setRenovationType(materialRequest.getRenovationType());
-        existingMaterial.setPricePerQuantity(materialRequest.getPricePerQuantity());
+        existingMaterial.setName(materialAdminRequest.getName());
+        existingMaterial.setUnit(materialAdminRequest.getUnit());
+        existingMaterial.setRenovationType(materialAdminRequest.getRenovationType());
+        existingMaterial.setPricePerQuantity(materialAdminRequest.getPricePerQuantity());
 
         Material updatedMaterial = materialRepository.save(existingMaterial);
-        MaterialResponse materialResponse = MaterialConvertor.materialToMaterialResponse(updatedMaterial);
-        return materialResponse;
+        MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(updatedMaterial);
+        return materialAdminResponse;
     }
 
     @Transactional
-    public MaterialResponse deleteMaterialById(int id){
+    public MaterialAdminResponse deleteMaterialById(int id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Delete");
         }
         Material material = optionalMaterial.get();
 
-        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
-
-        if(!phaseMaterialList.isEmpty()){
-            for(PhaseMaterial phaseMaterial : phaseMaterialList){
-                phaseMaterial.setMaterial(null);
-            }
+        if(material.isDeleted()){
+            throw new OperationNotAllowedException("Cannot Delete A Material That Is Already Deleted");
         }
-        materialRepository.deleteById(id);
-        MaterialResponse materialResponse = MaterialConvertor.materialToMaterialResponse(material);
-        return materialResponse;
+        material.setDeleted(true);
+        Material savedMaterial = materialRepository.save(material);
+        MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(savedMaterial);
+        return materialAdminResponse;
+    }
+
+    @Transactional
+    public MaterialAdminResponse reAddMaterialById(int id){
+        Optional<Material> optionalMaterial = materialRepository.findById(id);
+        if(optionalMaterial.isEmpty()){
+            throw  new ElementNotFoundException("Material Not Found To Re-Add");
+        }
+        Material material = optionalMaterial.get();
+
+        if(!material.isDeleted()){
+            throw new OperationNotAllowedException("Cannot Re Add A Material That Is Not Deleted");
+        }
+
+        material.setDeleted(false);
+        Material savedMaterial = materialRepository.save(material);
+
+        MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(savedMaterial);
+        return materialAdminResponse;
     }
 }

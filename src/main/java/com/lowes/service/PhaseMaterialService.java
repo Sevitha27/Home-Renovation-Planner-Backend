@@ -2,8 +2,8 @@ package com.lowes.service;
 
 
 import com.lowes.convertor.PhaseMaterialConvertor;
-import com.lowes.dto.request.PhaseMaterialRequest;
-import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.dto.request.PhaseMaterialUserRequest;
+import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
@@ -23,39 +23,39 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PhaseMaterialService {
     private final PhaseMaterialRepository phaseMaterialRepository;
-//    private final PhaseRepository phaseRepository;
+    private final PhaseRepository phaseRepository;
     private final MaterialRepository materialRepository;
 
-    public List<PhaseMaterialResponse> getPhaseMaterialsByPhaseId(int phaseId){
+    public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(int phaseId){
 
-//        if(!phaseRepository.existsById(phaseId)){
-//            throw new NotFoundException("Phase Not Found To Fetch Phase Materials");
-//        }
+        if(!phaseRepository.existsById(phaseId)){
+            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
+        }
 
         List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId);
-        List<PhaseMaterialResponse> phaseMaterialResponseList = new ArrayList<>();
+        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         for(PhaseMaterial phaseMaterial : phaseMaterialList){
-            phaseMaterialResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(phaseMaterial));
+            phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
         }
-        return phaseMaterialResponseList;
+        return phaseMaterialUserResponseList;
     }
 
     @Transactional
-    public List<PhaseMaterialResponse> addPhaseMaterialsToPhaseByPhaseId(int phaseId, List<PhaseMaterialRequest> phaseMaterialRequestList){
+    public List<PhaseMaterialUserResponse> addPhaseMaterialsToPhaseByPhaseId(int phaseId, List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
 
         Optional<Phase> optionalPhase = phaseRepository.findById(phaseId);
         if(optionalPhase.isEmpty()){
             throw new ElementNotFoundException("Phase Not Found To Add Phase Materials");
         }
         Phase phase = optionalPhase.get();
-        List<PhaseMaterialResponse> phaseMaterialResponseList = new ArrayList<>();
-        if(phaseMaterialRequestList.isEmpty()){
+        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
+        if(phaseMaterialUserRequestList.isEmpty()){
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
         }
-        for(PhaseMaterialRequest phaseMaterialRequest : phaseMaterialRequestList){
-            PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialRequestToPhaseMaterial(phase,phaseMaterialRequest);
+        for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
+            PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase, phaseMaterialUserRequest);
 
-            Optional<Material> optionalMaterial = materialRepository.findById(phaseMaterialRequest.getMaterialId());
+            Optional<Material> optionalMaterial = materialRepository.findById(phaseMaterialUserRequest.getMaterialId());
             if(optionalMaterial.isEmpty()){
                 throw new ElementNotFoundException("Material Not Found To Add Phase Material");
             }
@@ -66,7 +66,7 @@ public class PhaseMaterialService {
             phaseMaterial.setUnit(material.getUnit());
             phaseMaterial.setPricePerQuantity(material.getPricePerQuantity());
             phaseMaterial.setRenovationType(material.getRenovationType());
-            double totalPrice = phaseMaterialRequest.getQuantity()*material.getPricePerQuantity();
+            double totalPrice = phaseMaterialUserRequest.getQuantity()*material.getPricePerQuantity();
             phaseMaterial.setTotalPrice(totalPrice);
 
             phase.getPhaseMaterialList().add(phaseMaterial);
@@ -76,15 +76,15 @@ public class PhaseMaterialService {
             materialRepository.save(material);
             phaseMaterialRepository.save(phaseMaterial);
 
-            phaseMaterialResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(phaseMaterial));
+            phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
 
 
         }
-        return phaseMaterialResponseList;
+        return phaseMaterialUserResponseList;
     }
 
     @Transactional
-    public PhaseMaterialResponse updatePhaseMaterialQuantityById(int id, int quantity){
+    public PhaseMaterialUserResponse updatePhaseMaterialQuantityById(int id, int quantity){
         if(quantity<=0){
             throw new IllegalArgumentException("Quantity of Phase Material must be a number greater than 0");
         }
@@ -96,12 +96,12 @@ public class PhaseMaterialService {
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
-        PhaseMaterialResponse phaseMaterialResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(updatedPhaseMaterial);
-        return phaseMaterialResponse;
+        PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(updatedPhaseMaterial);
+        return phaseMaterialUserResponse;
     }
 
     @Transactional
-    public PhaseMaterialResponse deletePhaseMaterialById(int id){
+    public PhaseMaterialUserResponse deletePhaseMaterialById(int id){
         Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
         if(optionalPhaseMaterial.isEmpty()){
             throw new ElementNotFoundException("Phase Material Not Found To Delete It");
@@ -115,8 +115,8 @@ public class PhaseMaterialService {
         phase.getPhaseMaterialList().remove(phaseMaterial);
 
         phaseMaterialRepository.deleteById(id);
-        PhaseMaterialResponse phaseMaterialResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(phaseMaterial);
-        return phaseMaterialResponse;
+        PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
+        return phaseMaterialUserResponse;
     }
 
 

@@ -45,5 +45,6 @@ public class Material {
     @OneToMany(mappedBy = "material", fetch = FetchType.EAGER)
     List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
-
+    @Column(nullable = false)
+    boolean deleted = false;
 }

@@ -14,4 +14,6 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     List<Material> findByRenovationType(RenovationType renovationType);
 
     List<Material> findByDeleted(boolean deleted);
+
+    List<Material> findByRenovationTypeAndDeleted(RenovationType renovationType, boolean deleted);
 }

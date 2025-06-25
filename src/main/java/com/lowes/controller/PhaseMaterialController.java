@@ -1,14 +1,14 @@
 package com.lowes.controller;
 
 
-import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.dto.request.PhaseMaterialUserRequest;
+import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.EmptyException;
 import com.lowes.service.PhaseMaterialService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +27,8 @@ public class PhaseMaterialController {
     @GetMapping("/user/phase/{phase-id}/phase-materials")
     public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") int phaseId){
         try{
-            List<PhaseMaterialResponse> phaseMaterialResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
-            return new ResponseEntity(phaseMaterialResponseList, HttpStatus.OK);
+            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
+            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
         }
         catch(ElementNotFoundException exception){
             logger.error(exception.toString());
@@ -41,10 +41,10 @@ public class PhaseMaterialController {
     }
 
     @PostMapping("/user/phase/{phase-id}/phase-materials")
-    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("id") int phaseId, @RequestBody List<PhaseMaterialRequest> phaseMaterialRequestList){
+    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("id") int phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
         try{
-            List<PhaseMaterialResponse> phaseMaterialResponseList = phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phaseId,phaseMaterialRequestList);
-            return new ResponseEntity(phaseMaterialResponseList,HttpStatus.CREATED);
+            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phaseId,phaseMaterialUserRequestList);
+            return new ResponseEntity(phaseMaterialUserResponseList,HttpStatus.CREATED);
         }
         catch(ElementNotFoundException exception){
             logger.error(exception.toString());
@@ -63,8 +63,8 @@ public class PhaseMaterialController {
     @PatchMapping("/user/phase-materials/{phase-material-id}")
     public ResponseEntity updatePhaseMaterialQuantityById(@PathVariable("phase-material-id") int id, @RequestParam("quantity") int quantity){
         try{
-            PhaseMaterialResponse phaseMaterialResponse = phaseMaterialService.updatePhaseMaterialQuantityById(id,quantity);
-            return new ResponseEntity(phaseMaterialResponse,HttpStatus.OK);
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityById(id,quantity);
+            return new ResponseEntity(phaseMaterialUserResponse,HttpStatus.OK);
         }
         catch(IllegalArgumentException exception){
             logger.error("Illegal Argument Exception",exception);
@@ -84,8 +84,8 @@ public class PhaseMaterialController {
     @DeleteMapping("/user/phase-materials/{phase-material-id}")
     public ResponseEntity deletePhaseMaterialById(@PathVariable("phase-material-id") int id){
         try{
-            PhaseMaterialResponse phaseMaterialResponse = phaseMaterialService.deletePhaseMaterialById(id);
-            return new ResponseEntity(phaseMaterialResponse, HttpStatus.OK);
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialById(id);
+            return new ResponseEntity(phaseMaterialUserResponse, HttpStatus.OK);
         }
         catch(ElementNotFoundException exception){
             logger.error(exception.toString());

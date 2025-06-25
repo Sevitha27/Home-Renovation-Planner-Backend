@@ -1,8 +1,8 @@
 package com.lowes.convertor;
 
 
-import com.lowes.dto.request.PhaseMaterialRequest;
-import com.lowes.dto.response.PhaseMaterialResponse;
+import com.lowes.dto.request.PhaseMaterialUserRequest;
+import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
@@ -11,9 +11,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PhaseMaterialConvertor {
 
-    public static PhaseMaterialResponse phaseMaterialToPhaseMaterialResponse(PhaseMaterial phaseMaterial){
+    public static PhaseMaterialUserResponse phaseMaterialToPhaseMaterialUserResponse(PhaseMaterial phaseMaterial){
 
-        PhaseMaterialResponse phaseMaterialResponse = PhaseMaterialResponse.builder()
+        PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialUserResponse.builder()
                 .renovationType(phaseMaterial.getRenovationType())
                 .quantity(phaseMaterial.getQuantity())
                 .name(phaseMaterial.getName())
@@ -21,16 +21,16 @@ public class PhaseMaterialConvertor {
                 .pricePerQuantity(phaseMaterial.getPricePerQuantity())
                 .totalPrice(phaseMaterial.getTotalPrice())
                 .phaseResponse(PhaseConvertor.PhaseToPhaseResponse(phaseMaterial.getPhase()))
-                .materialResponse(MaterialConvertor.materialToMaterialResponse(phaseMaterial.getMaterial()))
+                .materialUserResponse(MaterialConvertor.materialToMaterialUserResponse(phaseMaterial.getMaterial()))
                 .build();
 
-        return phaseMaterialResponse;
+        return phaseMaterialUserResponse;
     }
 
-    public static PhaseMaterial phaseMaterialRequestToPhaseMaterial(Phase phase, PhaseMaterialRequest phaseMaterialRequest){
+    public static PhaseMaterial phaseMaterialUserRequestToPhaseMaterial(Phase phase, PhaseMaterialUserRequest phaseMaterialUserRequest){
 
         PhaseMaterial phaseMaterial = PhaseMaterial.builder()
-                .quantity(phaseMaterialRequest.getQuantity())
+                .quantity(phaseMaterialUserRequest.getQuantity())
                 .phase(phase)
                 .build();
 

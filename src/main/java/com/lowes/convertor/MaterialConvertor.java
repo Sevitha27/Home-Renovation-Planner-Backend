@@ -1,8 +1,9 @@
 package com.lowes.convertor;
 
 
-import com.lowes.dto.request.MaterialRequest;
-import com.lowes.dto.response.MaterialResponse;
+import com.lowes.dto.request.MaterialAdminRequest;
+import com.lowes.dto.response.MaterialAdminResponse;
+import com.lowes.dto.response.MaterialUserResponse;
 import com.lowes.entity.Material;
 import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
@@ -12,8 +13,8 @@ import java.util.List;
 @UtilityClass
 public class MaterialConvertor {
 
-    public static MaterialResponse materialToMaterialResponse(Material material){
-        MaterialResponse materialResponse =  MaterialResponse.builder()
+    public static MaterialUserResponse materialToMaterialUserResponse(Material material){
+        MaterialUserResponse materialUserResponse =  MaterialUserResponse.builder()
                                             .name(material.getName())
                                             .unit(material.getUnit())
                                             .renovationType(material.getRenovationType())
@@ -24,20 +25,42 @@ public class MaterialConvertor {
 
         if(phaseMaterialList!=null){
             for(PhaseMaterial phaseMaterial : phaseMaterialList){
-                materialResponse.getPhaseMaterialResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialResponse(phaseMaterial));
+                materialUserResponse.getPhaseMaterialUserResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
             }
         }
 
 
-        return materialResponse;
+        return materialUserResponse;
     }
 
-    public static Material materialRequestToMaterial(MaterialRequest materialRequest){
+    public static MaterialAdminResponse materialToMaterialAdminResponse(Material material){
+        MaterialAdminResponse materialAdminResponse =  MaterialAdminResponse.builder()
+                .name(material.getName())
+                .unit(material.getUnit())
+                .renovationType(material.getRenovationType())
+                .pricePerQuantity(material.getPricePerQuantity())
+                .deleted(material.isDeleted())
+                .build();
+
+        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
+
+        if(phaseMaterialList!=null){
+            for(PhaseMaterial phaseMaterial : phaseMaterialList){
+                materialAdminResponse.getPhaseMaterialUserResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
+            }
+        }
+
+
+        return materialAdminResponse;
+    }
+
+
+    public static Material materialAdminRequestToMaterial(MaterialAdminRequest materialAdminRequest){
         Material material = Material.builder()
-                .name(materialRequest.getName())
-                .unit(materialRequest.getUnit())
-                .renovationType(materialRequest.getRenovationType())
-                .pricePerQuantity(materialRequest.getPricePerQuantity())
+                .name(materialAdminRequest.getName())
+                .unit(materialAdminRequest.getUnit())
+                .renovationType(materialAdminRequest.getRenovationType())
+                .pricePerQuantity(materialAdminRequest.getPricePerQuantity())
                 .build();
 
         return  material;

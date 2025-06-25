@@ -1,18 +1,18 @@
-package com.lowes.dto.request;
+package com.lowes.dto.response;
 
 
 import com.lowes.entity.enums.RenovationType;
 import com.lowes.entity.enums.Unit;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialRequest {
+@Builder
+public class MaterialUserResponse {
 
     String name;
 
@@ -22,5 +22,5 @@ public class MaterialRequest {
 
     double pricePerQuantity;
 
-
+    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
 }

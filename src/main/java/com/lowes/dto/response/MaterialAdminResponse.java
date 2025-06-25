@@ -5,27 +5,24 @@ import com.lowes.entity.enums.RenovationType;
 import com.lowes.entity.enums.Unit;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PhaseMaterialResponse {
+public class MaterialAdminResponse {
 
     String name;
 
     Unit unit;
 
-    double pricePerQuantity;
-
     RenovationType renovationType;
 
-    int quantity;
+    double pricePerQuantity;
 
-    double totalPrice;
+    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
 
-    MaterialResponse materialResponse;
-
-    PhaseResponse phaseResponse;
-
+    boolean deleted;
 }
