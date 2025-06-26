@@ -38,8 +38,8 @@ public class Phase {
     private String phaseName;
     private String description;
 
-    private LocalDate start_date;
-    private LocalDate end_date;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;

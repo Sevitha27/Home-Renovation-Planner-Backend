@@ -48,7 +48,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     // One-to-Many: A user owns many projects
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference("user-project")
     private List<Project> projects;
 

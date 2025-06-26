@@ -26,7 +26,9 @@ public class Project {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference("user-project")
-    private User owner;
+    private User user;
+
+    private String name;
 
     @OneToMany(mappedBy = "project",cascade = CascadeType.ALL)
     @JsonManagedReference("project-phase")

@@ -23,8 +23,8 @@ public class PhaseService {
             Phase phase = new Phase();
             phase.setPhaseType(phaseRequestDTO.getPhaseType());
             phase.setDescription(phaseRequestDTO.getDescription());
-            phase.setStart_date(phaseRequestDTO.getStart_date());
-            phase.setEnd_date(phaseRequestDTO.getEnd_date());
+            phase.setStartDate(phaseRequestDTO.getStart_date());
+            phase.setEndDate(phaseRequestDTO.getEnd_date());
             phase.setVendor(phaseRequestDTO.getVendor());
             phase.setProject(phaseRequestDTO.getProject());
             phase.setPhaseName(phaseRequestDTO.getPhaseName());
@@ -55,10 +55,10 @@ public class PhaseService {
             );
 
         if (updatedPhase.getStart_date() != null)
-            phase.setStart_date(updatedPhase.getStart_date());
+            phase.setStartDate(updatedPhase.getStart_date());
 
         if (updatedPhase.getEnd_date() != null)
-            phase.setEnd_date(updatedPhase.getEnd_date());
+            phase.setEndDate(updatedPhase.getEnd_date());
 
         if (updatedPhase.getPhaseType() != null)
             phase.setPhaseType(updatedPhase.getPhaseType());
