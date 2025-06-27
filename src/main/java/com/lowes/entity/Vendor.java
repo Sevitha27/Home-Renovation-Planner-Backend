@@ -1,14 +1,12 @@
 package com.lowes.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -35,6 +33,7 @@ public class Vendor {
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     private List<Skill> skills;
+
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<VendorReview> reviews;
