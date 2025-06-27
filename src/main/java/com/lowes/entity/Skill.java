@@ -23,7 +23,7 @@ public class Skill {
 
     private BigDecimal base_price;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false , name="name")
     private String name; // e.g., "Plumbing", "Electrical", "Painting"
 
     @ManyToMany(mappedBy = "skills")
@@ -31,5 +31,6 @@ public class Skill {
 
     @OneToMany(mappedBy = "requiredSkill")
     private List<Phase> phases;
+
 
 }

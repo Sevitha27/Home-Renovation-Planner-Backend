@@ -25,4 +25,11 @@ public class VendorReview {
     @ManyToOne
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
+
+    @Column(length = 1000)
+    private String comment;
+
+    private Double rating;
+
+
 }
