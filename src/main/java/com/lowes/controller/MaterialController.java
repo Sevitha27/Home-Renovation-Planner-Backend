@@ -40,9 +40,9 @@ public class MaterialController {
     }
 
     @GetMapping("/user/materials")
-    public ResponseEntity getExistingMaterials(@RequestParam(name = "renovationType",required = false) RenovationType renovationType){
+    public ResponseEntity getExistingMaterialsByRenovationType(@RequestParam("renovationType") RenovationType renovationType){
         try{
-            List<MaterialUserResponse> materialUserResponseList = materialService.getExistingMaterials(renovationType);
+            List<MaterialUserResponse> materialUserResponseList = materialService.getExistingMaterialsByRenovationType(renovationType);
             return new ResponseEntity(materialUserResponseList,HttpStatus.OK);
         }
         catch(Exception exception){

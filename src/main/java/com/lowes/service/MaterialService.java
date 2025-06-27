@@ -49,7 +49,7 @@ public class MaterialService {
         return materialAdminResponseList;
     }
 
-    public List<MaterialUserResponse> getExistingMaterials(RenovationType renovationType){
+    public List<MaterialUserResponse> getExistingMaterialsByRenovationType(RenovationType renovationType){
 
         List<Material> materialList;
 

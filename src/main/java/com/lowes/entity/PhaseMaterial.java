@@ -47,8 +47,7 @@ public class PhaseMaterial {
 
     @JsonBackReference
     @ManyToOne
-    @Column(nullable = false)
-    @JoinColumn
+    @JoinColumn(nullable = false)
     Phase phase;
 
     @JsonManagedReference

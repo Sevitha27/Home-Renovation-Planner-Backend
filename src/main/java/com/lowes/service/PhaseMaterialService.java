@@ -23,14 +23,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PhaseMaterialService {
     private final PhaseMaterialRepository phaseMaterialRepository;
-    private final PhaseRepository phaseRepository;
+//    private final PhaseRepository phaseRepository;
     private final MaterialRepository materialRepository;
 
     public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(int phaseId){
 
-        if(!phaseRepository.existsById(phaseId)){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
+//        if(!phaseRepository.existsById(phaseId)){
+//            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
+//        }
 
         List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId);
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
@@ -43,11 +43,11 @@ public class PhaseMaterialService {
     @Transactional
     public List<PhaseMaterialUserResponse> addPhaseMaterialsToPhaseByPhaseId(int phaseId, List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
 
-        Optional<Phase> optionalPhase = phaseRepository.findById(phaseId);
-        if(optionalPhase.isEmpty()){
-            throw new ElementNotFoundException("Phase Not Found To Add Phase Materials");
-        }
-        Phase phase = optionalPhase.get();
+//        Optional<Phase> optionalPhase = phaseRepository.findById(phaseId);
+//        if(optionalPhase.isEmpty()){
+//            throw new ElementNotFoundException("Phase Not Found To Add Phase Materials");
+//        }
+//        Phase phase = optionalPhase.get();
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         if(phaseMaterialUserRequestList.isEmpty()){
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
@@ -62,6 +62,7 @@ public class PhaseMaterialService {
             Material material = optionalMaterial.get();
 
             phaseMaterial.setMaterial(material);
+//            phaseMaterial.setPhase(phase);
             phaseMaterial.setName(material.getName());
             phaseMaterial.setUnit(material.getUnit());
             phaseMaterial.setPricePerQuantity(material.getPricePerQuantity());
@@ -69,10 +70,10 @@ public class PhaseMaterialService {
             double totalPrice = phaseMaterialUserRequest.getQuantity()*material.getPricePerQuantity();
             phaseMaterial.setTotalPrice(totalPrice);
 
-            phase.getPhaseMaterialList().add(phaseMaterial);
+//            phase.getPhaseMaterialList().add(phaseMaterial);
             material.getPhaseMaterialList().add(phaseMaterial);
 
-            phaseRepository.save(phase);
+//            phaseRepository.save(phase);
             materialRepository.save(material);
             phaseMaterialRepository.save(phaseMaterial);
 
@@ -111,8 +112,8 @@ public class PhaseMaterialService {
         Material material = phaseMaterial.getMaterial();
         material.getPhaseMaterialList().remove(phaseMaterial);
 
-        Phase phase = phaseMaterial.getPhase();
-        phase.getPhaseMaterialList().remove(phaseMaterial);
+//        Phase phase = phaseMaterial.getPhase();
+//        phase.getPhaseMaterialList().remove(phaseMaterial);
 
         phaseMaterialRepository.deleteById(id);
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
