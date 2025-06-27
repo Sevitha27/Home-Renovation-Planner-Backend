@@ -5,6 +5,7 @@ import com.lowes.dto.request.PhaseMaterialUserRequest;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.EmptyException;
+import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.service.PhaseMaterialService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,24 +26,24 @@ public class PhaseMaterialController {
 
     Logger logger = LoggerFactory.getLogger(PhaseMaterialController.class);
 
-//    @GetMapping("/user/phase/{phase-id}/phase-materials")
-//    public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") UUID phaseId){
-//        try{
-//            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
-//            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
-//        }
-//        catch(ElementNotFoundException exception){
-//            logger.error(exception.toString());
-//            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
-//        }
-//        catch(Exception exception){
-//            logger.error("Exception",exception);
-//            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/user/phase/{phase-id}/phase-materials")
+    public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") UUID phaseId){
+        try{
+            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
+            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
+        }
+        catch(ElementNotFoundException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(Exception exception){
+            logger.error("Exception",exception);
+            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping("/user/phase/{phase-id}/phase-materials")
-    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("id") UUID phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
+    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("phase-id") UUID phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
         try{
             List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phaseId,phaseMaterialUserRequestList);
             return new ResponseEntity(phaseMaterialUserResponseList,HttpStatus.CREATED);
@@ -52,6 +53,10 @@ public class PhaseMaterialController {
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch(EmptyException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+        catch(OperationNotAllowedException exception){
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
         }

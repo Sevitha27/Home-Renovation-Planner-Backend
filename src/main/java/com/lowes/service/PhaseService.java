@@ -9,6 +9,7 @@ import com.lowes.entity.Project;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.PhaseRepository;
 import com.lowes.repository.ProjectRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -127,11 +128,14 @@ public class PhaseService {
 
         return phaseMaterialUserResponseList;
     }
+
+    @Transactional
     public int updateTotalCost(UUID id){
         Optional<Phase> optionalPhase = phaseRepository.findById(id);
         if(optionalPhase.isEmpty()){
             throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
         }
+        System.out.println('a');
         Phase phase = optionalPhase.get();
 
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();

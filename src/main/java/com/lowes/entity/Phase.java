@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,12 +46,12 @@ public class Phase {
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;
 
-    private Integer totalPhaseCost;
+    private Integer totalPhaseCost = 0;
     private Integer vendorCost;
 
-    @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
     @JsonManagedReference("phase-material")
-    private List<PhaseMaterial> phaseMaterialList;
+    private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

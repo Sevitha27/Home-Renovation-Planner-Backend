@@ -4,10 +4,13 @@ import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDate;
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PhaseResponse {
 
@@ -19,8 +22,5 @@ public class PhaseResponse {
 
 
     private PhaseType phaseType;
-
-    private Integer totalPhaseCost;
-    private Integer vendorCost;
     private PhaseStatus phaseStatus;
 }

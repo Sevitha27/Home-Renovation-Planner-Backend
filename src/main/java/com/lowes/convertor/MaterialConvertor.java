@@ -44,7 +44,7 @@ public class MaterialConvertor {
 
         List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
 
-        if(phaseMaterialList!=null){
+        if(!phaseMaterialList.isEmpty()){
             for(PhaseMaterial phaseMaterial : phaseMaterialList){
                 materialAdminResponse.getPhaseMaterialUserResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
             }

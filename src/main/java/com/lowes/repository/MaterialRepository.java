@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, UUID> {
 
-    List<Material> findByRenovationType(PhaseType phaseType);
+    List<Material> findByPhaseType(PhaseType phaseType);
 
     List<Material> findByDeleted(boolean deleted);
 
-    List<Material> findByRenovationTypeAndDeleted(PhaseType phaseType, boolean deleted);
+    List<Material> findByPhaseTypeAndDeleted(PhaseType phaseType, boolean deleted);
 }

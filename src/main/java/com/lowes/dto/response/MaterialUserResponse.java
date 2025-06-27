@@ -6,6 +6,7 @@ import com.lowes.entity.enums.Unit;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,5 +25,5 @@ public class MaterialUserResponse {
 
     int pricePerQuantity;
 
-    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
+    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
 }

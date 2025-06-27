@@ -9,6 +9,7 @@ import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.EmptyException;
+import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
@@ -63,6 +64,10 @@ public class PhaseMaterialService {
                 throw new ElementNotFoundException("Material Not Found To Add Phase Material");
             }
             Material material = optionalMaterial.get();
+
+            if((material.getPhaseType()!=phase.getPhaseType())){
+                throw new OperationNotAllowedException("Found Mismatch in the Phase Type of Material and the Phase Type of Phase to which it is being added");
+            }
 
             phaseMaterial.setMaterial(material);
             phaseMaterial.setName(material.getName());

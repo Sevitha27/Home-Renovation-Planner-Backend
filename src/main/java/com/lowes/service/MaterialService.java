@@ -28,11 +28,11 @@ public class MaterialService {
 
         List<Material> materialList;
         if(phaseType !=null && deleted!=null){
-            materialList = materialRepository.findByRenovationTypeAndDeleted(phaseType,deleted);
+            materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,deleted);
 
         }
         else if(phaseType !=null){
-            materialList = materialRepository.findByRenovationType(phaseType);
+            materialList = materialRepository.findByPhaseType(phaseType);
         }
         else if(deleted!=null){
             materialList = materialRepository.findByDeleted(deleted);
@@ -54,7 +54,7 @@ public class MaterialService {
         List<Material> materialList;
 
         if(phaseType !=null){
-            materialList = materialRepository.findByRenovationTypeAndDeleted(phaseType,false);
+            materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,false);
         }
         else{
             materialList = materialRepository.findByDeleted(false);
