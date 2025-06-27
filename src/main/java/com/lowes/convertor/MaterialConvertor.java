@@ -21,14 +21,6 @@ public class MaterialConvertor {
                                             .pricePerQuantity(material.getPricePerQuantity())
                                             .build();
 
-        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
-
-        if(phaseMaterialList!=null){
-            for(PhaseMaterial phaseMaterial : phaseMaterialList){
-                materialUserResponse.getPhaseMaterialUserResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
-            }
-        }
-
 
         return materialUserResponse;
     }
@@ -41,14 +33,6 @@ public class MaterialConvertor {
                 .pricePerQuantity(material.getPricePerQuantity())
                 .deleted(material.isDeleted())
                 .build();
-
-        List<PhaseMaterial> phaseMaterialList = material.getPhaseMaterialList();
-
-        if(!phaseMaterialList.isEmpty()){
-            for(PhaseMaterial phaseMaterial : phaseMaterialList){
-                materialAdminResponse.getPhaseMaterialUserResponseList().add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
-            }
-        }
 
 
         return materialAdminResponse;

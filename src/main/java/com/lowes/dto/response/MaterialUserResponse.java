@@ -24,6 +24,4 @@ public class MaterialUserResponse {
     PhaseType phaseType;
 
     int pricePerQuantity;
-
-    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
 }

@@ -25,7 +25,5 @@ public class MaterialAdminResponse {
 
     int pricePerQuantity;
 
-    List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
-
     boolean deleted;
 }
