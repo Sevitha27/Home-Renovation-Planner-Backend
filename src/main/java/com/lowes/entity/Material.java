@@ -1,7 +1,7 @@
 package com.lowes.entity;
 
 
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,8 +22,8 @@ import java.util.List;
 public class Material {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    UUID id;
 
 //    @Column(nullable = false, updatable = false, unique = true)
 //    UUID exposedId = UUID.randomUUID();
@@ -36,10 +37,10 @@ public class Material {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    RenovationType renovationType;
+    PhaseType phaseType;
 
     @Column(nullable = false)
-    double pricePerQuantity;
+    int pricePerQuantity;
 
     @JsonBackReference
     @OneToMany(mappedBy = "material", fetch = FetchType.EAGER)

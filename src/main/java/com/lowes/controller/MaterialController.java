@@ -4,7 +4,7 @@ package com.lowes.controller;
 import com.lowes.dto.request.MaterialAdminRequest;
 import com.lowes.dto.response.MaterialAdminResponse;
 import com.lowes.dto.response.MaterialUserResponse;
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.service.MaterialService;
@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +28,9 @@ public class MaterialController {
     Logger logger = LoggerFactory.getLogger(MaterialController.class);
 
     @GetMapping("/admin/materials")
-    public ResponseEntity getAllMaterials(@RequestParam(name = "renovationType", required = false) RenovationType renovationType, @RequestParam(name = "deleted", required = false) Boolean deleted){
+    public ResponseEntity getAllMaterials(@RequestParam(name = "renovationType", required = false) PhaseType phaseType, @RequestParam(name = "deleted", required = false) Boolean deleted){
         try{
-            List<MaterialAdminResponse> materialAdminResponseList = materialService.getAllMaterials(renovationType,deleted);
+            List<MaterialAdminResponse> materialAdminResponseList = materialService.getAllMaterials(phaseType,deleted);
             return new ResponseEntity(materialAdminResponseList,HttpStatus.OK);
         }
         catch(Exception exception){
@@ -40,9 +41,9 @@ public class MaterialController {
     }
 
     @GetMapping("/user/materials")
-    public ResponseEntity getExistingMaterialsByRenovationType(@RequestParam("renovationType") RenovationType renovationType){
+    public ResponseEntity getExistingMaterialsByPhaseType(@RequestParam("renovationType") PhaseType phaseType){
         try{
-            List<MaterialUserResponse> materialUserResponseList = materialService.getExistingMaterialsByRenovationType(renovationType);
+            List<MaterialUserResponse> materialUserResponseList = materialService.getExistingMaterialsByPhaseType(phaseType);
             return new ResponseEntity(materialUserResponseList,HttpStatus.OK);
         }
         catch(Exception exception){
@@ -52,7 +53,7 @@ public class MaterialController {
     }
 
     @GetMapping("/admin/materials/{id}")
-    public ResponseEntity getMaterialById(@PathVariable("id") int id){
+    public ResponseEntity getMaterialById(@PathVariable("id") UUID id){
         try{
             MaterialAdminResponse materialAdminResponse = materialService.getMaterialById(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
@@ -86,7 +87,7 @@ public class MaterialController {
     }
 
     @PutMapping("/admin/materials/{id}")
-    public ResponseEntity updateMaterialById(@PathVariable("id") int id, @RequestBody MaterialAdminRequest materialAdminRequest){
+    public ResponseEntity updateMaterialById(@PathVariable("id") UUID id, @RequestBody MaterialAdminRequest materialAdminRequest){
         try{
             MaterialAdminResponse materialAdminResponse = materialService.updateMaterialById(id, materialAdminRequest);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
@@ -108,7 +109,7 @@ public class MaterialController {
     }
 
     @PatchMapping("/admin/materials/delete/{id}")
-    public ResponseEntity deleteMaterialById(@PathVariable("id") int id){
+    public ResponseEntity deleteMaterialById(@PathVariable("id") UUID id){
         try{
             MaterialAdminResponse materialAdminResponse = materialService.deleteMaterialById(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
@@ -129,7 +130,7 @@ public class MaterialController {
     }
 
     @PatchMapping("/admin/materials/re-add/{id}")
-    public ResponseEntity reAddMaterialById(@PathVariable("id") int id){
+    public ResponseEntity reAddMaterialById(@PathVariable("id") UUID id){
         try{
             MaterialAdminResponse materialAdminResponse = materialService.reAddMaterialById(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);

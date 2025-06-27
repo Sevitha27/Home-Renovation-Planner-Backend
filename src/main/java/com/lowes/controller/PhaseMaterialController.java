@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,24 +25,24 @@ public class PhaseMaterialController {
 
     Logger logger = LoggerFactory.getLogger(PhaseMaterialController.class);
 
-    @GetMapping("/user/phase/{phase-id}/phase-materials")
-    public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") int phaseId){
-        try{
-            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
-            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
-        }
-        catch(ElementNotFoundException exception){
-            logger.error(exception.toString());
-            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
-        }
-        catch(Exception exception){
-            logger.error("Exception",exception);
-            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/user/phase/{phase-id}/phase-materials")
+//    public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") UUID phaseId){
+//        try{
+//            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
+//            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
+//        }
+//        catch(ElementNotFoundException exception){
+//            logger.error(exception.toString());
+//            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
+//        }
+//        catch(Exception exception){
+//            logger.error("Exception",exception);
+//            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("/user/phase/{phase-id}/phase-materials")
-    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("id") int phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
+    public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("id") UUID phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
         try{
             List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phaseId,phaseMaterialUserRequestList);
             return new ResponseEntity(phaseMaterialUserResponseList,HttpStatus.CREATED);
@@ -61,7 +62,7 @@ public class PhaseMaterialController {
     }
 
     @PatchMapping("/user/phase-materials/{phase-material-id}")
-    public ResponseEntity updatePhaseMaterialQuantityById(@PathVariable("phase-material-id") int id, @RequestParam("quantity") int quantity){
+    public ResponseEntity updatePhaseMaterialQuantityById(@PathVariable("phase-material-id") UUID id, @RequestParam("quantity") int quantity){
         try{
             PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityById(id,quantity);
             return new ResponseEntity(phaseMaterialUserResponse,HttpStatus.OK);
@@ -82,7 +83,7 @@ public class PhaseMaterialController {
     }
 
     @DeleteMapping("/user/phase-materials/{phase-material-id}")
-    public ResponseEntity deletePhaseMaterialById(@PathVariable("phase-material-id") int id){
+    public ResponseEntity deletePhaseMaterialById(@PathVariable("phase-material-id") UUID id){
         try{
             PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialById(id);
             return new ResponseEntity(phaseMaterialUserResponse, HttpStatus.OK);

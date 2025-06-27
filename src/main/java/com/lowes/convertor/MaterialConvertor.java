@@ -17,7 +17,7 @@ public class MaterialConvertor {
         MaterialUserResponse materialUserResponse =  MaterialUserResponse.builder()
                                             .name(material.getName())
                                             .unit(material.getUnit())
-                                            .renovationType(material.getRenovationType())
+                                            .phaseType(material.getPhaseType())
                                             .pricePerQuantity(material.getPricePerQuantity())
                                             .build();
 
@@ -37,7 +37,7 @@ public class MaterialConvertor {
         MaterialAdminResponse materialAdminResponse =  MaterialAdminResponse.builder()
                 .name(material.getName())
                 .unit(material.getUnit())
-                .renovationType(material.getRenovationType())
+                .phaseType(material.getPhaseType())
                 .pricePerQuantity(material.getPricePerQuantity())
                 .deleted(material.isDeleted())
                 .build();
@@ -59,7 +59,7 @@ public class MaterialConvertor {
         Material material = Material.builder()
                 .name(materialAdminRequest.getName())
                 .unit(materialAdminRequest.getUnit())
-                .renovationType(materialAdminRequest.getRenovationType())
+                .phaseType(materialAdminRequest.getPhaseType())
                 .pricePerQuantity(materialAdminRequest.getPricePerQuantity())
                 .build();
 

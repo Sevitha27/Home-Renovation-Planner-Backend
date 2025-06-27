@@ -1,9 +1,10 @@
 package com.lowes.dto.response;
 
 
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
@@ -12,15 +13,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MaterialAdminResponse {
 
     String name;
 
     Unit unit;
 
-    RenovationType renovationType;
+    PhaseType phaseType;
 
-    double pricePerQuantity;
+    int pricePerQuantity;
 
     List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
 

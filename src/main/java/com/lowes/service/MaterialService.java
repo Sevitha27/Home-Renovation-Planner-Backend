@@ -6,8 +6,7 @@ import com.lowes.dto.request.MaterialAdminRequest;
 import com.lowes.dto.response.MaterialAdminResponse;
 import com.lowes.dto.response.MaterialUserResponse;
 import com.lowes.entity.Material;
-import com.lowes.entity.PhaseMaterial;
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
@@ -18,21 +17,22 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class MaterialService {
     private final MaterialRepository materialRepository;
 
-    public List<MaterialAdminResponse> getAllMaterials(RenovationType renovationType, Boolean deleted){
+    public List<MaterialAdminResponse> getAllMaterials(PhaseType phaseType, Boolean deleted){
 
         List<Material> materialList;
-        if(renovationType!=null && deleted!=null){
-            materialList = materialRepository.findByRenovationTypeAndDeleted(renovationType,deleted);
+        if(phaseType !=null && deleted!=null){
+            materialList = materialRepository.findByRenovationTypeAndDeleted(phaseType,deleted);
 
         }
-        else if(renovationType!=null){
-            materialList = materialRepository.findByRenovationType(renovationType);
+        else if(phaseType !=null){
+            materialList = materialRepository.findByRenovationType(phaseType);
         }
         else if(deleted!=null){
             materialList = materialRepository.findByDeleted(deleted);
@@ -49,12 +49,12 @@ public class MaterialService {
         return materialAdminResponseList;
     }
 
-    public List<MaterialUserResponse> getExistingMaterialsByRenovationType(RenovationType renovationType){
+    public List<MaterialUserResponse> getExistingMaterialsByPhaseType(PhaseType phaseType){
 
         List<Material> materialList;
 
-        if(renovationType!=null){
-            materialList = materialRepository.findByRenovationTypeAndDeleted(renovationType,false);
+        if(phaseType !=null){
+            materialList = materialRepository.findByRenovationTypeAndDeleted(phaseType,false);
         }
         else{
             materialList = materialRepository.findByDeleted(false);
@@ -69,7 +69,7 @@ public class MaterialService {
     }
 
 
-    public MaterialAdminResponse getMaterialById(int id){
+    public MaterialAdminResponse getMaterialById(UUID id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
@@ -91,7 +91,7 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse updateMaterialById(int id, MaterialAdminRequest materialAdminRequest){
+    public MaterialAdminResponse updateMaterialById(UUID id, MaterialAdminRequest materialAdminRequest){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
@@ -100,7 +100,7 @@ public class MaterialService {
 
         existingMaterial.setName(materialAdminRequest.getName());
         existingMaterial.setUnit(materialAdminRequest.getUnit());
-        existingMaterial.setRenovationType(materialAdminRequest.getRenovationType());
+        existingMaterial.setPhaseType(materialAdminRequest.getPhaseType());
         existingMaterial.setPricePerQuantity(materialAdminRequest.getPricePerQuantity());
 
         Material updatedMaterial = materialRepository.save(existingMaterial);
@@ -109,7 +109,7 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse deleteMaterialById(int id){
+    public MaterialAdminResponse deleteMaterialById(UUID id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Delete");
@@ -126,7 +126,7 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse reAddMaterialById(int id){
+    public MaterialAdminResponse reAddMaterialById(UUID id){
         Optional<Material> optionalMaterial = materialRepository.findById(id);
         if(optionalMaterial.isEmpty()){
             throw  new ElementNotFoundException("Material Not Found To Re-Add");

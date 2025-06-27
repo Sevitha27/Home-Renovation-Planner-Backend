@@ -1,31 +1,31 @@
 package com.lowes.dto.response;
 
 
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseMaterialUserResponse {
 
     String name;
 
     Unit unit;
 
-    double pricePerQuantity;
+    int pricePerQuantity;
 
-    RenovationType renovationType;
+    PhaseType phaseType;
 
     int quantity;
 
-    double totalPrice;
+    int totalPrice;
 
-    MaterialUserResponse materialUserResponse;
-
-    //PhaseResponse phaseResponse;
+    PhaseResponse phaseResponse;
 
 }

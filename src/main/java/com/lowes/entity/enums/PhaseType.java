@@ -1,8 +1,10 @@
 package com.lowes.entity.enums;
 
-public enum RenovationType {
+public enum PhaseType {
     ELECTRICAL,
     PLUMBING,
     CARPENTRY,
-    CIVIL
+    CIVIL,
+    TILING,
+    PAINTING
 }

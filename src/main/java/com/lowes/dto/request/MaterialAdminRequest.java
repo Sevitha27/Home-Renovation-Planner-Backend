@@ -1,26 +1,25 @@
 package com.lowes.dto.request;
 
 
-import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MaterialAdminRequest {
 
     String name;
 
     Unit unit;
 
-    RenovationType renovationType;
+    PhaseType phaseType;
 
-    double pricePerQuantity;
+    int pricePerQuantity;
 
 
 }

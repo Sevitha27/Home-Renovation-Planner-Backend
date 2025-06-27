@@ -14,14 +14,13 @@ public class PhaseMaterialConvertor {
     public static PhaseMaterialUserResponse phaseMaterialToPhaseMaterialUserResponse(PhaseMaterial phaseMaterial){
 
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialUserResponse.builder()
-                .renovationType(phaseMaterial.getRenovationType())
+                .phaseType(phaseMaterial.getPhaseType())
                 .quantity(phaseMaterial.getQuantity())
                 .name(phaseMaterial.getName())
                 .unit(phaseMaterial.getUnit())
                 .pricePerQuantity(phaseMaterial.getPricePerQuantity())
                 .totalPrice(phaseMaterial.getTotalPrice())
-                //.phaseResponse(PhaseConvertor.PhaseToPhaseResponse(phaseMaterial.getPhase()))
-                .materialUserResponse(MaterialConvertor.materialToMaterialUserResponse(phaseMaterial.getMaterial()))
+                .phaseResponse(PhaseConvertor.phaseToPhaseResponse(phaseMaterial.getPhase()))
                 .build();
 
         return phaseMaterialUserResponse;
