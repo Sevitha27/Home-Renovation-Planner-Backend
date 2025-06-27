@@ -27,7 +27,7 @@ public class AuthRegisterDTO {
     @NonNull
     private String contact;
 
-    private MultipartFile pic;
+    //private MultipartFile pic;
 
 
 
@@ -44,7 +44,5 @@ public class AuthRegisterDTO {
 
     @NonNull
     private List<SkillRequestDTO> skills;
-
-
 
 }

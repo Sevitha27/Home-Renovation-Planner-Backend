@@ -12,7 +12,6 @@ import com.lowes.repository.SkillRepository;
 import com.lowes.repository.UserRepository;
 import com.lowes.repository.VendorRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,12 +33,12 @@ public class AuthService {
     public ResponseEntity<String> register(AuthRegisterDTO request) {
         User user = userConverter.authRegisterDTOtoUser(request);
         userRepository.save(user);
-
+        System.out.println("After user save");
         if (user.getRole() == Role.VENDOR) {
             List<Skill> skills = new ArrayList<>();
             for (SkillRequestDTO skillDTO : request.getSkills()) {
                 SkillType skillType = SkillType.valueOf(skillDTO.getSkillName().toUpperCase());
-                Skill skill = skillRepository.findByNameAndBasePrice(String.valueOf(skillType),skillDTO.getBasePrice())
+                Skill skill = skillRepository.findByNameAndBasePrice(skillType, skillDTO.getBasePrice())
                         .orElseGet(() -> skillRepository.save(
                                 Skill.builder()
                                         .name(skillType)

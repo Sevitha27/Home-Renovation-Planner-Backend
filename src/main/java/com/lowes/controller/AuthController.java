@@ -16,7 +16,7 @@ public class AuthController {
 
     //register
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute AuthRegisterDTO authRegisterDTO){
+    public ResponseEntity<?> register(@RequestBody AuthRegisterDTO authRegisterDTO){
 
         return authService.register(authRegisterDTO);
     }

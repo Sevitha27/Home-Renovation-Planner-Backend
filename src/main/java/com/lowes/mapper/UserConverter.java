@@ -27,7 +27,7 @@ public class UserConverter {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(Role.valueOf(dto.getRole().toUpperCase()))
                 .contact(dto.getContact())
-                .pic(dto.getPic() != null ? dto.getPic().getOriginalFilename() : null)
+                //.pic(dto.getPic() != null ? dto.getPic().getOriginalFilename() : null)
                 .build();
     }
 
