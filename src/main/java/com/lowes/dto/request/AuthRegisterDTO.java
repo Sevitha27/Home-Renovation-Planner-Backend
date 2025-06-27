@@ -27,9 +27,6 @@ public class AuthRegisterDTO {
     @NonNull
     private String contact;
 
-    //private MultipartFile pic;
-
-
 
 
     //additional for vendor
