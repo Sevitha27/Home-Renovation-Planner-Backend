@@ -96,19 +96,19 @@ public class PhaseService {
         phaseRepository.save(phase);
     }
 
-    public Integer calculateTotalCost(UUID id) {
-        Phase phase=phaseRepository.findById(id).orElseThrow(()-> new RuntimeException("Phase not found"));
-        int materialCost=0;
-        if (phase.getPhaseMaterialList()!=null)
-        {
-            materialCost = phase.getPhaseMaterialList().stream()
-                    .mapToInt(pm -> pm.getCost() != null ? pm.getCost() : 0)
-                    .sum();
-        }
-        phase.setTotalPhaseCost(phase.getVendorCost()+materialCost);
-        phaseRepository.save(phase);
-        return phase.getTotalPhaseCost();
-    }
+//    public Integer calculateTotalCost(UUID id) {
+//        Phase phase=phaseRepository.findById(id).orElseThrow(()-> new RuntimeException("Phase not found"));
+//        int materialCost=0;
+//        if (phase.getPhaseMaterialList()!=null)
+//        {
+//            materialCost = phase.getPhaseMaterialList().stream()
+//                    .mapToInt(pm -> pm.getCost() != null ? pm.getCost() : 0)
+//                    .sum();
+//        }
+//        phase.setTotalPhaseCost(phase.getVendorCost()+materialCost);
+//        phaseRepository.save(phase);
+//        return phase.getTotalPhaseCost();
+//    }
 
     public List<PhaseMaterialUserResponse> getAllPhaseMaterialsByPhaseId(UUID id){
         Optional<Phase> optionalPhase = phaseRepository.findById(id);

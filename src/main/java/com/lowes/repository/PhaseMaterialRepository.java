@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface PhaseMaterialRepository extends JpaRepository<PhaseMaterial, UUID> {
-    List<PhaseMaterial> findByPhaseId(int phaseId);
+    List<PhaseMaterial> findByPhaseId(UUID phaseId);
 }

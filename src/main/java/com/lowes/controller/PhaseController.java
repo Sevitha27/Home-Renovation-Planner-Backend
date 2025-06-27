@@ -55,10 +55,10 @@ public class PhaseController {
     }
 
     //working
-    @GetMapping("/{id}/total-cost")
-    public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
-        return phaseService.calculateTotalCost(id);
-    }
+//    @GetMapping("/{id}/total-cost")
+//    public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
+//        return phaseService.calculateTotalCost(id);
+//    }
 
     //working
     @DeleteMapping("/{id}")
