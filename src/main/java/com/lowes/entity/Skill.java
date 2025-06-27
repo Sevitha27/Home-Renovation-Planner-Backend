@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Skill {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    private Number base_price;
+    private BigDecimal base_price;
 
     @Column(unique = true, nullable = false)
     private String name; // e.g., "Plumbing", "Electrical", "Painting"
