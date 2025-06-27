@@ -17,7 +17,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name m;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     ServiceType serviceType;
