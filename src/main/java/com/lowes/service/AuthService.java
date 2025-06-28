@@ -72,7 +72,7 @@ public class AuthService {
             Optional<User> userFromDBOpt = userRepository.findByEmail(request.getEmail());
 
             if (userFromDBOpt.isEmpty())
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something Went Wrong!");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
 
             User userFromDB = userFromDBOpt.get();
 
@@ -91,7 +91,7 @@ public class AuthService {
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                     .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).build());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception : " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
         }
     }
 
@@ -120,11 +120,11 @@ public class AuthService {
                         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                         .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).build());
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Credentials!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).build());
         }
         catch(Exception e)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(authLoginDTO.getEmail()).build());
         }
     }
 

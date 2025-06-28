@@ -15,7 +15,7 @@ public class UserResponseDTO {
     @NonNull
     private String email;
 
-    @NonNull
+
     private String accessToken;
 
 }
