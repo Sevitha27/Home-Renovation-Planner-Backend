@@ -9,12 +9,14 @@ import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
+import java.util.UUID;
 
 @UtilityClass
 public class MaterialConvertor {
 
     public static MaterialUserResponse materialToMaterialUserResponse(Material material){
         MaterialUserResponse materialUserResponse =  MaterialUserResponse.builder()
+                                            .exposedId(material.getExposedId())
                                             .name(material.getName())
                                             .unit(material.getUnit())
                                             .phaseType(material.getPhaseType())
@@ -27,6 +29,7 @@ public class MaterialConvertor {
 
     public static MaterialAdminResponse materialToMaterialAdminResponse(Material material){
         MaterialAdminResponse materialAdminResponse =  MaterialAdminResponse.builder()
+                .exposedId(material.getExposedId())
                 .name(material.getName())
                 .unit(material.getUnit())
                 .phaseType(material.getPhaseType())
@@ -45,6 +48,7 @@ public class MaterialConvertor {
                 .unit(materialAdminRequest.getUnit())
                 .phaseType(materialAdminRequest.getPhaseType())
                 .pricePerQuantity(materialAdminRequest.getPricePerQuantity())
+                .exposedId(UUID.randomUUID())
                 .build();
 
         return  material;

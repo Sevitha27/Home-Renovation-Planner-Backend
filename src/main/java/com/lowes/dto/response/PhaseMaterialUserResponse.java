@@ -6,6 +6,8 @@ import com.lowes.entity.enums.Unit;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,6 +15,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseMaterialUserResponse {
+
+    UUID exposedId;
 
     String name;
 
@@ -26,6 +30,6 @@ public class PhaseMaterialUserResponse {
 
     int totalPrice;
 
-    PhaseResponse phaseResponse;
+    MaterialUserResponse materialUserResponse;
 
 }

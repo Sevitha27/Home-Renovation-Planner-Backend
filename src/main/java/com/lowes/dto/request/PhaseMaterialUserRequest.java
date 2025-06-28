@@ -12,7 +12,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseMaterialUserRequest {
 
-    UUID materialId;
+    UUID materialExposedId;
 
     int quantity;
 

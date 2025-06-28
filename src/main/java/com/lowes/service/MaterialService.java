@@ -69,8 +69,8 @@ public class MaterialService {
     }
 
 
-    public MaterialAdminResponse getMaterialById(UUID id){
-        Optional<Material> optionalMaterial = materialRepository.findById(id);
+    public MaterialAdminResponse getMaterialByExposedId(UUID id){
+        Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
         }
@@ -91,8 +91,8 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse updateMaterialById(UUID id, MaterialAdminRequest materialAdminRequest){
-        Optional<Material> optionalMaterial = materialRepository.findById(id);
+    public MaterialAdminResponse updateMaterialByExposedId(UUID id, MaterialAdminRequest materialAdminRequest){
+        Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Update");
         }
@@ -109,8 +109,8 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse deleteMaterialById(UUID id){
-        Optional<Material> optionalMaterial = materialRepository.findById(id);
+    public MaterialAdminResponse deleteMaterialByExposedId(UUID id){
+        Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
         if(optionalMaterial.isEmpty()){
             throw new ElementNotFoundException("Material Not Found To Delete");
         }
@@ -126,8 +126,8 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialAdminResponse reAddMaterialById(UUID id){
-        Optional<Material> optionalMaterial = materialRepository.findById(id);
+    public MaterialAdminResponse reAddMaterialByExposedId(UUID id){
+        Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
         if(optionalMaterial.isEmpty()){
             throw  new ElementNotFoundException("Material Not Found To Re-Add");
         }

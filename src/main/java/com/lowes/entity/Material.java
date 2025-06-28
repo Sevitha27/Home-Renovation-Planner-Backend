@@ -22,11 +22,14 @@ import java.util.UUID;
 public class Material {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
 
 //    @Column(nullable = false, updatable = false, unique = true)
 //    UUID exposedId = UUID.randomUUID();
+
+    @Column(nullable = false, unique = true)
+    UUID exposedId;
 
     @Column(nullable = false,unique = true)
     String name;

@@ -28,7 +28,7 @@ public class MaterialController {
     Logger logger = LoggerFactory.getLogger(MaterialController.class);
 
     @GetMapping("/admin/materials")
-    public ResponseEntity getAllMaterials(@RequestParam(name = "renovationType", required = false) PhaseType phaseType, @RequestParam(name = "deleted", required = false) Boolean deleted){
+    public ResponseEntity getAllMaterials(@RequestParam(name = "phaseType", required = false) PhaseType phaseType, @RequestParam(name = "deleted", required = false) Boolean deleted){
         try{
             List<MaterialAdminResponse> materialAdminResponseList = materialService.getAllMaterials(phaseType,deleted);
             return new ResponseEntity(materialAdminResponseList,HttpStatus.OK);
@@ -41,7 +41,7 @@ public class MaterialController {
     }
 
     @GetMapping("/user/materials")
-    public ResponseEntity getExistingMaterialsByPhaseType(@RequestParam("renovationType") PhaseType phaseType){
+    public ResponseEntity getExistingMaterialsByPhaseType(@RequestParam("phaseType") PhaseType phaseType){
         try{
             List<MaterialUserResponse> materialUserResponseList = materialService.getExistingMaterialsByPhaseType(phaseType);
             return new ResponseEntity(materialUserResponseList,HttpStatus.OK);
@@ -53,9 +53,9 @@ public class MaterialController {
     }
 
     @GetMapping("/admin/materials/{id}")
-    public ResponseEntity getMaterialById(@PathVariable("id") UUID id){
+    public ResponseEntity getMaterialByExposedId(@PathVariable("id") UUID id){
         try{
-            MaterialAdminResponse materialAdminResponse = materialService.getMaterialById(id);
+            MaterialAdminResponse materialAdminResponse = materialService.getMaterialByExposedId(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
         }
         catch (ElementNotFoundException exception){
@@ -87,9 +87,9 @@ public class MaterialController {
     }
 
     @PutMapping("/admin/materials/{id}")
-    public ResponseEntity updateMaterialById(@PathVariable("id") UUID id, @RequestBody MaterialAdminRequest materialAdminRequest){
+    public ResponseEntity updateMaterialByExposedId(@PathVariable("id") UUID id, @RequestBody MaterialAdminRequest materialAdminRequest){
         try{
-            MaterialAdminResponse materialAdminResponse = materialService.updateMaterialById(id, materialAdminRequest);
+            MaterialAdminResponse materialAdminResponse = materialService.updateMaterialByExposedId(id, materialAdminRequest);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
         }
         catch (ElementNotFoundException exception){
@@ -109,9 +109,9 @@ public class MaterialController {
     }
 
     @PatchMapping("/admin/materials/delete/{id}")
-    public ResponseEntity deleteMaterialById(@PathVariable("id") UUID id){
+    public ResponseEntity deleteMaterialByExposedId(@PathVariable("id") UUID id){
         try{
-            MaterialAdminResponse materialAdminResponse = materialService.deleteMaterialById(id);
+            MaterialAdminResponse materialAdminResponse = materialService.deleteMaterialByExposedId(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
         }
         catch (ElementNotFoundException exception){
@@ -130,9 +130,9 @@ public class MaterialController {
     }
 
     @PatchMapping("/admin/materials/re-add/{id}")
-    public ResponseEntity reAddMaterialById(@PathVariable("id") UUID id){
+    public ResponseEntity reAddMaterialByExposedId(@PathVariable("id") UUID id){
         try{
-            MaterialAdminResponse materialAdminResponse = materialService.reAddMaterialById(id);
+            MaterialAdminResponse materialAdminResponse = materialService.reAddMaterialByExposedId(id);
             return new ResponseEntity(materialAdminResponse,HttpStatus.OK);
         }
         catch (ElementNotFoundException exception){
