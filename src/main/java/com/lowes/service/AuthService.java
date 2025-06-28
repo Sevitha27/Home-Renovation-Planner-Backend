@@ -118,9 +118,9 @@ public class AuthService {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                        .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).build());
+                        .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).role(user.getRole().name()).build());
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).role(user.getRole().name()).build());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).build());
         }
         catch(Exception e)
         {
