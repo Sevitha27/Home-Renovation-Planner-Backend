@@ -1,5 +1,6 @@
 package com.lowes.entity;
 
+import com.lowes.entity.enums.SkillType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,13 +22,14 @@ public class Skill {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    private BigDecimal base_price;
+    @Enumerated(EnumType.STRING)
+    private SkillType name;
 
-    @Column(unique = true, nullable = false)
-    private String name; // e.g., "Plumbing", "Electrical", "Painting"
+    private Double basePrice;
 
     @ManyToMany(mappedBy = "skills")
     private List<Vendor> vendors;
+
 
     @OneToMany(mappedBy = "requiredSkill")
     private List<Phase> phases;
