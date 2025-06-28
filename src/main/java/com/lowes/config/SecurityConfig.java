@@ -41,7 +41,7 @@ public class SecurityConfig {
             "/auth/register", "/auth/login", "/auth/refreshAccessToken"
     };
 
-    private final List<String> ALLOWED_REDIRECT_URI = List.of(
+    private final List<String> ALLOWED_ORIGIN_URI = List.of(
             "http://localhost:5173", "http://localhost:5174"
     );
 
@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(ALLOWED_REDIRECT_URI);
+        configuration.setAllowedOrigins(ALLOWED_ORIGIN_URI);
         configuration.setAllowedMethods(List.of(ALLOWED_CORS_METHODS));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

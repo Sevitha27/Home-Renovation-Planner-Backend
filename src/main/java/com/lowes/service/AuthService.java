@@ -89,7 +89,7 @@ public class AuthService {
 
             return ResponseEntity.status(HttpStatus.OK)
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).build());
+                    .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).role(userFromDB.getRole().name()).build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
         }
@@ -120,7 +120,7 @@ public class AuthService {
                         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                         .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).build());
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).build());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).role(user.getRole().name()).build());
         }
         catch(Exception e)
         {
@@ -153,7 +153,7 @@ public class AuthService {
             User user = userOpt.get();
             String newAccessToken = jwtService.generateAccessToken(user);
 
-            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").accessToken(newAccessToken).email(email).build());
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").accessToken(newAccessToken).email(email).role(user.getRole().name()).build());
 
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error!");
