@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/project")
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class ProjectController {
     ProjectService projectService;
 
     @GetMapping("/{id}")
-    public Project getProjectById(@PathVariable Long id) {
+    public Project getProjectById(@PathVariable UUID id) {
         return projectService.getProjectById(id);
     }
 }

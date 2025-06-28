@@ -4,7 +4,6 @@ import com.lowes.entity.Project;
 import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

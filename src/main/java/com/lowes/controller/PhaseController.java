@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/phase")
@@ -32,38 +33,38 @@ public class PhaseController {
 
     //working
     @GetMapping("/{id}")
-    public Phase getPhaseById(@PathVariable Long id) {
+    public Phase getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);
     }
 
     //working
     @GetMapping("/project/{projectId}")
-    public List<Phase> getPhasesByProject(@PathVariable Long projectId) {
+    public List<Phase> getPhasesByProject(@PathVariable UUID projectId) {
         return phaseService.getPhasesByProject(projectId);
     }
 
     //working
     @PutMapping("/{id}")
-    public Phase updatePhase(@PathVariable Long id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
+    public Phase updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
         return phaseService.updatePhase(id, updatedPhaseRequestDTO);
     }
 
     //working
     @PostMapping("/vendor/{vendorId}/phase/{phaseId}/cost")
-    public String setVendorCost(@PathVariable Long vendorId, @PathVariable Long phaseId, @RequestParam Integer cost) {
+    public String setVendorCost(@PathVariable UUID vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
         phaseService.setVendorCostForPhase(vendorId, phaseId, cost);
         return "Cost updated successfully";
     }
 
     //working
-    @GetMapping("/{id}/total-cost")
-    public Integer calculatePhaseTotalCost(@PathVariable Long id) {
-        return phaseService.calculateTotalCost(id);
-    }
+//    @GetMapping("/{id}/total-cost")
+//    public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
+//        return phaseService.calculateTotalCost(id);
+//    }
 
     //working
     @DeleteMapping("/{id}")
-    public String deletePhase(@PathVariable Long id) {
+    public String deletePhase(@PathVariable UUID id) {
         phaseService.deletePhase(id);
         return "Phase deleted successfully";
     }
