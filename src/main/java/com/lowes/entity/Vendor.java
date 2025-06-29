@@ -1,10 +1,7 @@
 package com.lowes.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,4 +50,9 @@ public class Vendor {
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<Phase> assignedPhases;
+
+    public boolean isAvailable() {
+        return available;
+    }
+
 }
