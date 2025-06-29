@@ -1,10 +1,7 @@
 package com.lowes.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@Builder
 public class VendorReview {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,4 +19,15 @@ public class VendorReview {
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer;
+
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
+
+    @Column(length = 1000)
+    private String comment;
+
+    private Double rating;
+
+
 }

@@ -33,6 +33,10 @@ public class Phase {
     private Project project;
 
     @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill requiredSkill;
+
+    @ManyToOne
     @JoinColumn(name="vendor_id")
     @JsonBackReference("vendor-phase")
     private Vendor vendor;
