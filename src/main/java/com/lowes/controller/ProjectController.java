@@ -1,11 +1,12 @@
 package com.lowes.controller;
 
+import com.lowes.DTO.ProjectRequestDTO;
+import com.lowes.DTO.ProjectResponseDTO;
 import com.lowes.entity.Project;
 import com.lowes.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
