@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -27,4 +28,6 @@ public class PhaseResponse {
 
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
+
+    //List<MaterialUserResponse> materialUserResponseList;      this must be there
 }
