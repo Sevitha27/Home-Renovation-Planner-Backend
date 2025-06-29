@@ -40,6 +40,16 @@ public class PhaseService {
         phase.setStartDate(phaseRequestDTO.getStartDate());
         phase.setEndDate(phaseRequestDTO.getEndDate());
         phase.setVendor(phaseRequestDTO.getVendor());
+        List<Phase> conflicts = phaseRepository.findConflictingPhasesForVendor(
+                phaseRequestDTO.getVendor().getId(),
+                phaseRequestDTO.getStartDate(),
+                phaseRequestDTO.getEndDate()
+        );
+
+        if (!conflicts.isEmpty()) {
+            throw new RuntimeException("Vendor already assigned to another phase during this period.");
+        }
+
         phase.setProject(phaseRequestDTO.getProject());
         phase.setPhaseName(phaseRequestDTO.getPhaseName());
 
