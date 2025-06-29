@@ -25,6 +25,7 @@ public class PhaseMaterialConvertor {
                 .pricePerQuantity(phaseMaterial.getPricePerQuantity())
                 .totalPrice(phaseMaterial.getTotalPrice())
                 .materialUserResponse(MaterialConvertor.materialToMaterialUserResponse(phaseMaterial.getMaterial()))
+                .phaseResponse(PhaseConvertor.phaseToPhaseResponse(phaseMaterial.getPhase()))
                 .build();
 
         return phaseMaterialUserResponse;

@@ -2,6 +2,7 @@ package com.lowes.repository;
 
 
 import com.lowes.entity.PhaseMaterial;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ public interface PhaseMaterialRepository extends JpaRepository<PhaseMaterial, In
 
     Optional<PhaseMaterial> findByExposedId(UUID id);
 
-    List<PhaseMaterial> findByPhaseId(UUID phaseId);
+    List<PhaseMaterial> findByPhaseId(UUID phaseId, Sort sort);
 
     void deleteByExposedId(UUID id);
 }

@@ -12,6 +12,7 @@ import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,17 +29,17 @@ public class MaterialService {
 
         List<Material> materialList;
         if(phaseType !=null && deleted!=null){
-            materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,deleted);
+            materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,deleted, Sort.by(Sort.Direction.ASC,"id"));
 
         }
         else if(phaseType !=null){
-            materialList = materialRepository.findByPhaseType(phaseType);
+            materialList = materialRepository.findByPhaseType(phaseType, Sort.by(Sort.Direction.ASC,"deleted","id"));
         }
         else if(deleted!=null){
-            materialList = materialRepository.findByDeleted(deleted);
+            materialList = materialRepository.findByDeleted(deleted, Sort.by(Sort.Direction.ASC,"phaseType","id"));
         }
         else{
-            materialList = materialRepository.findAll();
+            materialList = materialRepository.findAll(Sort.by(Sort.Direction.ASC,"deleted","phaseType","id"));
         }
         List<MaterialAdminResponse> materialAdminResponseList = new ArrayList<>();
         if(!materialList.isEmpty()){
@@ -51,14 +52,9 @@ public class MaterialService {
 
     public List<MaterialUserResponse> getExistingMaterialsByPhaseType(PhaseType phaseType){
 
-        List<Material> materialList;
 
-        if(phaseType !=null){
-            materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,false);
-        }
-        else{
-            materialList = materialRepository.findByDeleted(false);
-        }
+
+        List<Material> materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType,false,Sort.by(Sort.Direction.ASC,"id"));
         List<MaterialUserResponse> materialUserResponseList = new ArrayList<>();
         if(!materialList.isEmpty()){
             for(Material material : materialList){

@@ -15,6 +15,7 @@ import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
         }
 
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId);
+        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         for(PhaseMaterial phaseMaterial : phaseMaterialList){
             phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));

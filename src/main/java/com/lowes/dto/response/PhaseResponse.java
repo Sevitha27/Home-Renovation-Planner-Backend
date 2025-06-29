@@ -7,12 +7,16 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PhaseResponse {
+
+    private UUID id;
 
     private String phaseName;
     private String description;

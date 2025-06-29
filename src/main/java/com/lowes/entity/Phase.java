@@ -51,6 +51,7 @@ public class Phase {
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
     @JsonManagedReference("phase-material")
+    @OrderBy("id ASC")
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

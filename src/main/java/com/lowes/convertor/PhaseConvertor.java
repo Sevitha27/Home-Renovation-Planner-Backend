@@ -9,6 +9,7 @@ public class PhaseConvertor {
 
     public static PhaseResponse phaseToPhaseResponse(Phase phase){
         PhaseResponse phaseResponse = PhaseResponse.builder()
+                .id(phase.getId())
                 .phaseName(phase.getPhaseName())
                 .description(phase.getDescription())
                 .startDate(phase.getStartDate())

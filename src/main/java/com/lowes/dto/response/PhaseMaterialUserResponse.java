@@ -32,4 +32,6 @@ public class PhaseMaterialUserResponse {
 
     MaterialUserResponse materialUserResponse;
 
+    PhaseResponse phaseResponse;
+
 }
