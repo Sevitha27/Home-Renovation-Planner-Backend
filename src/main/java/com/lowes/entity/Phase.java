@@ -1,6 +1,7 @@
 package com.lowes.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
@@ -37,6 +38,11 @@ public class Phase {
     private Skill requiredSkill;
 
     @ManyToOne
+    @JoinColumn(name="room_id")
+    @JsonBackReference("room-phase")
+    private Room room;
+
+    @ManyToOne
     @JoinColumn(name="vendor_id")
     @JsonBackReference("vendor-phase")
     private Vendor vendor;
@@ -54,7 +60,7 @@ public class Phase {
     private Integer vendorCost;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
-    @JsonManagedReference("phase-material")
+    @JsonIgnore
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,6 @@
 package com.lowes.service;
 
-import com.lowes.DTO.RoomRequestDTO;
+import com.lowes.dto.RoomRequestDTO;
 import com.lowes.entity.Project;
 import com.lowes.entity.Room;
 import com.lowes.repository.ProjectRepository;

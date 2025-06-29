@@ -1,6 +1,6 @@
 package com.lowes.controller;
 
-import com.lowes.DTO.RoomRequestDTO;
+import com.lowes.dto.RoomRequestDTO;
 import com.lowes.entity.Room;
 import com.lowes.service.RoomService;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.lowes.controller;
 
-import com.lowes.DTO.ProjectRequestDTO;
-import com.lowes.DTO.ProjectResponseDTO;
+import com.lowes.dto.ProjectRequestDTO;
+import com.lowes.dto.ProjectResponseDTO;
 import com.lowes.entity.Project;
 import com.lowes.service.ProjectService;
 import lombok.RequiredArgsConstructor;

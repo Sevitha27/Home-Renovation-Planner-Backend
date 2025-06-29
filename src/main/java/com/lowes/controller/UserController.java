@@ -5,6 +5,8 @@ import com.lowes.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
+    public User getUser(@PathVariable UUID id) {
         return userRepository.findById(id).orElse(null);
     }
 }

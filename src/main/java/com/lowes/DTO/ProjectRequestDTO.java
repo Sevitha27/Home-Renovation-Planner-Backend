@@ -1,7 +1,8 @@
-package com.lowes.DTO;
+package com.lowes.dto;
 import lombok.*;
-import com.lowes.enums.ServiceType;
+import com.lowes.entity.enums.ServiceType;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +14,7 @@ public class ProjectRequestDTO {
     private Double estimatedBudget;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long ownerId;
+    private UUID ownerId;
 
 
 }

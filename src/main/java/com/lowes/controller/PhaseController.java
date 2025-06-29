@@ -8,7 +8,10 @@ import com.lowes.entity.enums.RenovationType;
 import com.lowes.service.PhaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -69,11 +72,6 @@ public class PhaseController {
         return "Phase deleted successfully";
     }
 
-    //working
-    @GetMapping("/phases/by-renovation-type/{type}")
-    public List<PhaseType> getPhasesByRenovationType(@PathVariable RenovationType type) {
-        return phaseService.getPhasesByRenovationType(type);
-    }
 
     @GetMapping("/materials")
     public List<PhaseMaterialUserResponse> getMaterilsById(@RequestParam UUID id){
@@ -81,5 +79,13 @@ public class PhaseController {
     }
 
 
+    @GetMapping("/phases/by-renovation-type/{type}")
+    public List<PhaseType> getPhasesByRenovationType(@PathVariable RenovationType type) {
+        List<PhaseType> phases = phaseService.getPhasesByRenovationType(type);
+        if (phases == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No phases found for renovation type: " + type);
+        }
+        return phases;
+    }
 
 }

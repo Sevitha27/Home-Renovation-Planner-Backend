@@ -1,11 +1,10 @@
 package com.lowes.mapper;
 
-import com.lowes.DTO.ProjectRequestDTO;
-import com.lowes.DTO.ProjectResponseDTO;
+import com.lowes.dto.ProjectRequestDTO;
+import com.lowes.dto.ProjectResponseDTO;
 import com.lowes.entity.Project;
 import com.lowes.entity.Room;
 import com.lowes.entity.User;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,7 @@ public class ProjectMapper {
         project.setEstimatedBudget(dto.getEstimatedBudget());
         project.setStartDate(dto.getStartDate());
         project.setEndDate(dto.getEndDate());
-        project.setOwner(owner);
+        project.setUser(owner);
         return project;
     }
 
@@ -30,7 +29,7 @@ public class ProjectMapper {
                 .estimatedBudget(project.getEstimatedBudget())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
-                .ownerId(project.getOwner() != null ? project.getOwner().getId() : null)
+                .ownerId(project.getUser() != null ? project.getUser().getId() : null)
 
                 .roomNames(project.getRooms() != null
                         ? project.getRooms().stream().map(Room::getName).toList()

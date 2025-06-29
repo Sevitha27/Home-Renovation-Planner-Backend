@@ -1,7 +1,7 @@
 package com.lowes.service;
 
-import com.lowes.DTO.ProjectRequestDTO;
-import com.lowes.DTO.ProjectResponseDTO;
+import com.lowes.dto.ProjectRequestDTO;
+import com.lowes.dto.ProjectResponseDTO;
 import com.lowes.entity.Project;
 import com.lowes.entity.User;
 import com.lowes.mapper.ProjectMapper;
