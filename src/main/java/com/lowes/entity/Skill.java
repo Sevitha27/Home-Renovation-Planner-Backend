@@ -23,7 +23,7 @@ public class Skill {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    private SkillType name;
+    private SkillType name; // e.g., "Plumbing", "Electrical", "Painting"
 
     private Double basePrice;
 
