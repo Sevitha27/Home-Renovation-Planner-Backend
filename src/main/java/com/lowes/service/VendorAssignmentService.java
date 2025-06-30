@@ -13,12 +13,12 @@ public class VendorAssignmentService {
     @Autowired
     private VendorRepository vendorRepository;
 
-    public void assignVendor(UUID vendorId) {
+    public void setAvailability(UUID vendorId, boolean availability) {
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
-
-        vendor.setAvailable(false); // mark unavailable
+        vendor.setAvailable(availability);
         vendorRepository.save(vendor);
     }
+
 
 }

@@ -2,7 +2,9 @@ package com.lowes.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -11,6 +13,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Builder
+
 public class VendorReview {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,6 +31,10 @@ public class VendorReview {
     private String comment;
 
     private Double rating;
+
+    @Column(updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 
 }

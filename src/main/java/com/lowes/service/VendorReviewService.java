@@ -3,6 +3,7 @@ package com.lowes.service;
 import com.lowes.dto.request.VendorReviewRequestDTO;
 import com.lowes.dto.response.VendorReviewDTO;
 import com.lowes.entity.Skill;
+
 import com.lowes.entity.Vendor;
 import com.lowes.entity.VendorReview;
 import com.lowes.entity.enums.SkillType;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import com.lowes.entity.User;
 import com.lowes.repository.VendorRepository;
 import com.lowes.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -36,6 +38,7 @@ public class VendorReviewService {
     @Autowired
     private VendorReviewRepository vendorReviewRepository;
 
+    @Transactional
     public List<VendorReviewDTO> getVendorsBySkill(String skillName) {
         SkillType skillEnum = null;
         try {
@@ -59,9 +62,15 @@ public class VendorReviewService {
     private VendorReviewDTO mapToDTO(Vendor vendor) {
         List<VendorReview> reviews = vendor.getReviews();
 
-        List<String> comments = reviews.stream()
-                .map(VendorReview::getComment)
-                .filter(comment -> comment != null && !comment.trim().isEmpty())
+        List<VendorReviewDTO.ReviewDetail> reviewDetails = reviews.stream()
+                .map(review -> VendorReviewDTO.ReviewDetail.builder()
+                        .reviewerName(review.getReviewer().getName())
+                        .rating(review.getRating())
+                        .comment(review.getComment())
+                        .createdAt(review.getCreatedAt() != null
+                                ? review.getCreatedAt().toString()  // or format if needed
+                                : "")
+                        .build())
                 .collect(Collectors.toList());
 
         double averageRating = reviews.stream()
@@ -69,13 +78,18 @@ public class VendorReviewService {
                 .average()
                 .orElse(0.0);
 
+        Skill skill = vendor.getSkills().stream().findFirst().orElse(null);
+
         return VendorReviewDTO.builder()
                 .id(vendor.getId())
                 .name(vendor.getUser().getName())
                 .pic(vendor.getUser().getPic())
                 .rating(averageRating)
-                .reviews(comments)
+                .reviews(reviewDetails)
                 .available(vendor.isAvailable())
+                .experience(vendor.getExperience())
+                .companyName(vendor.getCompanyName())
+                .basePrice(skill != null ? skill.getBasePrice() : null)
                 .build();
     }
     public void addReview(VendorReviewRequestDTO dto) {

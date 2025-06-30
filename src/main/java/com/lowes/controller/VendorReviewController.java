@@ -26,6 +26,7 @@ public class VendorReviewController {
     }
     @PostMapping("/reviews")
     public ResponseEntity<String> addReview(@RequestBody VendorReviewRequestDTO dto) {
+        System.out.println(dto);
         vendorReviewService.addReview(dto);
         return ResponseEntity.ok("Review added successfully.");
     }
