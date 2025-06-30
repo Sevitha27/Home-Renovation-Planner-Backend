@@ -1,10 +1,10 @@
 package com.lowes.entity.enums;
 
 public enum PhaseType {
-    ELECTRICAL,
-    PLUMBING,
-    CARPENTRY,
-    CIVIL,
+    STRUCTURAL_WORK,
     TILING,
-    PAINTING
+    CARPENTRY,
+    PAINTING,
+    ELECTRICITY,
+    PLUMBING,
 }

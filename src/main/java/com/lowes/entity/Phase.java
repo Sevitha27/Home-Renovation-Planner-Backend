@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -33,6 +34,15 @@ public class Phase {
     private Project project;
 
     @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill requiredSkill;
+
+    @ManyToOne
+    @JoinColumn(name="room_id")
+    @JsonBackReference("room-phase")
+    private Room room;
+
+    @ManyToOne
     @JoinColumn(name="vendor_id")
     @JsonBackReference("vendor-phase")
     private Vendor vendor;
@@ -46,11 +56,9 @@ public class Phase {
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;
 
-    @ManyToOne
-    @JoinColumn(name = "skill_id")
-    private Skill requiredSkill;
-
+    private Integer totalPhaseCost = 0;
     private Integer totalPhaseMaterialCost = 0;
+
     private Integer vendorCost;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)

@@ -2,6 +2,7 @@ package com.lowes.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -50,7 +51,7 @@ public class PhaseMaterial {
     @Column(nullable = false)
     int totalPrice;
 
-    @JsonBackReference
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(nullable = false)
     Phase phase;

@@ -15,7 +15,6 @@ import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
         }
 
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
+        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId);
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         for(PhaseMaterial phaseMaterial : phaseMaterialList){
             phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
@@ -60,7 +59,7 @@ public class PhaseMaterialService {
         for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
             PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase,phaseMaterialUserRequest);
 
-            Optional<Material> optionalMaterial = materialRepository.findByExposedId(phaseMaterialUserRequest.getMaterialExposedId());
+            Optional<Material> optionalMaterial = materialRepository.findById(phaseMaterialUserRequest.getMaterialId());
             if(optionalMaterial.isEmpty()){
                 throw new ElementNotFoundException("Material Not Found To Add Phase Material");
             }
@@ -89,16 +88,16 @@ public class PhaseMaterialService {
 
 
         }
-        phaseService.updateTotalCost(phaseId);
+        phaseService.calculateTotalCost(phaseId);
         return phaseMaterialUserResponseList;
     }
 
     @Transactional
-    public PhaseMaterialUserResponse updatePhaseMaterialQuantityByExposedId(UUID id, int quantity){
+    public PhaseMaterialUserResponse updatePhaseMaterialQuantityById(UUID id, int quantity){
         if(quantity<=0){
             throw new IllegalArgumentException("Quantity of Phase Material must be a number greater than 0");
         }
-        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(id);
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
         if(optionalPhaseMaterial.isEmpty()){
             throw new ElementNotFoundException("Phase Material Not Found To Update Quantity");
         }
@@ -106,14 +105,14 @@ public class PhaseMaterialService {
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
-        phaseService.updateTotalCost(phaseMaterial.getPhase().getId());
+        phaseService.calculateTotalCost(phaseMaterial.getPhase().getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(updatedPhaseMaterial);
         return phaseMaterialUserResponse;
     }
 
     @Transactional
-    public PhaseMaterialUserResponse deletePhaseMaterialByExposedId(UUID id){
-        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(id);
+    public PhaseMaterialUserResponse deletePhaseMaterialById(UUID id){
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
         if(optionalPhaseMaterial.isEmpty()){
             throw new ElementNotFoundException("Phase Material Not Found To Delete It");
         }
@@ -125,8 +124,8 @@ public class PhaseMaterialService {
         Material material = phaseMaterial.getMaterial();
         material.getPhaseMaterialList().remove(phaseMaterial);
 
-        phaseMaterialRepository.deleteByExposedId(id);
-        phaseService.updateTotalCost(phase.getId());
+        phaseMaterialRepository.deleteById(id);
+        phaseService.calculateTotalCost(phase.getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
         return phaseMaterialUserResponse;
     }

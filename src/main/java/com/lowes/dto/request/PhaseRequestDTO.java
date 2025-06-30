@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,9 +24,8 @@ public class PhaseRequestDTO {
     private String phaseName;
     private String description;
 
-    private LocalDate start_date;
-    private LocalDate end_date;
-
+    private LocalDate startDate;
+    private LocalDate endDate;
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
 

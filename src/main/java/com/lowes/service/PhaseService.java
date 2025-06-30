@@ -5,43 +5,60 @@ import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.enums.PhaseType;
+import com.lowes.entity.enums.RenovationType;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.PhaseRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
+import static com.lowes.entity.enums.PhaseType.*;
 
 @Service
 public class PhaseService {
 
     @Autowired
-    PhaseRepository phaseRepository;
+    private PhaseRepository phaseRepository;
 
+    private final Map<RenovationType, List<PhaseType>> renovationPhaseMap = new HashMap<>();
 
     public void createPhase(PhaseRequestDTO phaseRequestDTO) {
-        try {
-            Phase phase = new Phase();
-            phase.setPhaseType(phaseRequestDTO.getPhaseType());
-            phase.setDescription(phaseRequestDTO.getDescription());
-            phase.setStartDate(phaseRequestDTO.getStart_date());
-            phase.setEndDate(phaseRequestDTO.getEnd_date());
-            phase.setVendor(phaseRequestDTO.getVendor());
-            phase.setProject(phaseRequestDTO.getProject());
-            phase.setPhaseName(phaseRequestDTO.getPhaseName());
-            phaseRepository.save(phase);
-        } catch (Exception e) {
-            System.out.println("Error:"+e.getMessage());
+        boolean exists = phaseRepository.existsByProjectAndPhaseType(
+                phaseRequestDTO.getProject(), phaseRequestDTO.getPhaseType());
+
+        if (exists) {
+            throw new RuntimeException("Phase of this type already exists for the project");
         }
 
+        Phase phase = new Phase();
+        phase.setPhaseType(phaseRequestDTO.getPhaseType());
+        phase.setDescription(phaseRequestDTO.getDescription());
+        phase.setStartDate(phaseRequestDTO.getStartDate());
+        phase.setEndDate(phaseRequestDTO.getEndDate());
+        phase.setVendor(phaseRequestDTO.getVendor());
+        List<Phase> conflicts = phaseRepository.findConflictingPhasesForVendor(
+                phaseRequestDTO.getVendor().getId(),
+                phaseRequestDTO.getStartDate(),
+                phaseRequestDTO.getEndDate()
+        );
+
+        if (!conflicts.isEmpty()) {
+            throw new RuntimeException("Vendor already assigned to another phase during this period.");
+        }
+
+        phase.setProject(phaseRequestDTO.getProject());
+        phase.setPhaseName(phaseRequestDTO.getPhaseName());
+
+        phaseRepository.save(phase);
     }
 
     public Phase getPhaseById(UUID id) {
-        return phaseRepository.findById(id).orElseThrow(()->new RuntimeException("Phase not found"));
+        return phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found"));
     }
 
     public List<Phase> getPhasesByProject(UUID projectId) {
@@ -49,21 +66,19 @@ public class PhaseService {
     }
 
     public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
-
-        Phase phase=phaseRepository.findById(id).orElseThrow(()->new RuntimeException("Phase not found"));
+        Phase phase = getPhaseById(id);
 
         if (updatedPhase.getDescription() != null)
             phase.setDescription(updatedPhase.getDescription());
 
         if (updatedPhase.getPhaseStatus() != null)
-            phase.setPhaseStatus(updatedPhase.getPhaseStatus()
-            );
+            phase.setPhaseStatus(updatedPhase.getPhaseStatus());
 
-        if (updatedPhase.getStart_date() != null)
-            phase.setStartDate(updatedPhase.getStart_date());
+        if (updatedPhase.getStartDate() != null)
+            phase.setStartDate(updatedPhase.getStartDate());
 
-        if (updatedPhase.getEnd_date() != null)
-            phase.setEndDate(updatedPhase.getEnd_date());
+        if (updatedPhase.getEndDate() != null)
+            phase.setEndDate(updatedPhase.getEndDate());
 
         if (updatedPhase.getPhaseType() != null)
             phase.setPhaseType(updatedPhase.getPhaseType());
@@ -85,65 +100,94 @@ public class PhaseService {
     }
 
     public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
-        Phase phase=phaseRepository.findById(phaseId).orElseThrow(()->new RuntimeException("Phase not found"));
-
+        Phase phase = getPhaseById(phaseId);
         if (phase.getVendor() == null || !phase.getVendor().getId().equals(vendorId)) {
             throw new RuntimeException("Unauthorized: Vendor mismatch");
         }
         phase.setVendorCost(cost);
-
         phaseRepository.save(phase);
     }
 
-//    public Integer calculateTotalCost(UUID id) {
-//        Phase phase=phaseRepository.findById(id).orElseThrow(()-> new RuntimeException("Phase not found"));
-//        int materialCost=0;
-//        if (phase.getPhaseMaterialList()!=null)
-//        {
-//            materialCost = phase.getPhaseMaterialList().stream()
-//                    .mapToInt(pm -> pm.getCost() != null ? pm.getCost() : 0)
-//                    .sum();
-//        }
-//        phase.setTotalPhaseCost(phase.getVendorCost()+materialCost);
-//        phaseRepository.save(phase);
-//        return phase.getTotalPhaseCost();
-//    }
+    public List<PhaseMaterialUserResponse> getAllPhaseMaterialsByPhaseId(UUID id) {
+        Phase phase = getPhaseById(id);
 
-    public List<PhaseMaterialUserResponse> getAllPhaseMaterialsByPhaseId(UUID id){
-        Optional<Phase> optionalPhase = phaseRepository.findById(id);
-        if(optionalPhase.isEmpty()){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
-        Phase phase = optionalPhase.get();
-
+        List<PhaseMaterialUserResponse> responseList = new ArrayList<>();
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
-        if(!phaseMaterialList.isEmpty()){
-            for(PhaseMaterial phaseMaterial : phaseMaterialList){
-                phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
+
+        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+            for (PhaseMaterial phaseMaterial : phaseMaterialList) {
+                responseList.add(PhaseMaterialConvertor
+                        .phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
             }
         }
-
-        return phaseMaterialUserResponseList;
+        return responseList;
     }
 
-    @Transactional
-    public int updateTotalCost(UUID id){
-        Optional<Phase> optionalPhase = phaseRepository.findById(id);
-        if(optionalPhase.isEmpty()){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
-        System.out.println('a');
-        Phase phase = optionalPhase.get();
-
+    public int calculateTotalCost(UUID id) {
+        Phase phase = getPhaseById(id);
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+        int materialCost = 0;
 
-        int totalCost = 0;
-        for(PhaseMaterial phaseMaterial : phaseMaterialList){
-            totalCost+=phaseMaterial.getTotalPrice();
+        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+            materialCost = phaseMaterialList.stream()
+                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+                    .sum();
         }
-        phase.setTotalPhaseMaterialCost(totalCost);
+
+        int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
+        int totalCost = vendorCost + materialCost;
+
+        phase.setTotalPhaseCost(totalCost);
         phaseRepository.save(phase);
+
         return totalCost;
+    }
+
+    public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
+        return renovationPhaseMap.getOrDefault(renovationType, List.of());
+    }
+
+    @PostConstruct
+    public void initRenovationPhaseMap() {
+        renovationPhaseMap.put(RenovationType.KITCHEN_RENOVATION, List.of(
+                PhaseType.values()
+        ));
+
+        renovationPhaseMap.put(RenovationType.BATHROOM_RENOVATION, List.of(
+                PLUMBING, ELECTRICITY, TILING, PAINTING,STRUCTURAL_WORK
+        ));
+
+        renovationPhaseMap.put(RenovationType.BEDROOM_RENOVATION, List.of(
+                ELECTRICITY, PAINTING, STRUCTURAL_WORK,
+                TILING, CARPENTRY
+        ));
+
+        renovationPhaseMap.put(RenovationType.FULL_HOME_RENOVATION, List.of(
+                PhaseType.values()
+        ));
+
+        renovationPhaseMap.put(RenovationType.EXTERIOR_RENOVATION, List.of(
+                STRUCTURAL_WORK, PAINTING
+        ));
+
+        renovationPhaseMap.put(RenovationType.GARAGE_RENOVATION, List.of(
+                PhaseType.values()
+        ));
+
+        renovationPhaseMap.put(RenovationType.ATTIC_CONVERSION, List.of(
+                STRUCTURAL_WORK, ELECTRICITY, TILING, CARPENTRY, PAINTING
+        ));
+
+        renovationPhaseMap.put(RenovationType.BASEMENT_FINISHING, List.of(
+                STRUCTURAL_WORK, ELECTRICITY,TILING, CARPENTRY, PAINTING
+        ));
+
+        renovationPhaseMap.put(RenovationType.LIVING_ROOM_REMODEL, List.of(
+                STRUCTURAL_WORK, ELECTRICITY, TILING, CARPENTRY, PAINTING
+        ));
+
+        renovationPhaseMap.put(RenovationType.BALCONY_RENOVATION, List.of(
+                STRUCTURAL_WORK, ELECTRICITY, TILING, PAINTING
+        ));
     }
 }
