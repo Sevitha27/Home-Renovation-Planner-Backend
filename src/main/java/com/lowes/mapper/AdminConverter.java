@@ -20,6 +20,7 @@ public class AdminConverter {
 
     public UserResponseAdminDTO usertoUserResponseAdminDTO(User user) {
         return UserResponseAdminDTO.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .contact(user.getContact())
@@ -30,6 +31,8 @@ public class AdminConverter {
 
     public VendorResponseAdminDTO vendorToVendorResponseAdminDTO(Vendor vendor) {
         return VendorResponseAdminDTO.builder()
+                .id(vendor.getId())
+                .name(vendor.getUser().getName())
                 .email(vendor.getUser().getEmail())
                 .contact(vendor.getUser().getContact())
                 .pic(vendor.getUser().getPic())

@@ -97,6 +97,7 @@ public class AdminController {
         try{
             MaterialResponseAdminDTO materialResponseAdminDTO = adminService.addMaterial(materialRequestAdminDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(materialResponseAdminDTO);
+
         }
         catch(DataIntegrityViolationException exception){
             logger.error("Data Integrity Violation",exception);

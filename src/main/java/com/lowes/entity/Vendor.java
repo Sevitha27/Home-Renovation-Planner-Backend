@@ -1,5 +1,6 @@
 package com.lowes.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class Vendor {
     private Boolean available;
 
     private Boolean approved;
+
 
     @ManyToMany
     @JoinTable(

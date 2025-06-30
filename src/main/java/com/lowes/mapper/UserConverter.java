@@ -36,7 +36,7 @@ public class UserConverter {
                 .companyName(dto.getCompanyName())
                 .experience(dto.getExperience())
                 .available(dto.getAvailable())
-                .approved(false)
+                .approved(null)
                 .skills(skills)
                 .user(user)
                 .build();

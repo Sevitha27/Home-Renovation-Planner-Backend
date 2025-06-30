@@ -78,6 +78,8 @@ public class AdminService {
         Vendor vendor = vendorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
         vendor.setApproved(approved);
+        System.out.println(approved);
+        System.out.println(vendor.toString());
         vendorRepository.save(vendor);
     }
 

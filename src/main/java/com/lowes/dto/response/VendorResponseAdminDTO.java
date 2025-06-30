@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class VendorResponseAdminDTO {
     UUID id;
-
+    private String name;
     private String email;
     private String contact;
     private String pic;
