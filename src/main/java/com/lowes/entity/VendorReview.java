@@ -15,10 +15,21 @@ import java.util.UUID;
 @Entity
 public class VendorReview {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer;
+
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
+
+    @Column(length = 1000)
+    private String comment;
+
+    private Double rating;
+
+
 }
