@@ -5,10 +5,8 @@ import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
-import com.lowes.entity.Project;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.PhaseRepository;
-import com.lowes.repository.ProjectRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,7 +142,7 @@ public class PhaseService {
         for(PhaseMaterial phaseMaterial : phaseMaterialList){
             totalCost+=phaseMaterial.getTotalPrice();
         }
-        phase.setTotalPhaseCost(totalCost);
+        phase.setTotalPhaseMaterialCost(totalCost);
         phaseRepository.save(phase);
         return totalCost;
     }

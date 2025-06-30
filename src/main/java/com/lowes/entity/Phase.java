@@ -46,7 +46,11 @@ public class Phase {
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;
 
-    private Integer totalPhaseCost = 0;
+    @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill requiredSkill;
+
+    private Integer totalPhaseMaterialCost = 0;
     private Integer vendorCost;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
