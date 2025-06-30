@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class EnumController {
 
-    @GetMapping("/phase-types")
-    public PhaseType[] getPhaseTypes() {
-        return PhaseType.values();
-    }
 
     @GetMapping("/phase-statuses")
     public PhaseStatus[] getPhaseStatuses() {

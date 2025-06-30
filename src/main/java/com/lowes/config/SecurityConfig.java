@@ -33,25 +33,25 @@ public class SecurityConfig {
 
     // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
-
+        "/phase/**","/api/enums/phase-statuses","/phase/phases/by-renovation-type/**"
     };
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken"
+            "/auth/register", "/auth/login", "/auth/refreshAccessToken","/phase/**"
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
 
-//    // Public API DELETE Endpoints to be Added here
-//    private final String[] PUBLIC_DELETE_ENDPOINTS = {
-//
-//    };
-//
-//    // Public API PUT Endpoints to be Added here
-//    private final String[] PUBLIC_PUT_ENDPOINTS = {
-//
-//    };
+    // Public API DELETE Endpoints to be Added here
+    private final String[] PUBLIC_DELETE_ENDPOINTS = {
+        "/phase"
+    };
+
+    // Public API PUT Endpoints to be Added here
+    private final String[] PUBLIC_PUT_ENDPOINTS = {
+        "/phase"
+    };
 //
 //    // Public API PATCH Endpoints to be Added here
 //    private final String[] PUBLIC_PATCH_ENDPOINTS = {

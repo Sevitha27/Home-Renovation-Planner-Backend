@@ -17,7 +17,7 @@ public class ProjectMapper {
         project.setEstimatedBudget(dto.getEstimatedBudget());
         project.setStartDate(dto.getStartDate());
         project.setEndDate(dto.getEndDate());
-        project.setUser(owner);
+        project.setOwner(owner);
         return project;
     }
 
@@ -29,7 +29,7 @@ public class ProjectMapper {
                 .estimatedBudget(project.getEstimatedBudget())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
-                .ownerId(project.getUser() != null ? project.getUser().getId() : null)
+                .ownerId(project.getOwner() != null ? project.getOwner().getId() : null)
 
                 .roomNames(project.getRooms() != null
                         ? project.getRooms().stream().map(Room::getName).toList()

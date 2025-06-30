@@ -29,13 +29,13 @@ public class EmailSchedulerService {
         List<Phase> upcoming = phaseRepository.findByStartDate(today.plusDays(3));
         for (Phase phase : upcoming) {
             String html = buildUpcomingPhaseEmail(phase);
-            sendHtmlEmail(phase.getProject().getUser().getEmail(), "Phase Starts in 3 Days", html);
+            sendHtmlEmail(phase.getProject().getOwner().getEmail(), "Phase Starts in 3 Days", html);
         }
 
         List<Phase> overdue = phaseRepository.findByEndDateBeforeAndPhaseStatusNot(today, PhaseStatus.COMPLETED);
         for (Phase phase : overdue) {
             String html = buildOverduePhaseEmail(phase);
-            sendHtmlEmail(phase.getProject().getUser().getEmail(), "Phase Overdue Alert", html);
+            sendHtmlEmail(phase.getProject().getOwner().getEmail(), "Phase Overdue Alert", html);
         }
     }
 
@@ -55,7 +55,7 @@ public class EmailSchedulerService {
     private String buildUpcomingPhaseEmail(Phase phase) {
         return "<html><body>" +
                 "<h2>Upcoming Phase Reminder</h2>" +
-                "<p>Dear " + phase.getProject().getUser().getName() + ",</p>" +
+                "<p>Dear " + phase.getProject().getOwner().getName() + ",</p>" +
                 "<p>The phase <strong>" + phase.getPhaseName() + "</strong> for your project <strong>" +
                 phase.getProject().getName() + "</strong> is starting in <strong>3 days</strong>.</p>" +
                 "<p>Start Date: " + phase.getStartDate() + "</p>" +
@@ -66,7 +66,7 @@ public class EmailSchedulerService {
     private String buildOverduePhaseEmail(Phase phase) {
         return "<html><body>" +
                 "<h2>Phase Overdue</h2>" +
-                "<p>Dear " + phase.getProject().getUser().getName() + ",</p>" +
+                "<p>Dear " + phase.getProject().getOwner().getName() + ",</p>" +
                 "<p>The phase <strong>" + phase.getPhaseName() + "</strong> for your project <strong>" +
                 phase.getProject().getName() + "</strong> was scheduled to end on <strong>" +
                 phase.getEndDate() + "</strong> and is still <strong>not marked completed</strong>.</p>" +
