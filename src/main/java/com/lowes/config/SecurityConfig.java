@@ -33,30 +33,30 @@ public class SecurityConfig {
 
     // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
-
+        "/admin/**"
     };
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken"
+        "/auth/register", "/auth/login", "/auth/refreshAccessToken", "/admin/**"
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
 
-//    // Public API DELETE Endpoints to be Added here
-//    private final String[] PUBLIC_DELETE_ENDPOINTS = {
-//
-//    };
-//
-//    // Public API PUT Endpoints to be Added here
-//    private final String[] PUBLIC_PUT_ENDPOINTS = {
-//
-//    };
-//
-//    // Public API PATCH Endpoints to be Added here
-//    private final String[] PUBLIC_PATCH_ENDPOINTS = {
-//
-//    };
+    // Public API DELETE Endpoints to be Added here
+    private final String[] PUBLIC_DELETE_ENDPOINTS = {
+        "/admin/**"
+    };
+
+    // Public API PUT Endpoints to be Added here
+    private final String[] PUBLIC_PUT_ENDPOINTS = {
+        "/admin/**"
+    };
+
+    // Public API PATCH Endpoints to be Added here
+    private final String[] PUBLIC_PATCH_ENDPOINTS = {
+            "/admin/**"
+    };
 
     private final List<String> ALLOWED_ORIGIN_URI = List.of(
             "http://localhost:5173", "http://localhost:5174"
@@ -89,9 +89,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         //For testing without Authentication: you may uncomment the required methods below as needed.
 
-//                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
-//                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-//                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

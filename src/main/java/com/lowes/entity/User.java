@@ -56,6 +56,4 @@ public class User {
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
     private List<VendorReview> vendorReviews;
 
-
-
 }

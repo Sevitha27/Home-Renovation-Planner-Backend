@@ -6,8 +6,6 @@ import com.lowes.entity.enums.Unit;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MaterialAdminResponse {
+public class MaterialResponseAdminDTO {
 
     UUID exposedId;
 
