@@ -16,8 +16,7 @@ public class VendorAssignmentService {
     public void setAvailability(UUID vendorId, boolean availability) {
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
-        vendor.setAvailable(availability);
-        vendorRepository.save(vendor);
+
     }
 
 

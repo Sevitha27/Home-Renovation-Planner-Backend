@@ -50,12 +50,16 @@ public class VendorReviewService {
                     Arrays.toString(SkillType.values()));
         }
 
-        SkillType finalSkillEnum = skillEnum;
-        Skill skill = skillRepository.findByName(skillEnum)
-                .orElseThrow(() -> new RuntimeException("Skill not found: " + finalSkillEnum.name()));
+        List<Skill> skills = skillRepository.findByName(skillEnum);
+        if (skills.isEmpty()) {
+            throw new RuntimeException("Skill not found: " + skillEnum.name());
+        }
 
-        return skill.getVendors().stream()
+        return skills.stream()
+                .flatMap(skill -> skill.getVendors().stream())
                 .filter(Vendor::getApproved)
+                .filter(Vendor::isAvailable)
+                .distinct() // Optional: avoid duplicate vendors if skill appears more than once
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

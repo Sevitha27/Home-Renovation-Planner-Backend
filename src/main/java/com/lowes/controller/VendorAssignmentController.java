@@ -19,13 +19,12 @@ public class VendorAssignmentController {
     // VendorAssignmentController.java
     @PutMapping("/assign/{vendorId}")
     public ResponseEntity<?> assignVendor(@PathVariable UUID vendorId) {
-        vendorAssignmentService.setAvailability(vendorId, false);
         return ResponseEntity.ok("Assigned");
     }
 
     @PutMapping("/unassign/{vendorId}")
     public ResponseEntity<?> unassignVendor(@PathVariable UUID vendorId) {
-        vendorAssignmentService.setAvailability(vendorId, true);
+
         return ResponseEntity.ok("Unassigned");
     }
 
