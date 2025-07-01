@@ -1,25 +1,32 @@
 package com.lowes.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
-@Builder
 public class Vendor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
 
     private String companyName;
 
@@ -37,16 +44,10 @@ public class Vendor {
     )
     private List<Skill> skills;
 
+
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<VendorReview> reviews;
 
-    @ManyToMany(mappedBy = "vendors")
-    @JsonIgnore
-    private List<User> users;
-
-    @OneToMany(mappedBy = "vendor",cascade = CascadeType.ALL)
-    @JsonManagedReference("vendor-phase")
-    private List<Phase> phases;
     @ManyToMany
     @JoinTable(
             name = "vendor_customers",
@@ -55,15 +56,10 @@ public class Vendor {
     )
     private List<User> customers;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id") // this is the vendor's user account
     private User user;
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<Phase> assignedPhases;
-
-    public boolean isAvailable() {
-        return available;
-    }
-
 }

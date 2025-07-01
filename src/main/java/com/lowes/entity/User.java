@@ -1,9 +1,6 @@
 package com.lowes.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,17 +11,28 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Table(name = "users")
 @Entity
-@Builder
 public class User {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
 
     private String name;
 
@@ -48,19 +56,13 @@ public class User {
 
     // One-to-Many: A user owns many projects
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @JsonManagedReference("user-project")
     private List<Project> projects;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_vendor",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "vendor_id")
-    )
-    @JsonIgnore
-    private List<Vendor> vendors;
+    @ManyToMany(mappedBy = "customers")
+    private List<Vendor> vendorsServingThisUser;
 
     // One-to-Many: A user can write many reviews
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
     private List<VendorReview> vendorReviews;
+
 }

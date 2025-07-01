@@ -1,4 +1,4 @@
-package com.lowes.dto.response;
+package com.lowes.dto.response.auth;
 
 import lombok.*;
 

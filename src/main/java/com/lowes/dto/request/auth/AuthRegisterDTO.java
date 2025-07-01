@@ -1,5 +1,6 @@
-package com.lowes.dto.request;
+package com.lowes.dto.request.auth;
 
+import com.lowes.dto.request.SkillRequestDTO;
 import lombok.*;
 
 import java.util.List;
@@ -25,7 +26,6 @@ public class AuthRegisterDTO {
 
     @NonNull
     private String contact;
-
 
     //additional for vendor
     @NonNull
