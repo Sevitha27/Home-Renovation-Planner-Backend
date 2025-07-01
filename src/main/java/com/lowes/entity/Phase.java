@@ -63,5 +63,7 @@ public class Phase {
     private PhaseStatus phaseStatus=PhaseStatus.NOTSTARTED;
 
 
+    public void setTotalPhaseCost(int totalCost) {
 
+    }
 }

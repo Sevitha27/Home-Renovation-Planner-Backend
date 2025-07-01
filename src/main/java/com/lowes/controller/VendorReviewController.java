@@ -45,15 +45,6 @@ public class VendorReviewController {
         return ResponseEntity.ok("Review deleted successfully.");
     }
 
-    @GetMapping("/available-vendors")
-    public ResponseEntity<List<VendorReviewDTO>> getAvailableVendors(
-            @RequestParam String phaseType,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-
-        List<VendorReviewDTO> vendors = vendorReviewService.getAvailableVendorsForPhase(phaseType, startDate, endDate);
-        return ResponseEntity.ok(vendors);
-    }
 
 
 }

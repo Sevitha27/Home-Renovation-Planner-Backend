@@ -2,10 +2,11 @@ package com.lowes.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.lowes.entity.enums.ServiceType;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -17,9 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@FieldDefaults(level= AccessLevel.PRIVATE)
 public class Project {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,24 +28,10 @@ public class Project {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    Double estimatedBudget;
-    LocalDate startDate;
-    LocalDate endDate;
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    ServiceType serviceType;
 
     @OneToMany(mappedBy = "project",cascade = CascadeType.ALL)
     @JsonManagedReference("project-phase")
     private List<Phase> phasesList;
-
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Room> rooms;
-
-
-
-
-
 
 }
