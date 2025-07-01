@@ -1,19 +1,15 @@
 package com.lowes.mapper;
 
-import com.lowes.dto.request.AuthRegisterDTO;
+import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.entity.Skill;
 import com.lowes.entity.User;
 import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.Role;
-import com.lowes.repository.SkillRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Component

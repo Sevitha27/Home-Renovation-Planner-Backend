@@ -1,9 +1,9 @@
 package com.lowes.mapper;
 
-import com.lowes.dto.request.MaterialRequestAdminDTO;
-import com.lowes.dto.response.MaterialResponseAdminDTO;
-import com.lowes.dto.response.UserResponseAdminDTO;
-import com.lowes.dto.response.VendorResponseAdminDTO;
+import com.lowes.dto.request.admin.MaterialRequestAdminDTO;
+import com.lowes.dto.response.admin.MaterialResponseAdminDTO;
+import com.lowes.dto.response.admin.UserResponseAdminDTO;
+import com.lowes.dto.response.admin.VendorResponseAdminDTO;
 import com.lowes.entity.Material;
 import com.lowes.entity.User;
 import com.lowes.entity.Vendor;
@@ -20,7 +20,7 @@ public class AdminConverter {
 
     public UserResponseAdminDTO usertoUserResponseAdminDTO(User user) {
         return UserResponseAdminDTO.builder()
-                .id(user.getId())
+                .exposedId(user.getExposedId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .contact(user.getContact())
@@ -31,7 +31,7 @@ public class AdminConverter {
 
     public VendorResponseAdminDTO vendorToVendorResponseAdminDTO(Vendor vendor) {
         return VendorResponseAdminDTO.builder()
-                .id(vendor.getId())
+                .exposedId(vendor.getExposedId())
                 .name(vendor.getUser().getName())
                 .email(vendor.getUser().getEmail())
                 .contact(vendor.getUser().getContact())
@@ -55,7 +55,7 @@ public class AdminConverter {
     }
 
     public static MaterialResponseAdminDTO materialToMaterialAdminResponse(Material material){
-        MaterialResponseAdminDTO materialResponseAdminDTO =  MaterialResponseAdminDTO.builder()
+        return MaterialResponseAdminDTO.builder()
                 .exposedId(material.getExposedId())
                 .name(material.getName())
                 .unit(material.getUnit())
@@ -63,21 +63,16 @@ public class AdminConverter {
                 .pricePerQuantity(material.getPricePerQuantity())
                 .deleted(material.isDeleted())
                 .build();
-
-
-        return materialResponseAdminDTO;
     }
 
     public static Material materialAdminRequestToMaterial(MaterialRequestAdminDTO materialRequestAdminDTO){
-        Material material = Material.builder()
+        return Material.builder()
                 .name(materialRequestAdminDTO.getName())
                 .unit(materialRequestAdminDTO.getUnit())
                 .phaseType(materialRequestAdminDTO.getPhaseType())
                 .pricePerQuantity(materialRequestAdminDTO.getPricePerQuantity())
                 .exposedId(UUID.randomUUID())
                 .build();
-
-        return  material;
     }
 
 }
