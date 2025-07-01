@@ -1,10 +1,7 @@
 package com.lowes.service;
 
-import com.lowes.dto.request.MaterialRequestAdminDTO;
-import com.lowes.dto.response.AdminToastDTO;
-import com.lowes.dto.response.MaterialResponseAdminDTO;
-import com.lowes.dto.response.UserResponseAdminDTO;
-import com.lowes.dto.response.VendorResponseAdminDTO;
+import com.lowes.dto.request.admin.MaterialRequestAdminDTO;
+import com.lowes.dto.response.admin.*;
 import com.lowes.entity.*;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Role;
@@ -18,13 +15,15 @@ import com.lowes.repository.VendorRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,14 +39,24 @@ public class AdminService {
 
     private final AdminConverter adminConverter;
 
-    public ResponseEntity<?> getAllCustomers() {
+    public ResponseEntity<?> getAllCustomers(int page, int size) {
         try {
-            List<UserResponseAdminDTO> list = userRepository.findAll()
-                    .stream()
-                    .filter(user -> user.getRole() == Role.CUSTOMER)
+            Pageable pageable = PageRequest.of(page, size);
+            Page<User> customerPage = userRepository.findByRole(Role.CUSTOMER, pageable);
+
+            List<UserResponseAdminDTO> customerDTOs = customerPage.stream()
                     .map(adminConverter::usertoUserResponseAdminDTO)
                     .toList();
-            return ResponseEntity.ok(list);
+
+            AdminPaginatedResponseDTO<UserResponseAdminDTO> response = AdminPaginatedResponseDTO.<UserResponseAdminDTO>builder()
+                    .content(customerDTOs)
+                    .pageNumber(page)
+                    .pageSize(size)
+                    .totalElements(customerPage.getTotalElements())
+                    .totalPages(customerPage.getTotalPages())
+                    .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
@@ -56,8 +65,9 @@ public class AdminService {
     @Transactional
     public ResponseEntity<?> deleteUser(UUID id) {
         try {
-            User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-
+            User user = userRepository.findByExposedId(id);
+            if (user == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AdminToastDTO.builder().message("ERROR").build());
             if (user.getProjects() != null) {
                 for (Project project : user.getProjects()) {
                     project.setOwner(null);
@@ -79,26 +89,75 @@ public class AdminService {
         }
     }
 
-
-    public ResponseEntity<?> getAllVendors() {
+    public ResponseEntity<?> getApprovedVendors(int page, int size) {
         try {
-            List<VendorResponseAdminDTO> list =  vendorRepository.findAll().stream()
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Vendor> vendorsPage = vendorRepository.findByApproved(true, pageable);
+
+            List<VendorResponseAdminDTO> dtos = vendorsPage
+                    .stream()
                     .map(adminConverter::vendorToVendorResponseAdminDTO)
                     .toList();
-            return ResponseEntity.ok(list);
+
+            AdminPaginatedResponseDTO<VendorResponseAdminDTO> response = AdminPaginatedResponseDTO.<VendorResponseAdminDTO>builder()
+                    .content(dtos)
+                    .totalPages(vendorsPage.getTotalPages())
+                    .totalElements(vendorsPage.getTotalElements())
+                    .pageNumber(vendorsPage.getNumber())
+                    .pageSize(vendorsPage.getSize())
+                    .build();
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception Occurred : " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception Occurred: " + e);
         }
     }
 
+    public ResponseEntity<?> getApprovalPendingVendors(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Vendor> vendorsPage = vendorRepository.findByApprovedIsNull(pageable);
+
+            List<VendorResponseAdminDTO> dtos = vendorsPage
+                    .stream()
+                    .map(adminConverter::vendorToVendorResponseAdminDTO)
+                    .toList();
+
+            AdminPaginatedResponseDTO<VendorResponseAdminDTO> response = AdminPaginatedResponseDTO.<VendorResponseAdminDTO>builder()
+                    .content(dtos)
+                    .totalPages(vendorsPage.getTotalPages())
+                    .totalElements(vendorsPage.getTotalElements())
+                    .pageNumber(vendorsPage.getNumber())
+                    .pageSize(vendorsPage.getSize())
+                    .build();
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Exception Occurred: " + e);
+        }
+    }
+
+
+    @Transactional
     public ResponseEntity<?> updateVendorApproval(UUID id, boolean approved) {
         try {
-            Vendor vendor = vendorRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Vendor not found"));
-            vendor.setApproved(approved);
-            vendorRepository.save(vendor);
-            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+            System.out.println(id);
+            Vendor vendor = vendorRepository.findByExposedId(id);
+            System.out.println(vendor);
+            if (vendor == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AdminToastDTO.builder().message("ERROR").build());
+            if (approved) {
+                vendor.setApproved(true);
+                vendorRepository.save(vendor);
+                return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+            } else {
+                return this.deleteVendor(id);
+            }
         } catch (Exception e) {
+            System.out.println(e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AdminToastDTO.builder().message("ERROR").build());
         }
     }
@@ -106,10 +165,10 @@ public class AdminService {
     @Transactional
     public ResponseEntity<?> deleteVendor(UUID vendorId) {
         try {
-            Optional<Vendor> vendorOpt = vendorRepository.findById(vendorId);
+            Vendor vendor = vendorRepository.findByExposedId(vendorId);
 
-            if(vendorOpt.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AdminToastDTO.builder().message("ERROR").build());
-            Vendor vendor = vendorOpt.get();
+            if (vendor == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(AdminToastDTO.builder().message("ERROR").build());
 
             if (vendor.getSkills() != null) {
                 for (Skill skill : vendor.getSkills()) {
@@ -138,33 +197,43 @@ public class AdminService {
 
 
     //MATERIALS
-    public ResponseEntity<?> getAllMaterials(PhaseType phaseType, Boolean deleted){
+    public ResponseEntity<?> getAllMaterials(PhaseType phaseType, Boolean deleted, int page, int size) {
         try {
-            List<Material> materialList;
-            if (phaseType != null && deleted != null) {
-                materialList = materialRepository.findByPhaseTypeAndDeleted(phaseType, deleted, Sort.by(Sort.Direction.ASC, "id"));
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "deleted", "phaseType", "id"));
+            Page<Material> materialPage;
 
+            if (phaseType != null && deleted != null) {
+                materialPage = materialRepository.findByPhaseTypeAndDeleted(phaseType, deleted, pageable);
             } else if (phaseType != null) {
-                materialList = materialRepository.findByPhaseType(phaseType, Sort.by(Sort.Direction.ASC, "deleted", "id"));
+                materialPage = materialRepository.findByPhaseType(phaseType, pageable);
             } else if (deleted != null) {
-                materialList = materialRepository.findByDeleted(deleted, Sort.by(Sort.Direction.ASC, "phaseType", "id"));
+                materialPage = materialRepository.findByDeleted(deleted, pageable);
             } else {
-                materialList = materialRepository.findAll(Sort.by(Sort.Direction.ASC, "deleted", "phaseType", "id"));
+                materialPage = materialRepository.findAll(pageable);
             }
-            List<MaterialResponseAdminDTO> materialResponseAdminDTOList = new ArrayList<>();
-            if (!materialList.isEmpty()) {
-                for (Material material : materialList) {
-                    materialResponseAdminDTOList.add(AdminConverter.materialToMaterialAdminResponse(material));
-                }
-            }
-            return ResponseEntity.ok(materialResponseAdminDTOList);
+
+            List<MaterialResponseAdminDTO> materialDTOs = materialPage.stream()
+                    .map(AdminConverter::materialToMaterialAdminResponse)
+                    .toList();
+
+            AdminPaginatedResponseDTO<MaterialResponseAdminDTO> response = AdminPaginatedResponseDTO.<MaterialResponseAdminDTO>builder()
+                    .content(materialDTOs)
+                    .pageNumber(page)
+                    .pageSize(size)
+                    .totalElements(materialPage.getTotalElements())
+                    .totalPages(materialPage.getTotalPages())
+                    .build();
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AdminToastDTO.builder().message("ERROR").build());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AdminToastDTO.builder().message("ERROR").build());
         }
     }
 
-    public ResponseEntity<?> getMaterialByExposedId(UUID id){
+
+    public ResponseEntity<?> getMaterialByExposedId(UUID id) {
         try {
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
             if (optionalMaterial.isEmpty()) {
@@ -172,32 +241,30 @@ public class AdminService {
             }
             Material material = optionalMaterial.get();
             return ResponseEntity.ok(AdminConverter.materialToMaterialAdminResponse(material));
-        } catch (ElementNotFoundException exception){
+        } catch (ElementNotFoundException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-        }
-        catch(Exception exception){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : "+exception.getMessage());
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
 
     @Transactional
-    public ResponseEntity<?> addMaterial(MaterialRequestAdminDTO materialRequestAdminDTO){
+    public ResponseEntity<?> addMaterial(MaterialRequestAdminDTO materialRequestAdminDTO) {
         try {
             Material material = AdminConverter.materialAdminRequestToMaterial(materialRequestAdminDTO);
-            Material savedMaterial = materialRepository.save(material);
-            return ResponseEntity.ok(AdminConverter.materialToMaterialAdminResponse(savedMaterial));
-        }catch(DataIntegrityViolationException exception){
+            materialRepository.save(material);
+            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+        } catch (DataIntegrityViolationException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data Integrity Violation: "+exception.getMessage());
-        }
-        catch(Exception exception){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data Integrity Violation: " + exception.getMessage());
+        } catch (Exception exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : "+exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
 
     @Transactional
-    public ResponseEntity<?> updateMaterialByExposedId(UUID id, MaterialRequestAdminDTO materialRequestAdminDTO){
+    public ResponseEntity<?> updateMaterialByExposedId(UUID id, MaterialRequestAdminDTO materialRequestAdminDTO) {
         try {
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
             if (optionalMaterial.isEmpty()) {
@@ -210,22 +277,22 @@ public class AdminService {
             existingMaterial.setPhaseType(materialRequestAdminDTO.getPhaseType());
             existingMaterial.setPricePerQuantity(materialRequestAdminDTO.getPricePerQuantity());
 
-            Material updatedMaterial = materialRepository.save(existingMaterial);
-            return ResponseEntity.ok(AdminConverter.materialToMaterialAdminResponse(updatedMaterial));
-        } catch (ElementNotFoundException exception){
+            materialRepository.save(existingMaterial);
+            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+        } catch (ElementNotFoundException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-        } catch (DataIntegrityViolationException exception){
+        } catch (DataIntegrityViolationException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data Integrity Violation: "+exception.getMessage());
-        } catch (Exception exception){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data Integrity Violation: " + exception.getMessage());
+        } catch (Exception exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : "+exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
 
     @Transactional
-    public ResponseEntity<?> deleteMaterialByExposedId(UUID id){
+    public ResponseEntity<?> deleteMaterialByExposedId(UUID id) {
         try {
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
             if (optionalMaterial.isEmpty()) {
@@ -238,23 +305,21 @@ public class AdminService {
             }
             material.setDeleted(true);
             Material savedMaterial = materialRepository.save(material);
-            return ResponseEntity.ok(AdminConverter.materialToMaterialAdminResponse(savedMaterial));
-        }catch (ElementNotFoundException exception){
+            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+        } catch (ElementNotFoundException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-        }
-        catch(OperationNotAllowedException exception){
+        } catch (OperationNotAllowedException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-        }
-        catch(Exception exception){
+        } catch (Exception exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : "+exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
 
     @Transactional
-    public ResponseEntity<?> reAddMaterialByExposedId(UUID id){
+    public ResponseEntity<?> reAddMaterialByExposedId(UUID id) {
         try {
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
             if (optionalMaterial.isEmpty()) {
@@ -267,20 +332,17 @@ public class AdminService {
             }
 
             material.setDeleted(false);
-            Material savedMaterial = materialRepository.save(material);
-
-            return ResponseEntity.ok(AdminConverter.materialToMaterialAdminResponse(savedMaterial));
-        }catch (ElementNotFoundException exception){
+            materialRepository.save(material);
+            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+        } catch (ElementNotFoundException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-        }
-        catch(OperationNotAllowedException exception){
+        } catch (OperationNotAllowedException exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-        }
-        catch(Exception exception){
+        } catch (Exception exception) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : "+exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
 }
