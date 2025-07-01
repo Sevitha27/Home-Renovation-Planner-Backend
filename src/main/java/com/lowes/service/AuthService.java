@@ -1,9 +1,9 @@
 package com.lowes.service;
 
-import com.lowes.dto.request.AuthLoginDTO;
-import com.lowes.dto.request.AuthRegisterDTO;
+import com.lowes.dto.request.auth.AuthLoginDTO;
+import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.dto.request.SkillRequestDTO;
-import com.lowes.dto.response.UserResponseDTO;
+import com.lowes.dto.response.auth.UserResponseDTO;
 import com.lowes.entity.Skill;
 import com.lowes.entity.User;
 import com.lowes.entity.Vendor;
@@ -30,8 +30,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static io.jsonwebtoken.Jwts.header;
 
 @Service
 @RequiredArgsConstructor

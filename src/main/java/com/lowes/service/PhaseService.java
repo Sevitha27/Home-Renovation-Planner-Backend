@@ -22,7 +22,6 @@ public class PhaseService {
     @Autowired
     PhaseRepository phaseRepository;
 
-
     public void createPhase(PhaseRequestDTO phaseRequestDTO) {
         try {
             Phase phase = new Phase();
@@ -87,7 +86,7 @@ public class PhaseService {
     public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
         Phase phase=phaseRepository.findById(phaseId).orElseThrow(()->new RuntimeException("Phase not found"));
 
-        if (phase.getVendor() == null || !phase.getVendor().getId().equals(vendorId)) {
+        if (phase.getVendor() == null || !phase.getVendor().getExposedId().equals(vendorId)) {
             throw new RuntimeException("Unauthorized: Vendor mismatch");
         }
         phase.setVendorCost(cost);
