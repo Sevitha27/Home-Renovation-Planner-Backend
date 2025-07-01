@@ -345,4 +345,19 @@ public class AdminService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error : " + exception.getMessage());
         }
     }
+
+    @Transactional
+    public ResponseEntity<?> hardDeleteMaterialByExposedId(UUID id) {
+        try {
+            Optional<Material> optionalMaterial = materialRepository.findByExposedId(id);
+            if (optionalMaterial.isEmpty())
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Material not found");
+            Material material = optionalMaterial.get();
+            materialRepository.delete(material);
+            return ResponseEntity.ok(AdminToastDTO.builder().message("SUCCESS").build());
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error hard deleting material");
+        }
+    }
 }
