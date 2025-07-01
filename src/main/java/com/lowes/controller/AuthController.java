@@ -1,7 +1,7 @@
 package com.lowes.controller;
 
-import com.lowes.dto.request.AuthLoginDTO;
-import com.lowes.dto.request.AuthRegisterDTO;
+import com.lowes.dto.request.auth.AuthLoginDTO;
+import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
