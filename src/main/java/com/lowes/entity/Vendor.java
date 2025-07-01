@@ -1,22 +1,25 @@
 package com.lowes.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
+@Builder
 public class Vendor {
 
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
 
     private String companyName;
 
@@ -34,10 +37,16 @@ public class Vendor {
     )
     private List<Skill> skills;
 
-
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<VendorReview> reviews;
 
+    @ManyToMany(mappedBy = "vendors")
+    @JsonIgnore
+    private List<User> users;
+
+    @OneToMany(mappedBy = "vendor",cascade = CascadeType.ALL)
+    @JsonManagedReference("vendor-phase")
+    private List<Phase> phases;
     @ManyToMany
     @JoinTable(
             name = "vendor_customers",
@@ -52,4 +61,9 @@ public class Vendor {
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<Phase> assignedPhases;
+
+    public boolean isAvailable() {
+        return available;
+    }
+
 }

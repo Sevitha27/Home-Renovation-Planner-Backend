@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
-
+            "/api/vendor-reviews/by-phaseType","/api/vendor-reviews/available-vendors"
     };
 
     // Public API POST Endpoints to be Added here
@@ -44,14 +44,15 @@ public class SecurityConfig {
 //For testing without authentication: you may uncomment the required methods below as needed.
 
 //    // Public API DELETE Endpoints to be Added here
+
 //    private final String[] PUBLIC_DELETE_ENDPOINTS = {
 //
 //    };
 //
 //    // Public API PUT Endpoints to be Added here
-//    private final String[] PUBLIC_PUT_ENDPOINTS = {
-//
-//    };
+    private final String[] PUBLIC_PUT_ENDPOINTS = {
+        "/api/vendor-assignment/assign/{vendorId}","/api/vendor-assignment/unassign/{vendorId}"
+    };
 //
 //    // Public API PATCH Endpoints to be Added here
 //    private final String[] PUBLIC_PATCH_ENDPOINTS = {
@@ -87,11 +88,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                                .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
                         //For testing without Authentication: you may uncomment the required methods below as needed.
 
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-//                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
+//
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

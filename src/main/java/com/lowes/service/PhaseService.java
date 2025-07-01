@@ -189,5 +189,25 @@ public class PhaseService {
         renovationPhaseMap.put(RenovationType.BALCONY_RENOVATION, List.of(
                 STRUCTURAL_WORK, ELECTRICITY, TILING, PAINTING
         ));
+
+    }
+    @Transactional
+    public int updateTotalCost(UUID id) {
+        Optional<Phase> optionalPhase = phaseRepository.findById(id);
+        if (optionalPhase.isEmpty()) {
+            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
+        }
+        System.out.println('a');
+        Phase phase = optionalPhase.get();
+
+        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+
+        int totalCost = 0;
+        for (PhaseMaterial phaseMaterial : phaseMaterialList) {
+            totalCost += phaseMaterial.getTotalPrice();
+        }
+        phase.setTotalPhaseMaterialCost(totalCost);
+        phaseRepository.save(phase);
+        return totalCost;
     }
 }

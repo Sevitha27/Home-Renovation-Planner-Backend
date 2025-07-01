@@ -2,9 +2,9 @@ package com.lowes.entity.enums;
 
 public enum SkillType {
     PLUMBING,
-    ELECTRICAL,
+    ELECTRICITY,
     PAINTING,
     CARPENTRY,
     TILING,
-    CIVIL
+    STRUCTURAL_WORK
 }

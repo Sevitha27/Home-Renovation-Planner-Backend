@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,6 +20,7 @@ import java.util.UUID;
 @Setter
 @Table(name = "users")
 @Entity
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,7 +47,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     // One-to-Many: A user owns many projects
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference("user-project")
     private List<Project> projects;
 

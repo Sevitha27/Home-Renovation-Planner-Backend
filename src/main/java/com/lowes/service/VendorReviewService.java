@@ -11,6 +11,8 @@ import com.lowes.repository.SkillRepository;
 import com.lowes.repository.VendorReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,12 +41,12 @@ public class VendorReviewService {
     private VendorReviewRepository vendorReviewRepository;
 
     @Transactional
-    public List<VendorReviewDTO> getVendorsBySkill(String skillName) {
+    public List<VendorReviewDTO> getVendorsBySkill(String phaseType) {
         SkillType skillEnum = null;
         try {
-            skillEnum = SkillType.valueOf(skillName.trim().toUpperCase());
+            skillEnum = SkillType.valueOf(phaseType.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid skill: '" + skillName + "'. Must be one of: " +
+            throw new RuntimeException("Invalid skill: '" + phaseType + "'. Must be one of: " +
                     Arrays.toString(SkillType.values()));
         }
 
@@ -119,5 +121,32 @@ public class VendorReviewService {
     public void deleteReview(UUID reviewId) {
         vendorReviewRepository.deleteById(reviewId);
     }
+
+    public List<VendorReviewDTO> getAvailableVendorsForPhase(String phaseType, LocalDate startDate, LocalDate endDate) {
+        SkillType skillEnum;
+        try {
+            skillEnum = SkillType.valueOf(phaseType.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid phase type: '" + phaseType + "'. Must be one of: " +
+                    Arrays.toString(SkillType.values()));
+        }
+
+        return vendorRepository.findAll().stream()
+                .filter(Vendor::getApproved)
+                .filter(vendor ->
+                        vendor.getSkills().stream().anyMatch(skill -> skill.getName() == skillEnum) &&
+                                vendor.getAssignedPhases().stream().noneMatch(phase ->
+                                        phase.getPhaseType().equals(skillEnum) &&
+                                                datesOverlap(startDate, endDate, phase.getStartDate(), phase.getEndDate()))
+                )
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private boolean datesOverlap(LocalDate start1, LocalDate end1, LocalDate start2, LocalDate end2) {
+        return !(end1.isBefore(start2) || start1.isAfter(end2));
+    }
+
+
 
 }

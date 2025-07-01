@@ -27,7 +27,6 @@ public class AuthRegisterDTO {
     private String contact;
 
 
-
     //additional for vendor
     @NonNull
     private String companyName;

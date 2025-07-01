@@ -4,9 +4,11 @@ import com.lowes.dto.request.VendorReviewRequestDTO;
 import com.lowes.dto.response.VendorReviewDTO;
 import com.lowes.service.VendorReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,9 +21,9 @@ public class VendorReviewController {
     @Autowired
     private VendorReviewService vendorReviewService;
 
-    @GetMapping("/by-skill")
-    public ResponseEntity<List<VendorReviewDTO>> getVendorsBySkill(@RequestParam String skill) {
-        List<VendorReviewDTO> vendors = vendorReviewService.getVendorsBySkill(skill);
+    @GetMapping("/by-phaseType")
+    public ResponseEntity<List<VendorReviewDTO>> getVendorsBySkill(@RequestParam String phaseType) {
+        List<VendorReviewDTO> vendors = vendorReviewService.getVendorsBySkill(phaseType);
         return ResponseEntity.ok(vendors);
     }
     @PostMapping("/reviews")
@@ -42,5 +44,16 @@ public class VendorReviewController {
         vendorReviewService.deleteReview(reviewId);
         return ResponseEntity.ok("Review deleted successfully.");
     }
+
+    @GetMapping("/available-vendors")
+    public ResponseEntity<List<VendorReviewDTO>> getAvailableVendors(
+            @RequestParam String phaseType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<VendorReviewDTO> vendors = vendorReviewService.getAvailableVendorsForPhase(phaseType, startDate, endDate);
+        return ResponseEntity.ok(vendors);
+    }
+
 
 }
