@@ -11,10 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PhaseService {
@@ -27,8 +24,8 @@ public class PhaseService {
             Phase phase = new Phase();
             phase.setPhaseType(phaseRequestDTO.getPhaseType());
             phase.setDescription(phaseRequestDTO.getDescription());
-            phase.setStartDate(phaseRequestDTO.getStart_date());
-            phase.setEndDate(phaseRequestDTO.getEnd_date());
+            phase.setStartDate(phaseRequestDTO.getStartDate());
+            phase.setEndDate(phaseRequestDTO.getEndDate());
             phase.setVendor(phaseRequestDTO.getVendor());
             phase.setProject(phaseRequestDTO.getProject());
             phase.setPhaseName(phaseRequestDTO.getPhaseName());
@@ -48,7 +45,6 @@ public class PhaseService {
     }
 
     public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
-
         Phase phase=phaseRepository.findById(id).orElseThrow(()->new RuntimeException("Phase not found"));
 
         if (updatedPhase.getDescription() != null)
@@ -58,11 +54,11 @@ public class PhaseService {
             phase.setPhaseStatus(updatedPhase.getPhaseStatus()
             );
 
-        if (updatedPhase.getStart_date() != null)
-            phase.setStartDate(updatedPhase.getStart_date());
+        if (updatedPhase.getStartDate() != null)
+            phase.setStartDate(updatedPhase.getStartDate());
 
-        if (updatedPhase.getEnd_date() != null)
-            phase.setEndDate(updatedPhase.getEnd_date());
+        if (updatedPhase.getEndDate() != null)
+            phase.setEndDate(updatedPhase.getEndDate());
 
         if (updatedPhase.getPhaseType() != null)
             phase.setPhaseType(updatedPhase.getPhaseType());
@@ -82,6 +78,26 @@ public class PhaseService {
     public void deletePhase(UUID id) {
         phaseRepository.delete(getPhaseById(id));
     }
+    public int calculateTotalCost(UUID id) {
+        Phase phase = getPhaseById(id);
+        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+        int materialCost = 0;
+
+        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+            materialCost = phaseMaterialList.stream()
+                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+                    .sum();
+        }
+
+        int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
+        int totalCost = vendorCost + materialCost;
+
+        phase.setTotalPhaseCost(totalCost);
+        phaseRepository.save(phase);
+
+        return totalCost;
+    }
+
 
     public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
         Phase phase=phaseRepository.findById(phaseId).orElseThrow(()->new RuntimeException("Phase not found"));

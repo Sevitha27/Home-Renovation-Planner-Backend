@@ -29,7 +29,7 @@ public class ProjectMapper {
                 .estimatedBudget(project.getEstimatedBudget())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
-                .ownerId(project.getOwner() != null ? project.getOwner().getId() : null)
+                .ownerId(project.getOwner() != null ? project.getOwner().getExposedId() : null)
 
                 .roomNames(project.getRooms() != null
                         ? project.getRooms().stream().map(Room::getName).toList()

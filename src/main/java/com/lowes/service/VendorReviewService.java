@@ -87,7 +87,7 @@ public class VendorReviewService {
         Skill skill = vendor.getSkills().stream().findFirst().orElse(null);
 
         return VendorReviewDTO.builder()
-                .id(vendor.getId())
+                .id(vendor.getExposedId())
                 .name(vendor.getUser().getName())
                 .pic(vendor.getUser().getPic())
                 .rating(averageRating)
