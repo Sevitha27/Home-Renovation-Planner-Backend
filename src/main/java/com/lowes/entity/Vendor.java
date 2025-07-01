@@ -1,6 +1,5 @@
 package com.lowes.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +15,18 @@ import java.util.UUID;
 public class Vendor {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
 
     private String companyName;
 
@@ -26,7 +35,6 @@ public class Vendor {
     private Boolean available;
 
     private Boolean approved;
-
 
     @ManyToMany
     @JoinTable(
