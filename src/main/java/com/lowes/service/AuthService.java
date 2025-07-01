@@ -24,6 +24,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class AuthService {
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                     .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).role(userFromDB.getRole().name()).build());
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
         }
     }
