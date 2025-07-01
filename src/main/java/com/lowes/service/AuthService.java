@@ -1,9 +1,9 @@
 package com.lowes.service;
 
-import com.lowes.dto.request.AuthLoginDTO;
-import com.lowes.dto.request.AuthRegisterDTO;
+import com.lowes.dto.request.auth.AuthLoginDTO;
+import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.dto.request.SkillRequestDTO;
-import com.lowes.dto.response.UserResponseDTO;
+import com.lowes.dto.response.auth.UserResponseDTO;
 import com.lowes.entity.Skill;
 import com.lowes.entity.User;
 import com.lowes.entity.Vendor;
@@ -24,13 +24,12 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static io.jsonwebtoken.Jwts.header;
 
 @Service
 @RequiredArgsConstructor
@@ -91,6 +90,7 @@ public class AuthService {
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                     .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).role(userFromDB.getRole().name()).build());
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
         }
     }

@@ -21,8 +21,18 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
 
     private String name;
 
@@ -41,7 +51,6 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -55,7 +64,5 @@ public class User {
     // One-to-Many: A user can write many reviews
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
     private List<VendorReview> vendorReviews;
-
-
 
 }
