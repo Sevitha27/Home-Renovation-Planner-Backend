@@ -1,6 +1,5 @@
-package com.lowes.dto.response;
+package com.lowes.dto.response.admin;
 
-import jakarta.persistence.Column;
 import lombok.*;
 import java.util.UUID;
 
@@ -10,7 +9,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UserResponseAdminDTO {
-    UUID id;
+
+    @NonNull
+    private UUID exposedId;
 
     @NonNull
     private String name;

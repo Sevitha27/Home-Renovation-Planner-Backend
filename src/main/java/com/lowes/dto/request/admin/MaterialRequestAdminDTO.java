@@ -1,4 +1,4 @@
-package com.lowes.dto.request;
+package com.lowes.dto.request.admin;
 
 
 import com.lowes.entity.enums.PhaseType;
