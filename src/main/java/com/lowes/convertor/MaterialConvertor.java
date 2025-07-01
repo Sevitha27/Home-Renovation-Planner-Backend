@@ -9,17 +9,12 @@ import lombok.experimental.UtilityClass;
 public class MaterialConvertor {
 
     public static MaterialUserResponse materialToMaterialUserResponse(Material material){
-        MaterialUserResponse materialUserResponse =  MaterialUserResponse.builder()
-                                            .exposedId(material.getExposedId())
-                                            .name(material.getName())
-                                            .unit(material.getUnit())
-                                            .phaseType(material.getPhaseType())
-                                            .pricePerQuantity(material.getPricePerQuantity())
-                                            .build();
-
-
-        return materialUserResponse;
+        return MaterialUserResponse.builder()
+                .exposedId(material.getExposedId())
+                .name(material.getName())
+                .unit(material.getUnit())
+                .phaseType(material.getPhaseType())
+                .pricePerQuantity(material.getPricePerQuantity())
+                .build();
     }
-
-
 }
