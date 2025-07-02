@@ -12,11 +12,12 @@ public class UserResponseDTO {
     @NonNull
     private String message;
 
-    @NonNull
     private String email;
 
     private String role;
 
     private String accessToken;
+
+    private String url;
 
 }
