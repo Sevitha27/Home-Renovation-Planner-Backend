@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/vendor-assignment")
-@CrossOrigin(origins = "http://localhost:5173") // or whatever your frontend port is
-
 public class VendorAssignmentController {
 
     @Autowired

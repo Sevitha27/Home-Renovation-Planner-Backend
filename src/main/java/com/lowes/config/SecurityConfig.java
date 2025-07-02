@@ -43,7 +43,7 @@ public class SecurityConfig {
 
 //For testing without authentication: you may uncomment the required methods below as needed.
 
-    //    // Public API DELETE Endpoints to be Added here
+    // Public API DELETE Endpoints to be Added here
 //    private final String[] PUBLIC_DELETE_ENDPOINTS = {
 //
 //    };
@@ -87,9 +87,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                                //.requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
-                                //For testing without Authentication: you may uncomment the required methods below as needed.
 
+//For testing without Authentication: you may uncomment the required methods below as needed.
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()

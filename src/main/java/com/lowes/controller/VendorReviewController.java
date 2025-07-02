@@ -14,8 +14,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/vendor-reviews")
-@CrossOrigin(origins = "http://localhost:5173") // or whatever your frontend port is
-
 public class VendorReviewController {
 
     @Autowired
@@ -44,7 +42,5 @@ public class VendorReviewController {
         vendorReviewService.deleteReview(reviewId);
         return ResponseEntity.ok("Review deleted successfully.");
     }
-
-
 
 }
