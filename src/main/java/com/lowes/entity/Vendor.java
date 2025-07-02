@@ -62,4 +62,5 @@ public class Vendor {
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<Phase> assignedPhases;
+
 }

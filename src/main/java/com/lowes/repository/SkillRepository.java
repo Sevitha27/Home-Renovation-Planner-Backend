@@ -5,6 +5,7 @@ import com.lowes.entity.Skill;
 import com.lowes.entity.enums.SkillType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,6 +19,6 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
 
     @Query("SELECT s FROM Skill s WHERE s.vendors IS EMPTY")
     List<Skill> findSkillsWithNoVendors();
-
+    List<Skill> findByName(SkillType name);
    // Optional<Skill> findByName(SkillType name);
 }
