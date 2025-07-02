@@ -18,4 +18,6 @@ public class UserResponseDTO {
 
     private String accessToken;
 
+    private String url;
+
 }
