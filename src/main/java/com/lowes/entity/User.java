@@ -46,7 +46,8 @@ public class User {
 
     private String contact;
 
-    private String pic;
+    @Column(name = "url_image")
+    private String pic = "https://res.cloudinary.com/dpuk8nzcl/image/upload/v1751453296/profile-pic-holder_gbqh7h.jpg";
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -12,7 +12,6 @@ public class UserResponseDTO {
     @NonNull
     private String message;
 
-    @NonNull
     private String email;
 
     private String role;

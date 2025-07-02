@@ -19,5 +19,5 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     @Query("SELECT s FROM Skill s WHERE s.vendors IS EMPTY")
     List<Skill> findSkillsWithNoVendors();
 
-   // Optional<Skill> findByName(SkillType name);
+
 }

@@ -3,6 +3,7 @@ package com.lowes.service;
 import com.lowes.dto.request.auth.AuthLoginDTO;
 import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.dto.request.SkillRequestDTO;
+import com.lowes.dto.request.auth.UpdateUserProfileDTO;
 import com.lowes.dto.response.auth.UserResponseDTO;
 import com.lowes.entity.Skill;
 import com.lowes.entity.User;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -42,6 +44,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final CloudinaryServiceImpl cloudinaryServiceImpl;
 
 
     @Transactional
@@ -160,4 +163,71 @@ public class AuthService {
         }
     }
 
+//    public ResponseEntity<?> updateProfile(UpdateUserProfileDTO dto) {
+//        try{
+//            User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//            String imageUrl = null;
+//            if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+//                imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
+//                if (imageUrl == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").build());
+//            }
+//
+//            userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
+//            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").build());
+//
+//        }catch (Exception e)
+//        {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").build());
+//        }
+//    }
+
+    public ResponseEntity<?> updateProfile(UpdateUserProfileDTO dto) {
+        try {
+            // Get the currently authenticated user
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            String imageUrl = null;
+
+            // Upload image only if it's provided
+            if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+                imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
+                if (imageUrl == null) {
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(UserResponseDTO.builder().message("ERROR: Image upload failed").build());
+                }
+            }
+
+            // Convert and update user using non-null fields
+            userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
+
+            return ResponseEntity.ok(UserResponseDTO.builder().message("SUCCESS").build());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(UserResponseDTO.builder().message("ERROR").build());
+        }
+    }
+
+
+
+    public ResponseEntity<?> getProfile() {
+        try{
+            User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(user.getRole() == Role.CUSTOMER){
+                return ResponseEntity.status(HttpStatus.OK).body(userConverter.userToGetCustomerProfileDTO(user));
+            }else if(user.getRole() == Role.VENDOR){
+                return ResponseEntity.status(HttpStatus.OK).body(userConverter.userToGetVendorProfileDTO(user));
+            }else
+            {
+                return null;
+            }
+        }catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get Profile");
+        }
+
+    }
 }
