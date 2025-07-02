@@ -50,68 +50,11 @@ public class UserConverter {
                 .build();
     }
 
-//    @Transactional
-//    public void updateUserProfileDTOToUser(UpdateUserProfileDTO dto, User user, String url) {
-//        if (user.getRole() == Role.VENDOR) {
-//            Vendor vendor = vendorRepository.findByUser(user);
-//            vendor.setCompanyName(dto.getCompanyName());
-//            vendor.setExperience(dto.getExperience());
-//            vendor.setAvailable(dto.getAvailable());
-//
-//            List<Skill> updatedSkillList = new ArrayList<>();
-//            List<Skill> oldSkillsToCheck = new ArrayList<>();
-//
-//            for (SkillRequestDTO skillDto : dto.getSkills()) {
-//                SkillType skillName = SkillType.valueOf(skillDto.getSkillName());
-//                Double newBasePrice = skillDto.getBasePrice();
-//
-//                Skill existingSkillInVendor = vendor.getSkills().stream()
-//                        .filter(s -> s.getName() == skillName)
-//                        .findFirst()
-//                        .orElse(null);
-//
-//                if (existingSkillInVendor != null) {
-//                    vendor.getSkills().remove(existingSkillInVendor);
-//                    oldSkillsToCheck.add(existingSkillInVendor);
-//                }
-//
-//                Skill skillToAdd = skillRepository.findByNameAndBasePrice(skillName, newBasePrice)
-//                        .orElse(null);
-//
-//                if (skillToAdd == null) {
-//                    skillToAdd = new Skill();
-//                    skillToAdd.setName(skillName);
-//                    skillToAdd.setBasePrice(newBasePrice);
-//                    skillToAdd = skillRepository.save(skillToAdd);
-//                }
-//
-//                updatedSkillList.add(skillToAdd);
-//            }
-//
-//            vendor.getSkills().addAll(updatedSkillList);
-//            vendorRepository.save(vendor);
-//
-//            for (Skill oldSkill : oldSkillsToCheck) {
-//                long count = vendorRepository.countBySkillsContaining(oldSkill);
-//                if (count == 0) {
-//                    skillRepository.delete(oldSkill);
-//                }
-//            }
-//        }
-//
-//        user.setName(dto.getName());
-//        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-//        user.setContact(dto.getContact());
-//        user.setPic(url);
-//        userRepository.save(user);
-//    }
-
     @Transactional
     public void updateUserProfileDTOToUser(UpdateUserProfileDTO dto, User user, String url) {
         if (user.getRole() == Role.VENDOR) {
             Vendor vendor = vendorRepository.findByUser(user);
 
-            // Update only non-null fields
             if (dto.getCompanyName() != null) {
                 vendor.setCompanyName(dto.getCompanyName());
             }
@@ -124,7 +67,6 @@ public class UserConverter {
                 vendor.setAvailable(dto.getAvailable());
             }
 
-            // Only update skills if they are provided
             if (dto.getSkills() != null && !dto.getSkills().isEmpty()) {
                 List<Skill> updatedSkillList = new ArrayList<>();
                 List<Skill> oldSkillsToCheck = new ArrayList<>();
@@ -168,10 +110,6 @@ public class UserConverter {
             }
         }
 
-        System.out.println(dto.getName());
-        System.out.println(dto.getContact());
-
-        // Only update user fields if non-null
         if (dto.getName() != null) {
             user.setName(dto.getName());
         }

@@ -113,7 +113,7 @@ public class AuthService {
 
                 ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)
-                        .secure(false)  // secure true only if we have https domain
+                        .secure(false)
                         .path("/")
                         .maxAge(Duration.ofDays(7))
                         .sameSite("strict")
@@ -163,36 +163,15 @@ public class AuthService {
         }
     }
 
-//    public ResponseEntity<?> updateProfile(UpdateUserProfileDTO dto) {
-//        try{
-//            User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//            String imageUrl = null;
-//            if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
-//                imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
-//                if (imageUrl == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").build());
-//            }
-//
-//            userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
-//            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").build());
-//
-//        }catch (Exception e)
-//        {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").build());
-//        }
-//    }
 
     public ResponseEntity<?> updateProfile(UpdateUserProfileDTO dto) {
         try {
-            // Get the currently authenticated user
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             String imageUrl = null;
 
             System.out.println(dto.getProfileImage());
-            // Upload image only if it's provided
             if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
-                System.out.println("Inside if");
                 imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
                 if (imageUrl == null) {
                     return ResponseEntity
@@ -200,8 +179,6 @@ public class AuthService {
                             .body(UserResponseDTO.builder().message("ERROR: Image upload failed").build());
                 }
             }
-            System.out.println(imageUrl);
-            // Convert and update user using non-null fields
             userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
 
             return ResponseEntity.ok(UserResponseDTO.builder().message("SUCCESS").build());
