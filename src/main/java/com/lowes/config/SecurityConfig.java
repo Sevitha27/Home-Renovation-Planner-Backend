@@ -49,9 +49,9 @@ public class SecurityConfig {
 //    };
 //
 //    // Public API PUT Endpoints to be Added here
-    private final String[] PUBLIC_PUT_ENDPOINTS = {
-            "/api/vendor-assignment/assign/{vendorId}","/api/vendor-assignment/unassign/{vendorId}"
-    };
+//    private final String[] PUBLIC_PUT_ENDPOINTS = {
+//
+//    };
 //
 //    // Public API PATCH Endpoints to be Added here
 //    private final String[] PUBLIC_PATCH_ENDPOINTS = {
@@ -87,7 +87,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                                .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
+                                //.requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
                                 //For testing without Authentication: you may uncomment the required methods below as needed.
 
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()

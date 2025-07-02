@@ -58,7 +58,7 @@ public class VendorReviewService {
         return skills.stream()
                 .flatMap(skill -> skill.getVendors().stream())
                 .filter(Vendor::getApproved)
-                .filter(Vendor::isAvailable)
+                .filter(Vendor::getAvailable)
                 .distinct() // Optional: avoid duplicate vendors if skill appears more than once
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -92,7 +92,7 @@ public class VendorReviewService {
                 .pic(vendor.getUser().getPic())
                 .rating(averageRating)
                 .reviews(reviewDetails)
-                .available(vendor.isAvailable())
+                .available(vendor.getAvailable())
                 .experience(vendor.getExperience())
                 .companyName(vendor.getCompanyName())
                 .basePrice(skill != null ? skill.getBasePrice() : null)
