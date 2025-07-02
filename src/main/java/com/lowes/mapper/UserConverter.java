@@ -168,6 +168,9 @@ public class UserConverter {
             }
         }
 
+        System.out.println(dto.getName());
+        System.out.println(dto.getContact());
+
         // Only update user fields if non-null
         if (dto.getName() != null) {
             user.setName(dto.getName());

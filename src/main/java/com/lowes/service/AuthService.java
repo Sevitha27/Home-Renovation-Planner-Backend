@@ -189,8 +189,10 @@ public class AuthService {
 
             String imageUrl = null;
 
+            System.out.println(dto.getProfileImage());
             // Upload image only if it's provided
             if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+                System.out.println("Inside if");
                 imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
                 if (imageUrl == null) {
                     return ResponseEntity
@@ -198,7 +200,7 @@ public class AuthService {
                             .body(UserResponseDTO.builder().message("ERROR: Image upload failed").build());
                 }
             }
-
+            System.out.println(imageUrl);
             // Convert and update user using non-null fields
             userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
 

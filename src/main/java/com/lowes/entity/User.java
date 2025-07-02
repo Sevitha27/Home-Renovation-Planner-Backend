@@ -27,13 +27,6 @@ public class User {
     @Column(nullable = false, unique = true, updatable = false)
     private UUID exposedId;
 
-    @PrePersist
-    public void prePersist() {
-        if (exposedId == null) {
-            exposedId = UUID.randomUUID();
-        }
-    }
-
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -47,7 +40,17 @@ public class User {
     private String contact;
 
     @Column(name = "url_image")
-    private String pic = "https://res.cloudinary.com/dpuk8nzcl/image/upload/v1751453296/profile-pic-holder_gbqh7h.jpg";
+    private String pic;
+
+    @PrePersist
+    public void prePersist(){
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+        if(pic == null || pic.isEmpty()){
+            pic = "https://res.cloudinary.com/dpuk8nzcl/image/upload/v1751453296/profile-pic-holder_gbqh7h.jpg";
+        }
+    }
 
     @CreationTimestamp
     private LocalDateTime createdAt;
