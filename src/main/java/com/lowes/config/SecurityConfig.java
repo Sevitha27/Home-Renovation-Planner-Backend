@@ -31,14 +31,13 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
 
     };
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken"
+            "/auth/register", "/auth/login", "/auth/refreshAccessToken" ,  
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
@@ -63,7 +62,7 @@ public class SecurityConfig {
     );
 
     private final String[] ALLOWED_CORS_METHODS = {
-            "GET", "POST", "PUT", "PATCH", "DELETE"
+            "GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS"
     };
 
     @Bean
@@ -87,6 +86,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        .requestMatchers("/api/projects/user").authenticated() 
+                    .requestMatchers(HttpMethod.POST, "/api/rooms").authenticated()
+                          .requestMatchers(HttpMethod.GET, "/api/rooms/project/{projectId}/costs").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/projects/{projectId}/cost").authenticated()
+           
+            
+            // Allow all OPTIONS requests
                         //For testing without Authentication: you may uncomment the required methods below as needed.
 
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
