@@ -3,6 +3,7 @@ package com.lowes.service;
 import com.lowes.dto.request.auth.AuthLoginDTO;
 import com.lowes.dto.request.auth.AuthRegisterDTO;
 import com.lowes.dto.request.SkillRequestDTO;
+import com.lowes.dto.request.auth.UpdateUserProfileDTO;
 import com.lowes.dto.response.auth.UserResponseDTO;
 import com.lowes.entity.Skill;
 import com.lowes.entity.User;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -42,6 +44,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final CloudinaryServiceImpl cloudinaryServiceImpl;
 
 
     @Transactional
@@ -88,7 +91,7 @@ public class AuthService {
 
             return ResponseEntity.status(HttpStatus.OK)
                     .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).role(userFromDB.getRole().name()).build());
+                    .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(userFromDB.getEmail()).url(userFromDB.getPic()).role(userFromDB.getRole().name()).build());
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponseDTO.builder().message("ERROR").email(request.getEmail()).build());
@@ -110,7 +113,7 @@ public class AuthService {
 
                 ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)
-                        .secure(false)  // secure true only if we have https domain
+                        .secure(false)
                         .path("/")
                         .maxAge(Duration.ofDays(7))
                         .sameSite("strict")
@@ -118,7 +121,7 @@ public class AuthService {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                        .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).role(user.getRole().name()).build());
+                        .body(UserResponseDTO.builder().message("SUCCESS").accessToken(accessToken).email(user.getEmail()).url(user.getPic()).role(user.getRole().name()).build());
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserResponseDTO.builder().message("ERROR").email(user.getEmail()).build());
         }
@@ -153,11 +156,57 @@ public class AuthService {
             User user = userOpt.get();
             String newAccessToken = jwtService.generateAccessToken(user);
 
-            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").accessToken(newAccessToken).email(email).role(user.getRole().name()).build());
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.builder().message("SUCCESS").accessToken(newAccessToken).email(email).url(user.getPic()).role(user.getRole().name()).build());
 
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error!");
         }
     }
 
+
+    public ResponseEntity<?> updateProfile(UpdateUserProfileDTO dto) {
+        try {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            String imageUrl = null;
+
+            System.out.println(dto.getProfileImage());
+            if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+                imageUrl = cloudinaryServiceImpl.uploadFile(dto.getProfileImage(), "RenoBase");
+                if (imageUrl == null) {
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(UserResponseDTO.builder().message("ERROR: Image upload failed").build());
+                }
+            }
+            userConverter.updateUserProfileDTOToUser(dto, user, imageUrl);
+
+            return ResponseEntity.ok(UserResponseDTO.builder().message("SUCCESS").build());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(UserResponseDTO.builder().message("ERROR").build());
+        }
+    }
+
+
+
+    public ResponseEntity<?> getProfile() {
+        try{
+            User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(user.getRole() == Role.CUSTOMER){
+                return ResponseEntity.status(HttpStatus.OK).body(userConverter.userToGetCustomerProfileDTO(user));
+            }else if(user.getRole() == Role.VENDOR){
+                return ResponseEntity.status(HttpStatus.OK).body(userConverter.userToGetVendorProfileDTO(user));
+            }else
+            {
+                return null;
+            }
+        }catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get Profile");
+        }
+
+    }
 }
