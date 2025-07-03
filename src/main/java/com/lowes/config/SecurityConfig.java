@@ -31,19 +31,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
-            "/api/vendor-reviews/by-phaseType","/api/vendor-reviews/available-vendors"
+
     };
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken"
+            "/auth/register", "/auth/login", "/auth/refreshAccessToken" ,  
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
 
-    // Public API DELETE Endpoints to be Added here
+//    // Public API DELETE Endpoints to be Added here
 //    private final String[] PUBLIC_DELETE_ENDPOINTS = {
 //
 //    };
@@ -63,7 +62,7 @@ public class SecurityConfig {
     );
 
     private final String[] ALLOWED_CORS_METHODS = {
-            "GET", "POST", "PUT", "PATCH", "DELETE"
+            "GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS"
     };
 
     @Bean
@@ -85,14 +84,21 @@ public class SecurityConfig {
                 .csrf( csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        .requestMatchers("/api/projects/user").authenticated() 
+                    .requestMatchers(HttpMethod.POST, "/api/rooms").authenticated()
+                          .requestMatchers(HttpMethod.GET, "/api/rooms/project/{projectId}/costs").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/projects/{projectId}/cost").authenticated()
+           
+            
+            // Allow all OPTIONS requests
+                        //For testing without Authentication: you may uncomment the required methods below as needed.
 
-//For testing without Authentication: you may uncomment the required methods below as needed.
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
-                                .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
