@@ -6,16 +6,7 @@ import java.util.UUID;
 import com.lowes.entity.enums.RenovationType;
 
 // import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 // import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,6 +26,17 @@ public class Room {
     private UUID id;
     
     private String name;
+
+
+   // @Column(unique = true, updatable = false)
+    //private String exposedId; // Frontend-facing
+
+    //@PrePersist
+    //private void generateExposedId() {
+      //  if(exposedId == null) {
+        //    exposedId = "PROJ-" + UUID.randomUUID().toString().substring(0,8);
+        //}
+    //}
     
     @Enumerated(EnumType.STRING)
     private RenovationType renovationType;

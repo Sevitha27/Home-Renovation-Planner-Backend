@@ -35,7 +35,8 @@ public class ProjectService {
     public ProjectResponse createProject(ProjectRequest request, User owner) {
         Project project = new Project();
         project.setName(request.name());
-        project.setEstimate(request.estimate());
+        project.setServiceType(request.serviceType());
+        project.setEstimatedBudget(request.estimatedBudget());
         project.setStartDate(request.startDate());
         project.setEndDate(request.endDate());
         project.setOwner(owner);

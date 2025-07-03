@@ -89,7 +89,7 @@ public class RoomController {
         @RequestHeader("Authorization") String token) {
         
         UUID userId = jwtService.extractUserId(token.substring(7));
-        return ResponseEntity.ok(roomService.getRoomWithCost(roomId, userId));
+        return ResponseEntity.ok(roomService.calculateRoomCost(roomId, userId));
     }
 
     //   complete room 

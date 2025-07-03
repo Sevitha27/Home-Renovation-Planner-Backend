@@ -1,5 +1,7 @@
 package com.lowes.entity;
 
+import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +25,24 @@ public class Project {
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
+
+
+   // @Column(unique = true, updatable = false)
+  //  private String exposedId; // Frontend-facing
+
+  //  @PrePersist
+  //  private void generateExposedId() {
+    //    if(exposedId == null) {
+   //         exposedId = "PROJ-" + UUID.randomUUID().toString().substring(0,8);
+  //      }
+ //   }
+
+    @Enumerated(EnumType.STRING)
+    ServiceType serviceType;
+
+
 private String name;
-private Double estimate; // New field
+private Double estimatedBudget; // New field
     private LocalDate startDate; // New field
     private LocalDate endDate;   //new field
      @ManyToOne(fetch = FetchType.LAZY)
@@ -38,6 +56,6 @@ private Double estimate; // New field
            fetch = FetchType.LAZY) // Keep lazy but ensure proper loading in queries
 private List<Room> rooms = new ArrayList<>();
 private Double totalProjectCost;  // New field to store sum of room costs
- 
+
 
 }

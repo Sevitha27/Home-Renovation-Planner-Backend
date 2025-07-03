@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.lowes.dto.response.RoomResponse;
+import com.lowes.entity.enums.ServiceType;
 
 public record ProjectRequest(
       String name,
-     Double estimate,
+      ServiceType serviceType,
+     Double estimatedBudget,
      LocalDate startDate,
     LocalDate endDate,
        List<RoomResponse> rooms

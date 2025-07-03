@@ -9,7 +9,8 @@ public static ProjectResponse toDTO(Project project) {
     return new ProjectResponse(
         project.getId(),
         project.getName(),
-        project.getEstimate(),       // Add these new fields
+            project.getServiceType(),
+        project.getEstimatedBudget(),       // Add these new fields
         project.getStartDate(),
         project.getEndDate(),
         project.getOwner().getId(),

@@ -2,7 +2,6 @@ package com.lowes.service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -10,11 +9,9 @@ import com.lowes.Exception.AccessDeniedException;
 import com.lowes.Exception.NotFoundException;
 import com.lowes.dto.request.RoomRequest;
 import com.lowes.dto.response.RoomResponse;
-import com.lowes.entity.Phase;
 import com.lowes.entity.Project;
 import com.lowes.entity.Room;
 import com.lowes.entity.User;
-import com.lowes.mapper.PhaseMapper;
 import com.lowes.mapper.RoomMapper;
 import com.lowes.repository.ProjectRepository;
 import com.lowes.repository.RoomRepository;
@@ -69,7 +66,7 @@ public class RoomService {
 
 
 // Calculate total cost for a single room  
-public int calculateRoomCost(UUID roomId, UUID userId) {
+public RoomResponse calculateRoomCost(UUID roomId, UUID userId) {
     // Step 1: Get room from DB
     Room room = roomRepo.findById(roomId)
         .orElseThrow(() -> new NotFoundException("Room not found"));
@@ -89,10 +86,14 @@ public int calculateRoomCost(UUID roomId, UUID userId) {
     room.setTotalRoomCost(totalCost);
     roomRepo.save(room);
     
-    return totalCost;
+    return new RoomResponse(
+            room.getId(),
+            room.getName(),
+            room.getRenovationType(),totalCost
+    );
 }
     // Get all rooms with costs for a project
-    public List<RoomResponse> getRoomsWithCosts(UUID projectId) {
+    public List<RoomResponse> getRoomsWithCosts(UUID projectId, UUID userId) {
         List<Room> rooms = roomRepo.findByProjectId(projectId);
         return rooms.stream()
                 .map(room -> new RoomResponse(

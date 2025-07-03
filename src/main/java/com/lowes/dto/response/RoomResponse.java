@@ -6,10 +6,11 @@ import java.util.UUID;
 import com.lowes.entity.enums.RenovationType;
 
 public record RoomResponse(
+        // @JsonProperty("exposeId")
     UUID id,
     String name,
     RenovationType renovationType,
-    // List<PhaseResponse> phases,
+     List<PhaseResponse> phases,
             Integer totalCost 
 
 ) {}
