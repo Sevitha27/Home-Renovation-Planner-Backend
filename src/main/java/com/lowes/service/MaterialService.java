@@ -81,6 +81,9 @@ public class MaterialService {
     @Transactional
     public MaterialAdminResponse addMaterial(MaterialAdminRequest materialAdminRequest){
         Material material = MaterialConvertor.materialAdminRequestToMaterial(materialAdminRequest);
+        if(material.getPricePerQuantity()<=0){
+            throw new IllegalArgumentException("Price Per Quantity of Material must be a number greater than 0");
+        }
         Material savedMaterial = materialRepository.save(material);
         MaterialAdminResponse materialAdminResponse = MaterialConvertor.materialToMaterialAdminResponse(savedMaterial);
         return materialAdminResponse;
@@ -93,7 +96,9 @@ public class MaterialService {
             throw new ElementNotFoundException("Material Not Found To Update");
         }
         Material existingMaterial = optionalMaterial.get();
-
+        if(existingMaterial.getPricePerQuantity()<=0){
+            throw new IllegalArgumentException("Price Per Quantity of Material must be a number greater than 0");
+        }
         existingMaterial.setName(materialAdminRequest.getName());
         existingMaterial.setUnit(materialAdminRequest.getUnit());
         existingMaterial.setPhaseType(materialAdminRequest.getPhaseType());

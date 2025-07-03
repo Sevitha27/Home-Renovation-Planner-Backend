@@ -76,6 +76,10 @@ public class MaterialController {
             MaterialAdminResponse materialAdminResponse = materialService.addMaterial(materialAdminRequest);
             return new ResponseEntity(materialAdminResponse,HttpStatus.CREATED);
         }
+        catch (IllegalArgumentException exception){
+            logger.error("Illegal Argument Exception",exception);
+            return new ResponseEntity("Illegal Argument Exception : "+exception.getMessage(),HttpStatus.BAD_REQUEST);
+        }
         catch(DataIntegrityViolationException exception){
             logger.error("Data Integrity Violation",exception);
             return new ResponseEntity("Data Integrity Violation: "+exception.getMessage(),HttpStatus.BAD_REQUEST);
@@ -96,7 +100,10 @@ public class MaterialController {
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
-
+        catch (IllegalArgumentException exception){
+            logger.error("Illegal Argument Exception",exception);
+            return new ResponseEntity("Illegal Argument Exception : "+exception.getMessage(),HttpStatus.BAD_REQUEST);
+        }
         catch(DataIntegrityViolationException exception){
             logger.error("Data Integrity Violation",exception);
             return new ResponseEntity("Data Integrity Violation: "+exception.getMessage(),HttpStatus.BAD_REQUEST);

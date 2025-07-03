@@ -45,10 +45,12 @@ public class Material {
     @Column(nullable = false)
     int pricePerQuantity;
 
+    @Builder.Default
     @JsonBackReference
     @OneToMany(mappedBy = "material", fetch = FetchType.EAGER)
     List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
+    @Builder.Default
     @Column(nullable = false)
     boolean deleted = false;
 }
