@@ -1,11 +1,13 @@
 package com.lowes.controller;
 
-import com.lowes.dto.request.AuthLoginDTO;
-import com.lowes.dto.request.AuthRegisterDTO;
+import com.lowes.dto.request.auth.AuthLoginDTO;
+import com.lowes.dto.request.auth.AuthRegisterDTO;
+import com.lowes.dto.request.auth.UpdateUserProfileDTO;
 import com.lowes.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,11 +38,17 @@ public class AuthController {
         return authService.refreshAccessToken(request, response);
     }
 
-    //change password
+    //get Profile
+    @GetMapping("/getProfile")
+    public ResponseEntity<?> getProfile(){
+        return authService.getProfile();
+    }
+
+    //update profile
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_VENDOR','ROLE_CUSTOMER')")
-    @PostMapping("/changePassword")
-    public ResponseEntity<?> changePassword(){
-        return null;
+    @PostMapping("/updateProfile")
+    public ResponseEntity<?> updateProfile(@ModelAttribute UpdateUserProfileDTO dto) {
+        return authService.updateProfile(dto);
     }
 
     //delete account

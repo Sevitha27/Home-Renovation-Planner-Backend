@@ -9,7 +9,9 @@ import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
 import com.lowes.repository.PhaseRepository;
+import com.lowes.repository.ProjectRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,10 @@ import static com.lowes.entity.enums.PhaseType.*;
 public class PhaseService {
 
     @Autowired
-    private PhaseRepository phaseRepository;
+    PhaseRepository phaseRepository;
+
+    @Autowired
+    ProjectRepository projectRepository;
 
     private final Map<RenovationType, List<PhaseType>> renovationPhaseMap = new HashMap<>();
 
@@ -52,11 +57,16 @@ public class PhaseService {
     }
 
     public List<PhaseResponseDTO> getPhasesByProject(UUID projectId) {
+        if (!projectRepository.existsById(projectId)) {
+            throw new EntityNotFoundException("Project not found with ID: " + projectId);
+        }
+
         List<Phase> phases = phaseRepository.findAllByProject_Id(projectId);
         return phases.stream()
                 .map(PhaseResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
 
     public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
         Phase phase = getPhaseById(id);

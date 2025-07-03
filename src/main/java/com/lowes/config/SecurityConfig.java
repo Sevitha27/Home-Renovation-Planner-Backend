@@ -33,7 +33,8 @@ public class SecurityConfig {
 
     // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
-        "/phase/**","/api/enums/phase-statuses","/phase/phases/by-renovation-type/**","/api/**"
+        "/phase/**","/api/enums/phase-statuses","/phase/phases/by-renovation-type/**","/api/**",
+            "/api/vendor-reviews/by-phaseType","/api/vendor-reviews/available-vendors"
     };
 
     // Public API POST Endpoints to be Added here
@@ -85,14 +86,14 @@ public class SecurityConfig {
                 .csrf( csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                        //For testing without Authentication: you may uncomment the required methods below as needed.
+                                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
 
+//For testing without Authentication: you may uncomment the required methods below as needed.
 //                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

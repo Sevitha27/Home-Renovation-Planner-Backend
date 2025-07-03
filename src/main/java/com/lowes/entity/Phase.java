@@ -6,16 +6,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -58,9 +57,11 @@ public class Phase {
 
     private Integer totalPhaseCost = 0;
     private Integer vendorCost;
+    private Integer totalPhaseMaterialCost = 0;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
     @JsonIgnore
+    @OrderBy("id ASC")
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

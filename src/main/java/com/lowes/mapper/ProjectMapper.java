@@ -30,7 +30,6 @@ public class ProjectMapper {
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .ownerId(project.getOwner() != null ? project.getOwner().getId() : null)
-
                 .roomNames(project.getRooms() != null
                         ? project.getRooms().stream().map(Room::getName).toList()
                         : null)

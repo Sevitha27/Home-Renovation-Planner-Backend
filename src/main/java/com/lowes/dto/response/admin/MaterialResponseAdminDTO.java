@@ -1,4 +1,4 @@
-package com.lowes.dto.response;
+package com.lowes.dto.response.admin;
 
 
 import com.lowes.entity.enums.PhaseType;
@@ -6,8 +6,7 @@ import com.lowes.entity.enums.Unit;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MaterialAdminResponse {
+public class MaterialResponseAdminDTO {
+
+    UUID exposedId;
 
     String name;
 

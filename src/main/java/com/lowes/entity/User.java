@@ -21,8 +21,11 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    UUID id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
 
     private String name;
 
@@ -36,7 +39,18 @@ public class User {
 
     private String contact;
 
+    @Column(name = "url_image")
     private String pic;
+
+    @PrePersist
+    public void prePersist(){
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+        if(pic == null || pic.isEmpty()){
+            pic = "https://res.cloudinary.com/dpuk8nzcl/image/upload/v1751453296/profile-pic-holder_gbqh7h.jpg";
+        }
+    }
 
     @CreationTimestamp
     private LocalDateTime createdAt;

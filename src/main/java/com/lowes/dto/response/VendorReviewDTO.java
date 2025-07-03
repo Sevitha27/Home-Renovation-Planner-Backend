@@ -13,10 +13,24 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VendorReviewDTO {
+    // List of comment strings
     private UUID id;
-    private String name;      // From vendor.user.name
-    private String pic;       // From vendor.user.pic
-    private Double rating;    // Average of all ratings
-    private List<String> reviews;
-    private boolean available; // List of comment strings
+    private String name;
+    private String pic;
+    private String experience;        // in years
+    private String companyName;
+    private double rating;
+    private boolean available;
+    private Double basePrice;
+    private List<ReviewDetail> reviews;
+
+
+    @Data
+    @Builder
+    public static class ReviewDetail {
+        private String reviewerName;
+        private double rating;
+        private String comment;
+        private String createdAt; // ISO string or formatted date
+    }
 }

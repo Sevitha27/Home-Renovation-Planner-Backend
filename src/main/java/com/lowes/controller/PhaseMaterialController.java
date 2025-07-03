@@ -67,9 +67,9 @@ public class PhaseMaterialController {
     }
 
     @PatchMapping("/user/phase-materials/{phase-material-id}")
-    public ResponseEntity updatePhaseMaterialQuantityById(@PathVariable("phase-material-id") UUID id, @RequestParam("quantity") int quantity){
+    public ResponseEntity updatePhaseMaterialQuantityByExposedId(@PathVariable("phase-material-id") UUID id, @RequestParam("quantity") int quantity){
         try{
-            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityById(id,quantity);
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityByExposedId(id,quantity);
             return new ResponseEntity(phaseMaterialUserResponse,HttpStatus.OK);
         }
         catch(IllegalArgumentException exception){
@@ -88,9 +88,9 @@ public class PhaseMaterialController {
     }
 
     @DeleteMapping("/user/phase-materials/{phase-material-id}")
-    public ResponseEntity deletePhaseMaterialById(@PathVariable("phase-material-id") UUID id){
+    public ResponseEntity deletePhaseMaterialByExposedId(@PathVariable("phase-material-id") UUID id){
         try{
-            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialById(id);
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialByExposedId(id);
             return new ResponseEntity(phaseMaterialUserResponse, HttpStatus.OK);
         }
         catch(ElementNotFoundException exception){

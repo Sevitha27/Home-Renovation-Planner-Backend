@@ -30,17 +30,18 @@ public class Project {
     @JsonBackReference("user-project")
     private User owner;
 
-    Double estimatedBudget;
-    LocalDate startDate;
-    LocalDate endDate;
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    ServiceType serviceType;
 
     @OneToMany(mappedBy = "project",cascade = CascadeType.ALL)
     @JsonManagedReference("project-phase")
     private List<Phase> phasesList;
+
+    Double estimatedBudget;
+    LocalDate startDate;
+    LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    ServiceType serviceType;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Room> rooms;

@@ -22,8 +22,11 @@ import java.util.UUID;
 public class PhaseMaterial {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
+
+    @Column(nullable = false, unique = true)
+    UUID exposedId;
 
 //    @Column(nullable = false, updatable = false, unique = true)
 //    UUID exposedId = UUID.randomUUID();

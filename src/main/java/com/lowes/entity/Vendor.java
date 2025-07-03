@@ -20,6 +20,15 @@ public class Vendor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
     private String companyName;
 
     private String experience;
@@ -54,7 +63,7 @@ public class Vendor {
     )
     private List<User> customers;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id") // this is the vendor's user account
     private User user;
 

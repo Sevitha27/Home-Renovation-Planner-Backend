@@ -15,6 +15,7 @@ import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
         }
 
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId);
+        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         for(PhaseMaterial phaseMaterial : phaseMaterialList){
             phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
@@ -59,7 +60,7 @@ public class PhaseMaterialService {
         for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
             PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase,phaseMaterialUserRequest);
 
-            Optional<Material> optionalMaterial = materialRepository.findById(phaseMaterialUserRequest.getMaterialId());
+            Optional<Material> optionalMaterial = materialRepository.findByExposedId(phaseMaterialUserRequest.getMaterialExposedId());
             if(optionalMaterial.isEmpty()){
                 throw new ElementNotFoundException("Material Not Found To Add Phase Material");
             }
@@ -93,11 +94,11 @@ public class PhaseMaterialService {
     }
 
     @Transactional
-    public PhaseMaterialUserResponse updatePhaseMaterialQuantityById(UUID id, int quantity){
+    public PhaseMaterialUserResponse updatePhaseMaterialQuantityByExposedId(UUID id, int quantity){
         if(quantity<=0){
             throw new IllegalArgumentException("Quantity of Phase Material must be a number greater than 0");
         }
-        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(id);
         if(optionalPhaseMaterial.isEmpty()){
             throw new ElementNotFoundException("Phase Material Not Found To Update Quantity");
         }
@@ -111,8 +112,8 @@ public class PhaseMaterialService {
     }
 
     @Transactional
-    public PhaseMaterialUserResponse deletePhaseMaterialById(UUID id){
-        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findById(id);
+    public PhaseMaterialUserResponse deletePhaseMaterialByExposedId(UUID id){
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(id);
         if(optionalPhaseMaterial.isEmpty()){
             throw new ElementNotFoundException("Phase Material Not Found To Delete It");
         }
