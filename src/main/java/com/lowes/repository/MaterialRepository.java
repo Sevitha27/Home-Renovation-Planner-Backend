@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface MaterialRepository extends JpaRepository<Material, UUID> {
+public interface MaterialRepository extends JpaRepository<Material, Integer> {
 
     Optional<Material> findByExposedId(UUID id);
 

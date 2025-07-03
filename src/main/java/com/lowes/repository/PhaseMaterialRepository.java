@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PhaseMaterialRepository extends JpaRepository<PhaseMaterial, UUID> {
+public interface PhaseMaterialRepository extends JpaRepository<PhaseMaterial, Integer> {
 
     Optional<PhaseMaterial> findByExposedId(UUID id);
 
