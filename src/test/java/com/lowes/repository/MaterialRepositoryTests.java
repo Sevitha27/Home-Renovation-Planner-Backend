@@ -42,15 +42,18 @@ public class MaterialRepositoryTests {
     public void whenMaterialIsSavedThenReturnNonNullMaterial(){
 
         Material material = getMaterial();
+        UUID exposedId = material.getExposedId();
 
-        Material savedMaterial = materialRepository.save(material);
+        materialRepository.save(material);
 
-        Assertions.assertNotNull(savedMaterial);
+        Material savedMaterial = materialRepository.findByExposedId(exposedId).get();
+
+                Assertions.assertNotNull(savedMaterial);
         Assertions.assertNotEquals(0,savedMaterial.getId());
         Assertions.assertNotNull(savedMaterial.getExposedId());
         Assertions.assertEquals("Cement",savedMaterial.getName());
-//        Assertions.assertTrue(savedMaterial.getPhaseMaterialList() instanceof List<PhaseMaterial>);
-//        Assertions.assertEquals(0,savedMaterial.getPhaseMaterialList().size());
+        Assertions.assertNotNull(savedMaterial.getPhaseMaterialList());
+        Assertions.assertEquals(0,savedMaterial.getPhaseMaterialList().size());
         Assertions.assertEquals(false,material.isDeleted());
     }
 
@@ -87,7 +90,7 @@ public class MaterialRepositoryTests {
     }
 
     @Test
-    public void whenNameIdIsNotUniqueThenThrowException(){
+    public void whenNameIsIsNotUniqueThenThrowException(){
         Material material1 = getMaterial();
         materialRepository.save(material1);
         Material material2 = getMaterial();
@@ -116,6 +119,7 @@ public class MaterialRepositoryTests {
 
         List<Material> materialList = materialRepository.findByPhaseTypeAndDeleted(PhaseType.CIVIL,false, Sort.by(Sort.Direction.ASC,"id"));
 
+        Assertions.assertNotNull(materialList);
         Assertions.assertEquals(1,materialList.size());
         Assertions.assertEquals("Cement",materialList.getFirst().getName());
         Assertions.assertNotNull(materialList.getFirst().getExposedId());
@@ -133,6 +137,7 @@ public class MaterialRepositoryTests {
 
         List<Material> materialList = materialRepository.findByPhaseType(PhaseType.CIVIL, Sort.by(Sort.Direction.ASC,"deleted","id"));
 
+        Assertions.assertNotNull(materialList);
         Assertions.assertEquals(1,materialList.size());
         Assertions.assertEquals("Cement",materialList.getFirst().getName());
         Assertions.assertNotNull(materialList.getFirst().getExposedId());
@@ -150,6 +155,7 @@ public class MaterialRepositoryTests {
 
         List<Material> materialList = materialRepository.findByDeleted(false, Sort.by(Sort.Direction.ASC,"phaseType","id"));
 
+        Assertions.assertNotNull(materialList);
         Assertions.assertEquals(1,materialList.size());
         Assertions.assertEquals("Cement",materialList.getFirst().getName());
         Assertions.assertNotNull(materialList.getFirst().getExposedId());
@@ -176,6 +182,7 @@ public class MaterialRepositoryTests {
 
         List<Material> materialList = materialRepository.findAll(Sort.by(Sort.Direction.ASC,"deleted","phaseType","id"));
 
+        Assertions.assertNotNull(materialList);
         Assertions.assertEquals(4,materialList.size());
         Assertions.assertNotNull(materialList.getFirst().getExposedId());
     }

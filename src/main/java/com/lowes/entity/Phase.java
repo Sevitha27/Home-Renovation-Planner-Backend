@@ -51,6 +51,7 @@ public class Phase {
     private Integer totalPhaseMaterialCost = 0;
     private Integer vendorCost;
 
+    @Builder.Default
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
     @JsonManagedReference("phase-material")
     @OrderBy("id ASC")
