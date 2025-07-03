@@ -1,5 +1,7 @@
 package com.lowes.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +29,6 @@ public class Vendor {
             exposedId = UUID.randomUUID();
         }
     }
-
     private String companyName;
 
     private String experience;
@@ -48,6 +49,8 @@ public class Vendor {
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
     private List<VendorReview> reviews;
 
+
+
     @ManyToMany
     @JoinTable(
             name = "vendor_customers",
@@ -61,6 +64,11 @@ public class Vendor {
     private User user;
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+    @JsonManagedReference("vendor-phase")
     private List<Phase> assignedPhases;
+
+    public boolean isAvailable() {
+        return available;
+    }
 
 }

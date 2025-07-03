@@ -17,7 +17,8 @@ public class VendorAssignmentService {
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
 
+        vendor.setAvailable(false); // mark unavailable
+        vendorRepository.save(vendor);
     }
-
 
 }
