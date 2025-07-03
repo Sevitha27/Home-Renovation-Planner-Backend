@@ -17,8 +17,8 @@ import java.util.UUID;
 public class Vendor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
 
     @Column(nullable = false, unique = true, updatable = false)
     private UUID exposedId;

@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 public class Skill {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "UUID")
     private UUID id;
 
     @Enumerated(EnumType.STRING)

@@ -15,7 +15,7 @@ public class PhaseConvertor {
                 .endDate(phase.getEndDate())
                 .phaseType(phase.getPhaseType())
                 .phaseStatus(phase.getPhaseStatus())
-                .Id(phase.getId())
+                .id(phase.getId())
                 .build();
         return phaseResponseDTO;
     }

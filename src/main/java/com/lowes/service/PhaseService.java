@@ -102,9 +102,9 @@ public class PhaseService {
         phaseRepository.delete(getPhaseById(id));
     }
 
-    public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
+    public void setVendorCostForPhase(long vendorId, UUID phaseId, Integer cost) {
         Phase phase = getPhaseById(phaseId);
-        if (phase.getVendor() == null || !phase.getVendor().getId().equals(vendorId)) {
+        if (phase.getVendor() == null || phase.getVendor().getId() != vendorId) {
             throw new RuntimeException("Unauthorized: Vendor mismatch");
         }
         phase.setVendorCost(cost);
@@ -153,44 +153,44 @@ public class PhaseService {
     @PostConstruct
     public void initRenovationPhaseMap() {
         renovationPhaseMap.put(RenovationType.KITCHEN_RENOVATION, List.of(
-                PhaseType.values()
+                values()
         ));
 
         renovationPhaseMap.put(RenovationType.BATHROOM_RENOVATION, List.of(
-                PLUMBING, ELECTRICITY, TILING, PAINTING,STRUCTURAL_WORK
+                PLUMBING, ELECTRICAL, TILING, PAINTING,CIVIL
         ));
 
         renovationPhaseMap.put(RenovationType.BEDROOM_RENOVATION, List.of(
-                ELECTRICITY, PAINTING, STRUCTURAL_WORK,
+                ELECTRICAL, PAINTING, CIVIL,
                 TILING, CARPENTRY
         ));
 
         renovationPhaseMap.put(RenovationType.FULL_HOME_RENOVATION, List.of(
-                PhaseType.values()
+                values()
         ));
 
         renovationPhaseMap.put(RenovationType.EXTERIOR_RENOVATION, List.of(
-                STRUCTURAL_WORK, PAINTING
+                CIVIL, PAINTING
         ));
 
         renovationPhaseMap.put(RenovationType.GARAGE_RENOVATION, List.of(
-                PhaseType.values()
+                values()
         ));
 
         renovationPhaseMap.put(RenovationType.ATTIC_CONVERSION, List.of(
-                STRUCTURAL_WORK, ELECTRICITY, TILING, CARPENTRY, PAINTING
+                CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
         ));
 
         renovationPhaseMap.put(RenovationType.BASEMENT_FINISHING, List.of(
-                STRUCTURAL_WORK, ELECTRICITY,TILING, CARPENTRY, PAINTING
+                CIVIL, ELECTRICAL,TILING, CARPENTRY, PAINTING
         ));
 
         renovationPhaseMap.put(RenovationType.LIVING_ROOM_REMODEL, List.of(
-                STRUCTURAL_WORK, ELECTRICITY, TILING, CARPENTRY, PAINTING
+                CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
         ));
 
         renovationPhaseMap.put(RenovationType.BALCONY_RENOVATION, List.of(
-                STRUCTURAL_WORK, ELECTRICITY, TILING, PAINTING
+                CIVIL, ELECTRICAL, TILING, PAINTING
         ));
     }
 }

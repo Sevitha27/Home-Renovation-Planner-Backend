@@ -25,7 +25,7 @@ public class Phase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID Id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "project_id")

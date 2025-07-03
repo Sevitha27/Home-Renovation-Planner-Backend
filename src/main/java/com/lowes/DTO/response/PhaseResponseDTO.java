@@ -21,7 +21,7 @@ public class PhaseResponseDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private UUID Id;
+    private UUID id;
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
 
@@ -35,6 +35,6 @@ public class PhaseResponseDTO {
         this.phaseType=phase.getPhaseType();
         this.phaseStatus=phase.getPhaseStatus();
         this.totalPhaseCost=phase.getTotalPhaseCost();
-        this.Id=phase.getId();
+        this.id=phase.getId();
     }
 }
