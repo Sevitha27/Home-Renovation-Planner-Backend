@@ -6,16 +6,21 @@ import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
+import org.checkerframework.checker.lock.qual.EnsuresLockHeldIf;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest
@@ -41,9 +46,11 @@ public class PhaseMaterialRepositoryTests {
                 .pricePerQuantity(100)
                 .build();
 
-        Material savedMaterial = materialRepository.save(material);
+        UUID materialExposedId = material.getExposedId();
+        materialRepository.save(material);
+        Material savedMaterial = materialRepository.findByExposedId(materialExposedId).get();
 
-        Phase phase = Phase.builder()
+                Phase phase = Phase.builder()
                 .phaseName("Foundation Work")
                 .description("Phase involves laying the foundation")
                 .startDate(LocalDate.of(2024, 1, 1))
@@ -57,9 +64,11 @@ public class PhaseMaterialRepositoryTests {
                 .vendor(null)
                 .build();
 
-        Phase savedPhase = phaseRepository.save(phase);
 
-        PhaseMaterial phaseMaterial = PhaseMaterial.builder()
+        phaseRepository.save(phase);
+        Phase savedPhase = phaseRepository.findAll().getFirst();
+
+                PhaseMaterial phaseMaterial = PhaseMaterial.builder()
                 .name("Cement")
                 .exposedId(UUID.randomUUID())
                 .unit(Unit.KG)
@@ -71,8 +80,8 @@ public class PhaseMaterialRepositoryTests {
 
         phaseMaterial.setMaterial(savedMaterial);
         phaseMaterial.setPhase(savedPhase);
-//        material.getPhaseMaterialList().add(phaseMaterial);
-//        phase.getPhaseMaterialList().add(phaseMaterial);
+        savedMaterial.getPhaseMaterialList().add(phaseMaterial);
+        savedPhase.getPhaseMaterialList().add(phaseMaterial);
 
 
 
@@ -92,50 +101,102 @@ public class PhaseMaterialRepositoryTests {
         Assertions.assertEquals("Cement",savedPhaseMaterial.getName());
         Assertions.assertNotNull(savedPhaseMaterial.getMaterial());
         Assertions.assertNotNull(savedPhaseMaterial.getPhase());
-//        Assertions.assertEquals(1,savedPhaseMaterial.getMaterial().getPhaseMaterialList().size());
-//        Assertions.assertEquals(1,savedPhaseMaterial.getPhase().getPhaseMaterialList().size());
-
+        Assertions.assertEquals(1,savedPhaseMaterial.getMaterial().getPhaseMaterialList().size());
+        Assertions.assertEquals(1,savedPhaseMaterial.getPhase().getPhaseMaterialList().size());
 
     }
 
     @Test
     public void whenExposedIdIsNullThenThrowException(){
-        Material material = getMaterial();
-        material.setExposedId(null);
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        phaseMaterial.setExposedId(null);
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{materialRepository.save(material);});
+        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{phaseMaterialRepository.save(phaseMaterial);});
     }
 
     @Test
     public void whenNameIsNullThenThrowException(){
-        Material material = getMaterial();
-        material.setName(null);
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        phaseMaterial.setName(null);
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{materialRepository.save(material);});
+        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{phaseMaterialRepository.save(phaseMaterial);});
     }
 
     @Test
     public void whenUnitIsNullThenThrowException(){
-        Material material = getMaterial();
-        material.setUnit(null);
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        phaseMaterial.setUnit(null);
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{materialRepository.save(material);});
+        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{phaseMaterialRepository.save(phaseMaterial);});
     }
 
     @Test
     public void whenPhaseTypeIsNullThenThrowException(){
-        Material material = getMaterial();
-        material.setPhaseType(null);
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        phaseMaterial.setPhaseType(null);
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{materialRepository.save(material);});
+        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{phaseMaterialRepository.save(phaseMaterial);});
+    }
+
+//    @Test
+//    public void whenNameIsIsNotUniqueThenThrowException(){
+//        PhaseMaterial phaseMaterial1 = getPhaseMaterial();
+//        phaseMaterialRepository.save(phaseMaterial1);
+//        PhaseMaterial phaseMaterial2 = getPhaseMaterial();
+//        phaseMaterial2.getMaterial().setName("Wood");
+//        materialRepository.save(phaseMaterial2.getMaterial());
+//
+//        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{phaseMaterialRepository.save(phaseMaterial2);});
+//    }
+
+    @Test
+    public void findByPhaseId(){
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+
+        UUID phaseId = phaseMaterial.getPhase().getId();
+
+        phaseMaterialRepository.save(phaseMaterial);
+
+        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
+
+        Assertions.assertNotNull(phaseMaterialList);
+        Assertions.assertEquals(1,phaseMaterialList.size());
+        Assertions.assertEquals("Cement",phaseMaterialList.getFirst().getName());
     }
 
     @Test
-    public void whenNameIdIsNotUniqueThenThrowException(){
-        Material material1 = getMaterial();
-        materialRepository.save(material1);
-        Material material2 = getMaterial();
+    public void getMaterialByExposedId(){
+        PhaseMaterial phaseMaterial1 = getPhaseMaterial();
+        UUID exposedId = phaseMaterial1.getExposedId();
 
-        Assertions.assertThrows(DataIntegrityViolationException.class, ()->{materialRepository.save(material2);});
+        phaseMaterialRepository.save(phaseMaterial1);
+
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(exposedId);
+
+        Assertions.assertTrue(optionalPhaseMaterial.isPresent());
+        Assertions.assertEquals("Cement",optionalPhaseMaterial.get().getName());
     }
+
+    @Test
+    public  void deleteByExposedId(){
+        PhaseMaterial phaseMaterial1 = getPhaseMaterial();
+        UUID exposedId = phaseMaterial1.getExposedId();
+
+        phaseMaterialRepository.save(phaseMaterial1);
+
+        Optional<PhaseMaterial> optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(exposedId);
+
+        Assertions.assertTrue(optionalPhaseMaterial.isPresent());
+        Assertions.assertEquals("Cement",optionalPhaseMaterial.get().getName());
+
+        phaseMaterialRepository.deleteByExposedId(exposedId);
+
+        optionalPhaseMaterial = phaseMaterialRepository.findByExposedId(exposedId);
+
+        Assertions.assertTrue(optionalPhaseMaterial.isEmpty());
+
+
+    }
+
+
 }
