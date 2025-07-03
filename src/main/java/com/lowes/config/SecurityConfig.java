@@ -45,14 +45,14 @@ public class SecurityConfig {
 //For testing without authentication: you may uncomment the required methods below as needed.
 
     // Public API DELETE Endpoints to be Added here
-    private final String[] PUBLIC_DELETE_ENDPOINTS = {
-        "/phase"
-    };
-
-    // Public API PUT Endpoints to be Added here
-    private final String[] PUBLIC_PUT_ENDPOINTS = {
-        "/phase"
-    };
+//    private final String[] PUBLIC_DELETE_ENDPOINTS = {
+//        "/phase"
+//    };
+//
+//    // Public API PUT Endpoints to be Added here
+//    private final String[] PUBLIC_PUT_ENDPOINTS = {
+//        "/phase"
+//    };
 //
 //    // Public API PATCH Endpoints to be Added here
 //    private final String[] PUBLIC_PATCH_ENDPOINTS = {
