@@ -13,7 +13,8 @@ import java.util.UUID;
 
 @Repository
 public interface  PhaseRepository extends JpaRepository<Phase, UUID> {
-    List<Phase> findByProject_Id(UUID projectId);
+    List<Phase> findAllByProject_Id(UUID projectId);
+
     List<Phase> findByEndDateBeforeAndPhaseStatusNot(LocalDate date, PhaseStatus status);
     List<Phase> findByStartDate(LocalDate date);
 

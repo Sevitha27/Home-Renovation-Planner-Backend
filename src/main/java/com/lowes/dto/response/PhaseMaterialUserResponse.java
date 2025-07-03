@@ -26,6 +26,6 @@ public class PhaseMaterialUserResponse {
 
     int totalPrice;
 
-    PhaseResponse phaseResponse;
+    PhaseResponseDTO phaseResponseDTO;
 
 }

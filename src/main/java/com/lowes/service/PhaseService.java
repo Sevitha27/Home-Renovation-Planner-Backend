@@ -3,18 +3,18 @@ package com.lowes.service;
 import com.lowes.convertor.PhaseMaterialConvertor;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
+import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
-import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.PhaseRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.lowes.entity.enums.PhaseType.*;
 
@@ -51,8 +51,11 @@ public class PhaseService {
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
     }
 
-    public List<Phase> getPhasesByProject(UUID projectId) {
-        return phaseRepository.findByProject_Id(projectId);
+    public List<PhaseResponseDTO> getPhasesByProject(UUID projectId) {
+        List<Phase> phases = phaseRepository.findAllByProject_Id(projectId);
+        return phases.stream()
+                .map(PhaseResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {

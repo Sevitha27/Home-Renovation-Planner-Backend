@@ -1,6 +1,7 @@
 package com.lowes.controller;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
+import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
 import com.lowes.entity.enums.PhaseType;
@@ -56,7 +57,7 @@ public class PhaseController {
 
     //working
     @GetMapping("/project/{projectId}")
-    public List<Phase> getPhasesByProject(@PathVariable UUID projectId) {
+    public List<PhaseResponseDTO> getPhasesByProject(@PathVariable UUID projectId) {
         return phaseService.getPhasesByProject(projectId);
     }
     //working
