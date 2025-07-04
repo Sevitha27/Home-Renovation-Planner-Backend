@@ -27,9 +27,6 @@ public class PhaseMaterial {
     @Column(nullable = false, unique = true)
     UUID exposedId;
 
-//    @Column(nullable = false, updatable = false, unique = true)
-//    UUID exposedId = UUID.randomUUID();
-
     @Column(nullable = false)
     String name;
 

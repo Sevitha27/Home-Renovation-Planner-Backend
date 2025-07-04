@@ -62,6 +62,4 @@ public class Phase {
     @Column(nullable = false)
     private PhaseStatus phaseStatus=PhaseStatus.NOTSTARTED;
 
-
-
 }
