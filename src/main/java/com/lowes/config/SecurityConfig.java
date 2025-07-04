@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken","/api/user/phase/{phase-id}/phase-materials"
+            "/auth/register", "/auth/login", "/auth/refreshAccessToken","/api/user/phase/{phase-id}/phase-materials", "/api/admin/materials"
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
@@ -49,9 +49,9 @@ public class SecurityConfig {
     };
 //
 //    // Public API PUT Endpoints to be Added here
-//    private final String[] PUBLIC_PUT_ENDPOINTS = {
-//
-//    };
+    private final String[] PUBLIC_PUT_ENDPOINTS = {
+        "/api/admin/materials/{id}"
+    };
 //
 //    // Public API PATCH Endpoints to be Added here
     private final String[] PUBLIC_PATCH_ENDPOINTS = {
@@ -91,7 +91,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-//                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
