@@ -29,7 +29,7 @@ public class BudgetOverviewService {
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new com.lowes.Exception.NotFoundException("Project not found"));
 
-        if (!project.getOwner().getId().equals(userId)) {
+        if (!project.getOwner().getExposedId().equals(userId)) {
             throw new com.lowes.Exception.AccessDeniedException("You don't own this project!");
         }
 
