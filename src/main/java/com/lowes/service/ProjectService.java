@@ -32,40 +32,40 @@ public class ProjectService {
     }
 
 
-    public ProjectResponse createProject(ProjectRequest request, User owner) {
-        Project project = new Project();
-        project.setName(request.name());
-        project.setServiceType(request.serviceType());
-        project.setEstimatedBudget(request.estimatedBudget());
-        project.setStartDate(request.startDate());
-        project.setEndDate(request.endDate());
-        project.setOwner(owner);
+//    public ProjectResponse createProject(ProjectRequest request, User owner) {
+//        Project project = new Project();
+//        project.setName(request.name());
+//        project.setServiceType(request.serviceType());
+//        project.setEstimatedBudget(request.estimatedBudget());
+//        project.setStartDate(request.startDate());
+//        project.setEndDate(request.endDate());
+//        project.setOwner(owner);
+//
+//        return ProjectMapper.toDTO(projectRepo.save(project));
+//    }
 
-        return ProjectMapper.toDTO(projectRepo.save(project));
-    }
+//    public ProjectResponse getProject(UUID projectId, User user) {
+//        Project project = projectRepo.findById(projectId)
+//            .orElseThrow(() -> new NotFoundException("Project not found"));
+//
+//        if (!project.getOwner().getExposedId().equals(user.getId())) {
+//            throw new AccessDeniedException("You don't own this project!");
+//        }
+//
+//        return ProjectMapper.toDTO(project);
+//    }
 
-    public ProjectResponse getProject(UUID projectId, User user) {
-        Project project = projectRepo.findById(projectId)
-            .orElseThrow(() -> new NotFoundException("Project not found"));
-        
-        if (!project.getOwner().getId().equals(user.getId())) {
-            throw new AccessDeniedException("You don't own this project!");
-        }
-        
-        return ProjectMapper.toDTO(project);
-    }
-
-    public List<ProjectResponse> getProjectsByUser(User user) {
-        return projectRepo.findByOwnerId(user.getId())
-            .stream()
-            .map(ProjectMapper::toDTO)
-            .collect(Collectors.toList());
-    }
-      public Project getProjectWithOwner(UUID projectId, UUID userId) {
-        return projectRepo.findByIdWithOwner(projectId)
-            .filter(project -> project.getOwner().getId().equals(userId))
-            .orElseThrow(() -> new AccessDeniedException("Project not found or access denied"));
-    }
+//    public List<ProjectResponse> getProjectsByUser(User user) {
+//        return projectRepo.findByOwnerId(user.getExposedId())
+//            .stream()
+//            .map(ProjectMapper::toDTO)
+//            .collect(Collectors.toList());
+//    }
+//      public Project getProjectWithOwner(UUID projectId, UUID userId) {
+//        return projectRepo.findByIdWithOwner(projectId)
+//            .filter(project -> project.getOwner().getId().equals(userId))
+//            .orElseThrow(() -> new AccessDeniedException("Project not found or access denied"));
+//    }
 
 
 
@@ -74,7 +74,7 @@ public double calculateProjectCost(UUID projectId, UUID userId) {
     Project project = projectRepo.findById(projectId)
         .orElseThrow(() -> new NotFoundException("Project not found"));
     
-    if (!project.getOwner().getId().equals(userId)) {
+    if (!project.getOwner().getExposedId().equals(userId)) {
         throw new AccessDeniedException("Not authorized!");
     }
     
