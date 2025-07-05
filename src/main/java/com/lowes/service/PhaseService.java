@@ -132,7 +132,6 @@ public class PhaseService {
         if(optionalPhase.isEmpty()){
             throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
         }
-        System.out.println('a');
         Phase phase = optionalPhase.get();
 
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
