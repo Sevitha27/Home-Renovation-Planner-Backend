@@ -46,10 +46,13 @@ public class Phase {
     @JsonBackReference("vendor-phase")
     private Vendor vendor;
 
+    @Column(nullable = false)
     private String phaseName;
     private String description;
 
+    @Column(nullable = false)
     private LocalDate startDate;
+    @Column(nullable = false)
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)

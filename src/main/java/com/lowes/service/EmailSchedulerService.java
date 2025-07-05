@@ -22,20 +22,20 @@ public class EmailSchedulerService {
     @Autowired
     JavaMailSender mailSender;
 
-    @Scheduled(cron = "0 20 23 * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     public void sendPhaseReminders() {
         LocalDate today = LocalDate.now();
 
         List<Phase> upcoming = phaseRepository.findByStartDate(today.plusDays(3));
         for (Phase phase : upcoming) {
             String html = buildUpcomingPhaseEmail(phase);
-            sendHtmlEmail(phase.getProject().getOwner().getEmail(), "Phase Starts in 3 Days", html);
+            sendHtmlEmail(phase.getRoom().getProject().getOwner().getEmail(), "Phase Starts in 3 Days", html);
         }
 
         List<Phase> overdue = phaseRepository.findByEndDateBeforeAndPhaseStatusNot(today, PhaseStatus.COMPLETED);
         for (Phase phase : overdue) {
             String html = buildOverduePhaseEmail(phase);
-            sendHtmlEmail(phase.getProject().getOwner().getEmail(), "Phase Overdue Alert", html);
+            sendHtmlEmail(phase.getRoom().getProject().getOwner().getEmail(), "Phase Overdue Alert", html);
         }
     }
 
@@ -55,9 +55,9 @@ public class EmailSchedulerService {
     private String buildUpcomingPhaseEmail(Phase phase) {
         return "<html><body>" +
                 "<h2>Upcoming Phase Reminder</h2>" +
-                "<p>Dear " + phase.getProject().getOwner().getName() + ",</p>" +
+                "<p>Dear " + phase.getRoom().getProject().getOwner().getName() + ",</p>" +
                 "<p>The phase <strong>" + phase.getPhaseName() + "</strong> for your project <strong>" +
-                phase.getProject().getName() + "</strong> is starting in <strong>3 days</strong>.</p>" +
+                phase.getRoom().getProject().getName() + "</strong> is starting in <strong>3 days</strong>.</p>" +
                 "<p>Start Date: " + phase.getStartDate() + "</p>" +
                 "<br/><p>Thank you,<br/>Renovation Team</p>" +
                 "</body></html>";
@@ -66,9 +66,9 @@ public class EmailSchedulerService {
     private String buildOverduePhaseEmail(Phase phase) {
         return "<html><body>" +
                 "<h2>Phase Overdue</h2>" +
-                "<p>Dear " + phase.getProject().getOwner().getName() + ",</p>" +
+                "<p>Dear " + phase.getRoom().getProject().getOwner().getName() + ",</p>" +
                 "<p>The phase <strong>" + phase.getPhaseName() + "</strong> for your project <strong>" +
-                phase.getProject().getName() + "</strong> was scheduled to end on <strong>" +
+                phase.getRoom().getProject().getName() + "</strong> was scheduled to end on <strong>" +
                 phase.getEndDate() + "</strong> and is still <strong>not marked completed</strong>.</p>" +
                 "<p>Please update the status or extend the end date.</p>" +
                 "<br/><p>Regards,<br/>Renovation Team</p>" +
