@@ -23,7 +23,7 @@ public class MaterialController {
     Logger logger = LoggerFactory.getLogger(MaterialController.class);
 
 
-    @PreAuthorize("hasRole('ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @GetMapping("/user/materials")
     public ResponseEntity getExistingMaterialsByPhaseType(@RequestParam("phaseType") PhaseType phaseType){
         try{
