@@ -66,7 +66,7 @@ public class Phase {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PhaseStatus phaseStatus=PhaseStatus.NOTSTARTED;
+    private PhaseStatus phaseStatus;
 
 
 

@@ -4,8 +4,10 @@ import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
+import com.lowes.entity.Room;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
+import com.lowes.repository.PhaseRepository;
 import com.lowes.service.PhaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class PhaseController {
     @Autowired
     PhaseService phaseService;
 
+    @Autowired
+    PhaseRepository phaseRepository;
     //working
     @PostMapping
     public String createPhase(@RequestBody PhaseRequestDTO phaseRequestDTO) {
@@ -56,9 +60,9 @@ public class PhaseController {
     }
 
     //working
-    @GetMapping("/project/{projectId}")
-    public List<PhaseResponseDTO> getPhasesByProject(@PathVariable UUID projectId) {
-        return phaseService.getPhasesByProject(projectId);
+    @GetMapping("/room/{roomId}")
+    public List<PhaseResponseDTO> getPhasesByRoom(@PathVariable UUID roomId) {
+        return phaseService.getPhasesByRoom(roomId);
     }
     //working
     @GetMapping("/{id}/total-cost")
@@ -88,5 +92,16 @@ public class PhaseController {
         }
         return phases;
     }
+
+    @GetMapping("/phase/exists")
+    public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam String phaseType) {
+
+        Room room = new Room();
+        room.setId(roomId);
+
+        return phaseRepository.existsByRoomAndPhaseType(room, PhaseType.valueOf(phaseType));
+    }
+
+
 
 }

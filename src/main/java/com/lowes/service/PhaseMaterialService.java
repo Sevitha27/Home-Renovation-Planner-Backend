@@ -125,7 +125,7 @@ public class PhaseMaterialService {
         Material material = phaseMaterial.getMaterial();
         material.getPhaseMaterialList().remove(phaseMaterial);
 
-        phaseMaterialRepository.deleteById(id);
+        phaseMaterialRepository.deleteByExposedId(id);
         phaseService.calculateTotalCost(phase.getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
         return phaseMaterialUserResponse;

@@ -9,11 +9,13 @@ import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
 import com.lowes.repository.PhaseRepository;
-import com.lowes.repository.ProjectRepository;
+import com.lowes.repository.RoomRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,17 +29,15 @@ public class PhaseService {
     PhaseRepository phaseRepository;
 
     @Autowired
-    ProjectRepository projectRepository;
+    RoomRepository roomRepository;
+
 
     private final Map<RenovationType, List<PhaseType>> renovationPhaseMap = new HashMap<>();
 
     public void createPhase(PhaseRequestDTO phaseRequestDTO) {
-        boolean exists = phaseRepository.existsByProjectAndPhaseType(
-                phaseRequestDTO.getProject(), phaseRequestDTO.getPhaseType());
+        boolean exists = phaseRepository.existsByRoomAndPhaseType(
+                phaseRequestDTO.getRoom(), phaseRequestDTO.getPhaseType());
 
-        if (exists) {
-            throw new RuntimeException("Phase of this type already exists for the project");
-        }
 
         Phase phase = new Phase();
         phase.setPhaseType(phaseRequestDTO.getPhaseType());
@@ -45,8 +45,9 @@ public class PhaseService {
         phase.setStartDate(phaseRequestDTO.getStartDate());
         phase.setEndDate(phaseRequestDTO.getEndDate());
         phase.setVendor(phaseRequestDTO.getVendor());
-        phase.setProject(phaseRequestDTO.getProject());
+        phase.setRoom(phaseRequestDTO.getRoom());
         phase.setPhaseName(phaseRequestDTO.getPhaseName());
+        phase.setPhaseStatus(phaseRequestDTO.getPhaseStatus());
 
         phaseRepository.save(phase);
     }
@@ -56,12 +57,12 @@ public class PhaseService {
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
     }
 
-    public List<PhaseResponseDTO> getPhasesByProject(UUID projectId) {
-        if (!projectRepository.existsById(projectId)) {
-            throw new EntityNotFoundException("Project not found with ID: " + projectId);
+    public List<PhaseResponseDTO> getPhasesByRoom(UUID roomId) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new EntityNotFoundException("Room not found with ID: " + roomId);
         }
 
-        List<Phase> phases = phaseRepository.findAllByProject_Id(projectId);
+        List<Phase> phases = phaseRepository.findAllByRoom_Id(roomId);
         return phases.stream()
                 .map(PhaseResponseDTO::new)
                 .collect(Collectors.toList());
@@ -89,8 +90,8 @@ public class PhaseService {
         if (updatedPhase.getVendor() != null)
             phase.setVendor(updatedPhase.getVendor());
 
-        if (updatedPhase.getProject() != null)
-            phase.setProject(updatedPhase.getProject());
+        if (updatedPhase.getRoom() != null)
+            phase.setRoom(updatedPhase.getRoom());
 
         if (updatedPhase.getPhaseName() != null)
             phase.setPhaseName(updatedPhase.getPhaseName());

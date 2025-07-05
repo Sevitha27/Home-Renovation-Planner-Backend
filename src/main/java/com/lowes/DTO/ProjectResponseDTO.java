@@ -16,7 +16,7 @@ public class ProjectResponseDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double estimatedBudget;
-    private UUID ownerId;
+    private Long ownerId;
     private List<String> roomNames;
 
 

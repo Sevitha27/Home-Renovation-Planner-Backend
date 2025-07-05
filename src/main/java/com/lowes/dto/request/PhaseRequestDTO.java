@@ -1,6 +1,7 @@
 package com.lowes.dto.request;
 
 import com.lowes.entity.Project;
+import com.lowes.entity.Room;
 import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
@@ -20,7 +21,7 @@ public class PhaseRequestDTO {
 
 
     private Vendor vendor;
-    private Project project;
+    private Room room;
     private String phaseName;
     private String description;
 

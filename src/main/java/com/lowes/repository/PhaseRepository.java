@@ -2,6 +2,7 @@ package com.lowes.repository;
 
 import com.lowes.entity.Phase;
 import com.lowes.entity.Project;
+import com.lowes.entity.Room;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,10 +14,13 @@ import java.util.UUID;
 
 @Repository
 public interface  PhaseRepository extends JpaRepository<Phase, UUID> {
-    List<Phase> findAllByProject_Id(UUID projectId);
+
 
     List<Phase> findByEndDateBeforeAndPhaseStatusNot(LocalDate date, PhaseStatus status);
     List<Phase> findByStartDate(LocalDate date);
 
-    boolean existsByProjectAndPhaseType(Project project, PhaseType phaseType);
+
+    boolean existsByRoomAndPhaseType(Room room, PhaseType phaseType);
+
+    List<Phase> findAllByRoom_Id(UUID roomId);
 }
