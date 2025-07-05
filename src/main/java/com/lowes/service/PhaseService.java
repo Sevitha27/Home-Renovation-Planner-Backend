@@ -130,7 +130,7 @@ public class PhaseService {
     public int updateTotalCost(UUID id){
         Optional<Phase> optionalPhase = phaseRepository.findById(id);
         if(optionalPhase.isEmpty()){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
+            throw new ElementNotFoundException("Phase Not Found To Update Total Phase Materials Cost");
         }
         Phase phase = optionalPhase.get();
 
