@@ -27,10 +27,6 @@ public class Phase {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    @JsonBackReference("project-phase")
-    private Project project;
 
     @ManyToOne
     @JoinColumn(name = "skill_id")

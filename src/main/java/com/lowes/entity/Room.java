@@ -4,32 +4,63 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.RenovationType;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
+@Table(name = "rooms")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
-    String name;
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID exposedId;
+
+    private String name;
 
     @Enumerated(EnumType.STRING)
-    RenovationType renovationType;
+    private RenovationType renovationType;
 
-    @ManyToOne
+    private Integer totalCost;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    Project project;
+    private Project project;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     @JsonManagedReference("room-phase")
-    List<Phase> phases;
+    private List<Phase> phases = new ArrayList<>();
+
+    @PrePersist
+    public void prePersist() {
+        if (exposedId == null) {
+            exposedId = UUID.randomUUID();
+        }
+    }
+
+  @PreUpdate
+@PrePersist
+public void calculateTotalCost() {
+    if (phases == null) {
+        this.totalCost = 0;
+        return;
+    }
+
+    this.totalCost = phases.stream()
+        .mapToInt(phase ->
+            (phase.getTotalPhaseMaterialCost() != null ? phase.getTotalPhaseMaterialCost() : 0) +
+            (phase.getVendorCost() != null ? phase.getVendorCost() : 0)
+        )
+        .sum();
+}
 }
