@@ -27,10 +27,18 @@ public class Phase {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID Id;
 
+<<<<<<< HEAD
     @ManyToOne
     @JoinColumn(name = "project_id")
     @JsonBackReference("project-phase")
     private Project project;
+=======
+  // Changed to reference Room instead of Project
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    @JsonBackReference("room-phase")
+    private Room room;
+>>>>>>> dfd3572 (Pushed files from ZIP to new branch feature3/finalproject)
 
     @ManyToOne
     @JoinColumn(name="vendor_id")
