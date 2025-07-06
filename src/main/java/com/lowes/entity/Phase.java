@@ -48,6 +48,7 @@ public class Phase {
     @JoinColumn(name = "skill_id")
     private Skill requiredSkill;
 
+    @Builder.Default
     private Integer totalPhaseMaterialCost = 0;
     private Integer vendorCost;
 

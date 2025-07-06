@@ -29,5 +29,5 @@ public class PhaseResponse {
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
 
-    //List<MaterialUserResponse> materialUserResponseList;      this must be there
+    //List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;      this must be there
 }
