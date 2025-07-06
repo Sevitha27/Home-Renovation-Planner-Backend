@@ -55,10 +55,11 @@ public class PhaseController {
     }
 
     //working
- @GetMapping("/{id}/total-cost")
-   public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
-        return phaseService.calculateTotalCost(id);
-    }
+    // commented since calculateTotalCost method in phase service is giving error and hence this is also giving error
+// @GetMapping("/{id}/total-cost")
+//   public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
+//        return phaseService.calculateTotalCost(id);
+//    }
 
     //working
     @DeleteMapping("/{id}")
