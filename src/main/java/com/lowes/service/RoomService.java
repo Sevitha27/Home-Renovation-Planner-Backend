@@ -47,7 +47,7 @@ public class RoomService {
     }
 
     // Changed to long for user ID
-    @PreAuthorize("@roomSecurity.isRoomOwner(#id, authentication.principal.id)")
+
     public Room getRoomById(UUID id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new ElementNotFoundException("Room not found"));

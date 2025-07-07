@@ -37,4 +37,8 @@ public class PhaseResponseDTO {
         this.totalPhaseCost=phase.getTotalPhaseCost();
         this.id=phase.getId();
     }
+
+    public static PhaseResponseDTO toDTO(Phase phase) {
+        return new PhaseResponseDTO(phase);
+    }
 }

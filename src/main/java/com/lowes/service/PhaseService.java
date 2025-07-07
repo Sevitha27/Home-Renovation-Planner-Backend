@@ -103,9 +103,9 @@ public class PhaseService {
         phaseRepository.delete(getPhaseById(id));
     }
 
-    public void setVendorCostForPhase(long vendorId, UUID phaseId, Integer cost) {
+    public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
         Phase phase = getPhaseById(phaseId);
-        if (phase.getVendor() == null || phase.getVendor().getId() != vendorId) {
+        if (phase.getVendor() == null || !phase.getVendor().getExposedId().equals(vendorId)) {
             throw new RuntimeException("Unauthorized: Vendor mismatch");
         }
         phase.setVendorCost(cost);

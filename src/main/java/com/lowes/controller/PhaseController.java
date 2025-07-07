@@ -12,6 +12,7 @@ import com.lowes.service.PhaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,6 +30,8 @@ public class PhaseController {
     @Autowired
     PhaseRepository phaseRepository;
     //working
+
+
     @PostMapping
     public String createPhase(@RequestBody PhaseRequestDTO phaseRequestDTO) {
         try {
@@ -41,6 +44,7 @@ public class PhaseController {
     }
 
     //working
+
     @GetMapping("/{id}")
     public Phase getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);
@@ -48,18 +52,20 @@ public class PhaseController {
 
     //working
     @PostMapping("/vendor/{vendorId}/phase/{phaseId}/cost")
-    public String setVendorCost(@PathVariable Long vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
+    public String setVendorCost(@PathVariable UUID vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
         phaseService.setVendorCostForPhase(vendorId, phaseId, cost);
         return "Cost updated successfully";
     }
 
     //working
+
     @PutMapping("/{id}")
     public Phase updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
         return phaseService.updatePhase(id, updatedPhaseRequestDTO);
     }
 
     //working
+
     @GetMapping("/room/{roomId}")
     public List<PhaseResponseDTO> getPhasesByRoom(@PathVariable UUID roomId) {
         return phaseService.getPhasesByRoom(roomId);
@@ -70,12 +76,6 @@ public class PhaseController {
         return phaseService.calculateTotalCost(id);
     }
 
-    //working
-    @DeleteMapping("/{id}")
-    public String deletePhase(@PathVariable UUID id) {
-        phaseService.deletePhase(id);
-        return "Phase deleted successfully";
-    }
 
 
     @GetMapping("/materials")
@@ -93,6 +93,7 @@ public class PhaseController {
         return phases;
     }
 
+
     @GetMapping("/phase/exists")
     public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam String phaseType) {
 
@@ -102,6 +103,9 @@ public class PhaseController {
         return phaseRepository.existsByRoomAndPhaseType(room, PhaseType.valueOf(phaseType));
     }
 
-
+    @DeleteMapping("delete/{id}")
+    public void deletePhase(@PathVariable UUID id){
+        phaseService.deletePhase(id);
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.lowes.controller;
 
 import com.lowes.dto.request.RoomRequestDTO;
+import com.lowes.dto.response.PhaseResponseDTO;
+import com.lowes.dto.response.RoomResponse;
 import com.lowes.entity.Room;
 import com.lowes.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +29,22 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public Room getRoom(@PathVariable UUID id) {
-        return roomService.getRoomById(id);
+    public RoomResponse getRoom(@PathVariable UUID id) {
+        Room room = roomService.getRoomById(id);
+
+        List<PhaseResponseDTO> phaseDTOs = room.getPhases().stream()
+                .map(PhaseResponseDTO::new)
+                .toList();
+
+        return new RoomResponse(
+                room.getExposedId(),
+                room.getName(),
+                room.getRenovationType(),
+                phaseDTOs,
+                room.getTotalCost()
+        );
     }
+
 
     @GetMapping("/project/{projectId}")
     public List<Room> getProjectRooms(@PathVariable UUID projectId) {
@@ -40,4 +55,6 @@ public class RoomController {
     public void deleteRoom(@PathVariable UUID id) {
         roomService.deleteRoom(id);
     }
+
+
 }

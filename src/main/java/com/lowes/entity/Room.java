@@ -48,19 +48,19 @@ public class Room {
         }
     }
 
-  @PreUpdate
-@PrePersist
-public void calculateTotalCost() {
-    if (phases == null) {
-        this.totalCost = 0;
-        return;
-    }
-
-    this.totalCost = phases.stream()
-        .mapToInt(phase ->
-            (phase.getTotalPhaseMaterialCost() != null ? phase.getTotalPhaseMaterialCost() : 0) +
-            (phase.getVendorCost() != null ? phase.getVendorCost() : 0)
-        )
-        .sum();
-}
+//  @PreUpdate
+//@PrePersist
+//public void calculateTotalCost() {
+//    if (phases == null) {
+//        this.totalCost = 0;
+//        return;
+//    }
+//
+//    this.totalCost = phases.stream()
+//        .mapToInt(phase ->
+//            (phase.getTotalPhaseMaterialCost() != null ? phase.getTotalPhaseMaterialCost() : 0) +
+//            (phase.getVendorCost() != null ? phase.getVendorCost() : 0)
+//        )
+//        .sum();
+//}
 }

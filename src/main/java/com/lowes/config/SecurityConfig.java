@@ -34,7 +34,7 @@ public class SecurityConfig {
     // Public API GET Endpoints to be Added here
     private final String[] PUBLIC_GET_ENDPOINTS = {
         "/phase/**","/api/enums/phase-statuses","/phase/phases/by-renovation-type/**","/api/**",
-            "/api/vendor-reviews/by-phaseType","/api/vendor-reviews/available-vendors"
+            "/api/vendor-reviews/by-phaseType","/api/vendor-reviews/available-vendors","/rooms/**"
     };
 
     // Public API POST Endpoints to be Added here
@@ -90,7 +90,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
 
 //For testing without Authentication: you may uncomment the required methods below as needed.
-//                        .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
+                       .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT_ENDPOINTS).permitAll()
                                 .anyRequest().authenticated()
