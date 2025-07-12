@@ -21,6 +21,8 @@ public interface VendorRepository extends JpaRepository<Vendor, UUID> {
 
     Vendor findByUser(User user);
 
+
+
     @Query("SELECT COUNT(v) FROM Vendor v JOIN v.skills s WHERE s = :skill")
     long countBySkillsContaining(@Param("skill") Skill skill);
 }

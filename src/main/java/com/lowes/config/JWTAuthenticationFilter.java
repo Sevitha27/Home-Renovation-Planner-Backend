@@ -64,7 +64,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 response.getWriter().write("Invalid access token");
                 return;
             }
-
         }
         filterChain.doFilter(request, response);
 
