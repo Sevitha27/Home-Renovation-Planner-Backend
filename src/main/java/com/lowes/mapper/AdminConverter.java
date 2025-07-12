@@ -11,6 +11,7 @@ import com.lowes.entity.Vendor;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,6 +47,9 @@ public class AdminConverter {
     }
 
     private List<String> formatSkills(Vendor vendor) {
+        if (vendor.getSkills() == null) {
+            return new ArrayList<>();
+        }
         return vendor.getSkills().stream()
                 .map(skill -> {
                     String skillName = skill.getName().name();

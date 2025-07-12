@@ -51,13 +51,6 @@ public class AuthController {
         return authService.updateProfile(dto);
     }
 
-    //delete account
-    @PostMapping("/delete")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_VENDOR','ROLE_CUSTOMER')")
-    public ResponseEntity<?> deleteAccount(){
-        return null;
-    }
-
     // vendor role authorization testing
     @PreAuthorize("hasRole('ROLE_VENDOR')")
     @GetMapping("/vendor-authz")

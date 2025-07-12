@@ -1,6 +1,7 @@
 package com.lowes.repository;
 
 import com.lowes.entity.Phase;
+import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,6 @@ public interface  PhaseRepository extends JpaRepository<Phase, UUID> {
     List<Phase> findByProject_Id(UUID projectId);
     List<Phase> findByEndDateBeforeAndPhaseStatusNot(LocalDate date, PhaseStatus status);
     List<Phase> findByStartDate(LocalDate date);
+
+    List<Phase> findByVendor(Vendor vendor);
 }
