@@ -15,10 +15,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,5 +60,17 @@ public class VendorService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AdminToastDTO.builder().message("ERROR").build());
         }
 
+    }
+
+    public ResponseEntity<?> getVendorApprovalStatus() {
+        try{
+            User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Vendor vendor= vendorRepository.findByUser(user);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("approval", vendor.getApproved()));
+        }
+        catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error!");
+        }
     }
 }
