@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface VendorRepository extends JpaRepository<Vendor, UUID> {
+public interface VendorRepository extends JpaRepository<Vendor, Long> {
     Vendor findByExposedId(UUID exposedId);
 
     Page<Vendor> findByApproved(Boolean approved, Pageable pageable);
