@@ -12,7 +12,10 @@ public class ProjectSecurity {
 
     private final ProjectRepository projectRepository;
 
-    public boolean isProjectOwner(UUID projectExposedId, Long userId) {
-        return projectRepository.findByExposedIdAndOwnerId(projectExposedId, userId).isPresent();
+    public boolean isProjectOwner(UUID projectExposedId, UUID userExposedId) {
+        return projectRepository.existsByExposedIdAndOwnerExposedId(
+            projectExposedId, 
+            userExposedId
+        );
     }
 }

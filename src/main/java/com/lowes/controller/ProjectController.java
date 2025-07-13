@@ -4,8 +4,10 @@ import com.lowes.dto.request.ProjectRequestDTO;
 import com.lowes.dto.response.ProjectResponse;
 import com.lowes.entity.User;
 import com.lowes.mapper.ProjectMapper;
+import com.lowes.security.ProjectSecurity;
 import com.lowes.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -20,20 +22,27 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ProjectResponse createProject(@RequestBody ProjectRequestDTO dto, Authentication authentication) {
-  UUID exposedId = ((User) authentication.getPrincipal()).getExposedId();
-        return ProjectMapper.toDTO(projectService.createProject(dto, exposedId));
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ProjectResponse createProject(
+            @RequestBody ProjectRequestDTO dto,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return ProjectMapper.toDTO(projectService.createProject(dto, user.getExposedId()));
     }
 
     @GetMapping("/user")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public List<ProjectResponse> getUserProjects(Authentication authentication) {
-        Long userId = ((User) authentication.getPrincipal()).getId();
-        return projectService.getProjectsByUser(userId).stream()
+        User user = (User) authentication.getPrincipal();
+        return projectService.getProjectsByUser(user.getId()).stream()
                 .map(ProjectMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @PutMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+                  "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
     public ProjectResponse updateProject(
             @PathVariable UUID exposedId,
             @RequestBody ProjectRequestDTO dto
@@ -42,11 +51,15 @@ public class ProjectController {
     }
 
     @GetMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+                  "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
     public ProjectResponse getProject(@PathVariable UUID exposedId) {
         return ProjectMapper.toDTO(projectService.getProjectById(exposedId));
     }
 
     @DeleteMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+                  "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
     public void deleteProject(@PathVariable UUID exposedId) {
         projectService.deleteProject(exposedId);
     }

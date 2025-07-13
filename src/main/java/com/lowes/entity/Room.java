@@ -59,4 +59,9 @@ public class Room {
             )
             .sum();
     }
+
+     // Add this accessor for query method
+    public Project getProject() {
+        return project;
+    }
 }

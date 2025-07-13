@@ -7,7 +7,6 @@ import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.ProjectRepository;
 import com.lowes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +17,7 @@ public class ProjectService {
     @Autowired private ProjectRepository projectRepository;
     @Autowired private UserRepository userRepository;
 
-    @PreAuthorize("#ownerId == authentication.principal.id")
+
     public Project createProject(ProjectRequestDTO dto,  UUID ownerId) {
     User owner = userRepository.findById(ownerId)
     .orElseThrow(() -> new ElementNotFoundException("User not found"));
@@ -34,7 +33,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    @PreAuthorize("@projectSecurity.isProjectOwner(#exposedId, authentication.principal.id)")
+
     public Project updateProject(UUID exposedId, ProjectRequestDTO dto) {
         Project project = projectRepository.findByExposedId(exposedId)
                 .orElseThrow(() -> new ElementNotFoundException("Project not found"));
@@ -48,18 +47,18 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    @PreAuthorize("@projectSecurity.isProjectOwner(#exposedId, authentication.principal.id)")
+
     public Project getProjectById(UUID exposedId) {
         return projectRepository.findByExposedId(exposedId)
                 .orElseThrow(() -> new ElementNotFoundException("Project not found"));
     }
 
-    @PreAuthorize("#userId == authentication.principal.id")
+  
     public List<Project> getProjectsByUser(Long userId) {
         return projectRepository.findByOwnerId(userId);
     }
 
-    @PreAuthorize("@projectSecurity.isProjectOwner(#exposedId, authentication.principal.id)")
+   
     public void deleteProject(UUID exposedId) {
         Project project = projectRepository.findByExposedId(exposedId)
                 .orElseThrow(() -> new ElementNotFoundException("Project not found"));

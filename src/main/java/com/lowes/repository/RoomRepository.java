@@ -9,6 +9,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
+
+      // Add this new method
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+           "FROM Room r " +
+           "WHERE r.exposedId = :roomExposedId " +
+           "AND r.project.owner.exposedId = :userExposedId")
+    boolean existsByExposedIdAndProjectOwnerExposedId(
+        @Param("roomExposedId") UUID roomExposedId,
+        @Param("userExposedId") UUID userExposedId
+    );
     @Query("SELECT r FROM Room r WHERE r.project.exposedId = :projectExposedId")
     List<Room> findByProjectExposedId(@Param("projectExposedId") UUID projectExposedId);
     

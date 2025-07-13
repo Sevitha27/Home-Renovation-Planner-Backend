@@ -19,4 +19,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
         @Param("exposedId") UUID exposedId,
         @Param("userId") Long userId
     );
+    boolean existsByExposedIdAndOwnerExposedId(UUID projectExposedId, UUID ownerExposedId);
 }
