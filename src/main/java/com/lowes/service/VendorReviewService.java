@@ -99,10 +99,20 @@ public class VendorReviewService {
                 .build();
     }
     public void addReview(VendorReviewRequestDTO dto) {
-        Vendor vendor = vendorRepository.findByExposedId(dto.getVendorId())
-                .orElseThrow(() -> new RuntimeException("Vendor not found"));
-        User user = userRepository.findByExposedId(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Vendor vendor = vendorRepository.findByExposedId(dto.getVendorId());
+        if (vendor == null) {
+            throw new RuntimeException("Vendor not found with ID: " + dto.getVendorId());
+        }
+
+        User user = userRepository.findByExposedId(dto.getUserId());
+        if (user == null) {
+            throw new RuntimeException("User not found with ID: " + dto.getUserId());
+        }
+
+        if (dto.getRating() < 1 || dto.getRating() > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+
 
         VendorReview review = VendorReview.builder()
                 .vendor(vendor)

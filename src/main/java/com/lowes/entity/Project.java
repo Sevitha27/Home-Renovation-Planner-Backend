@@ -38,12 +38,14 @@ public class Project {
     private LocalDate endDate;
     private Integer estimatedBudget;
 
-    @Transient
+   @Transient
     public Integer getTotalCost() {
         return rooms.stream()
-                .mapToInt(room -> room.getTotalCost() != null ? room.getTotalCost() : 0)
-                .sum();
+               .mapToInt(room -> room.getTotalCost() != null ? room.getTotalCost() : 0)
+               .sum();
     }
+
+    private Integer TotalCost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

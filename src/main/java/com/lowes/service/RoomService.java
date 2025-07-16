@@ -59,4 +59,7 @@ public class RoomService {
                 .orElseThrow(() -> new ElementNotFoundException("Room not found"));
         roomRepository.delete(room);
     }
+
+
+
 }

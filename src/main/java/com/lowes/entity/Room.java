@@ -45,7 +45,6 @@ public class Room {
             exposedId = UUID.randomUUID();
         }
     }
-
     @PreUpdate
     public void calculateTotalCost() {
         if (phases == null || phases.isEmpty()) {
@@ -57,7 +56,6 @@ public class Room {
                 .mapToInt(phase -> phase.getTotalPhaseCost() != null ? phase.getTotalPhaseCost() : 0)
                 .sum();
     }
-
 
     // Add this accessor for query method
     public Project getProject() {
