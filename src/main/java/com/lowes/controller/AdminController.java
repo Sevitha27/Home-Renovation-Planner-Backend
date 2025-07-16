@@ -92,4 +92,10 @@ public class AdminController {
     public ResponseEntity<?> reAddMaterialByExposedId(@PathVariable("id") UUID id){
         return adminService.reAddMaterialByExposedId(id);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/materials/hard/{id}")
+    public ResponseEntity<?> hardDeleteMaterialByExposedId(@PathVariable("id") UUID id) {
+        return adminService.hardDeleteMaterialByExposedId(id);
+    }
 }
