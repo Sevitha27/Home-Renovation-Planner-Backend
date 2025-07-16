@@ -61,3 +61,4 @@ public class RoomController {
         roomService.deleteRoom(exposedId);
     }
 }
+

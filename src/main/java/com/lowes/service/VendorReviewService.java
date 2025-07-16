@@ -99,9 +99,9 @@ public class VendorReviewService {
                 .build();
     }
     public void addReview(VendorReviewRequestDTO dto) {
-        Vendor vendor = vendorRepository.findById(dto.getVendorId())
+        Vendor vendor = vendorRepository.findByExposedId(dto.getVendorId())
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findByExposedId(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         VendorReview review = VendorReview.builder()

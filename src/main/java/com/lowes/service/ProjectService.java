@@ -5,8 +5,8 @@ import com.lowes.entity.Project;
 import com.lowes.entity.User;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.repository.ProjectRepository;
-import com.lowes.repository.UserProjectRepository;
 
+import com.lowes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.UUID;
 public class ProjectService {
 
     @Autowired private ProjectRepository projectRepository;
-    @Autowired private UserProjectRepository userProjectRepository;
+    @Autowired private UserRepository userRepository;
 
 
     public Project createProject(ProjectRequestDTO dto,  UUID ownerId) {
-        User owner = userProjectRepository.findByExposedId(ownerId);
+        User owner = userRepository.findByExposedId(ownerId);
         Project project = Project.builder()
                 .name(dto.getName())
                 .serviceType(dto.getServiceType())
@@ -55,6 +55,7 @@ public class ProjectService {
 
 
     public List<Project> getProjectsByUser(Long userId) {
+
         return projectRepository.findByOwnerId(userId);
     }
 

@@ -13,13 +13,15 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface VendorRepository extends JpaRepository<Vendor, UUID> {
+public interface VendorRepository extends JpaRepository<Vendor, Long> {
     Vendor findByExposedId(UUID exposedId);
 
     Page<Vendor> findByApproved(Boolean approved, Pageable pageable);
     Page<Vendor> findByApprovedIsNull(Pageable pageable);
 
     Vendor findByUser(User user);
+
+
 
     @Query("SELECT COUNT(v) FROM Vendor v JOIN v.skills s WHERE s = :skill")
     long countBySkillsContaining(@Param("skill") Skill skill);
