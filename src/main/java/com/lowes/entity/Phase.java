@@ -15,6 +15,7 @@ import java.util.UUID;
 
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
