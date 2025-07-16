@@ -45,19 +45,16 @@ public class Room {
         }
     }
 
-    @PreUpdate
+     @PreUpdate
     public void calculateTotalCost() {
-        if (phases == null) {
+        if (phases == null || phases.isEmpty()) {
             this.totalCost = 0;
             return;
         }
-        
+
         this.totalCost = phases.stream()
-            .mapToInt(phase -> 
-                (phase.getTotalPhaseMaterialCost() != null ? phase.getTotalPhaseMaterialCost() : 0) +
-                (phase.getVendorCost() != null ? phase.getVendorCost() : 0)
-            )
-            .sum();
+                .mapToInt(phase -> phase.getTotalPhaseCost() != null ? phase.getTotalPhaseCost() : 0)
+                .sum();
     }
 
      // Add this accessor for query method
