@@ -1,5 +1,7 @@
 package com.lowes.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import jakarta.persistence.EnumType;
@@ -29,5 +31,5 @@ public class PhaseResponse {
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
 
-    //List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;      this must be there
+    private List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
 }
