@@ -20,10 +20,11 @@ public class VendorReviewController {
     private VendorReviewService vendorReviewService;
 
     @GetMapping("/by-phaseType")
-    public ResponseEntity<List<VendorReviewDTO>> getVendorsBySkill(@RequestParam String skill) {
-        List<VendorReviewDTO> vendors = vendorReviewService.getVendorsBySkill(skill);
+    public ResponseEntity<List<VendorReviewDTO>> getVendorsBySkill(@RequestParam("phaseType") String phaseType) {
+        List<VendorReviewDTO> vendors = vendorReviewService.getVendorsBySkill(phaseType);  // Still calling with phaseType
         return ResponseEntity.ok(vendors);
     }
+
     @PostMapping("/reviews")
     public ResponseEntity<String> addReview(@RequestBody VendorReviewRequestDTO dto) {
         System.out.println(dto);

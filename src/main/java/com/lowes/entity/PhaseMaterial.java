@@ -50,7 +50,7 @@ public class PhaseMaterial {
     @Column(nullable = false)
     int totalPrice;
 
-    @JsonIgnore
+    @JsonBackReference("phase-material")
     @ManyToOne
     @JoinColumn(nullable = false)
     Phase phase;
