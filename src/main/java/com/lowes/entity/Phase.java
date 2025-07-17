@@ -60,7 +60,7 @@ public class Phase {
     private Integer totalPhaseMaterialCost = 0;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
-    @JsonManagedReference("phase-material")
+    @JsonIgnore
     @OrderBy("id ASC")
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 

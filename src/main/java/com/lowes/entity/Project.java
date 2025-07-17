@@ -1,4 +1,5 @@
 package com.lowes.entity;
+
 import com.lowes.entity.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +37,7 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer estimatedBudget;
-    
+
     @Transient  // Will be calculated dynamically
     public Integer getTotalCost() {
         return rooms.stream()
@@ -48,12 +49,15 @@ public class Project {
     @JoinColumn(name = "owner_id")
     private User owner;
 
+    private Integer TotalCost;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Room> rooms = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -65,4 +69,6 @@ public class Project {
         }
     }
 }
+
+
 

@@ -1,52 +1,64 @@
 package com.lowes.controller;
-
 import com.lowes.dto.request.ProjectRequestDTO;
-import com.lowes.entity.Project;
-import com.lowes.entity.User; // IMPORT ADDED
+import com.lowes.dto.response.ProjectResponseDTO;
+import com.lowes.entity.User;
+import com.lowes.mapper.ProjectMapper;
 import com.lowes.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/projects")
 @RequiredArgsConstructor
 public class ProjectController {
 
-   private final ProjectService projectService;
+    private final ProjectService projectService;
 
     @PostMapping
-    public Project createProject(@RequestBody ProjectRequestDTO dto, Authentication authentication) {
-        // FIXED: Correct casting and variable name
-        long userId = ((User) authentication.getPrincipal()).getId();
-        return projectService.createProject(dto, userId);
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ProjectResponseDTO createProject(
+            @RequestBody ProjectRequestDTO dto,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return ProjectMapper.toDTO(projectService.createProject(dto, user.getExposedId()));
     }
 
     @GetMapping("/user")
-    public List<Project> getUserProjects(Authentication authentication) {
-        // FIXED: Correct casting and variable name
-        long userId = ((User) authentication.getPrincipal()).getId();
-        return projectService.getProjectsByUser(userId);
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public List<ProjectResponseDTO> getUserProjects(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return projectService.getProjectsByUser(user.getId()).stream()
+                .map(ProjectMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-
-    @PutMapping("/{id}")
-    public Project updateProject(@PathVariable UUID id, @RequestBody ProjectRequestDTO dto) {
-        return projectService.updateProject(id, dto);
+    @PutMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
+    public ProjectResponseDTO updateProject(
+            @PathVariable UUID exposedId,
+            @RequestBody ProjectRequestDTO dto
+    ) {
+        return ProjectMapper.toDTO(projectService.updateProject(exposedId, dto));
     }
 
-    @GetMapping("/{id}")
-    public Project getProject(@PathVariable UUID id) {
-        return projectService.getProjectById(id);
+    @GetMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
+    public ProjectResponseDTO getProject(@PathVariable UUID exposedId) {
+        return ProjectMapper.toDTO(projectService.getProjectById(exposedId));
     }
 
- 
-
-    @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable UUID id) {
-        projectService.deleteProject(id);
+    @DeleteMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@projectSecurity.isProjectOwner(#exposedId, authentication.principal.exposedId)")
+    public void deleteProject(@PathVariable UUID exposedId) {
+        projectService.deleteProject(exposedId);
     }
 }

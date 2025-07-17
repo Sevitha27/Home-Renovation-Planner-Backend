@@ -2,7 +2,6 @@ package com.lowes.dto.request;
 
 import com.lowes.entity.enums.RenovationType;
 import lombok.*;
-
 import java.util.UUID;
 
 @Getter
@@ -12,5 +11,5 @@ import java.util.UUID;
 public class RoomRequestDTO {
     private String name;
     private RenovationType renovationType;
-    private UUID projectId;
+    private UUID projectExposedId; // Use exposed ID reference
 }

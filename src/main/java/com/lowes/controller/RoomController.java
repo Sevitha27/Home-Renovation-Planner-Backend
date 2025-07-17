@@ -1,13 +1,13 @@
 package com.lowes.controller;
 
 import com.lowes.dto.request.RoomRequestDTO;
-import com.lowes.dto.response.PhaseResponseDTO;
-import com.lowes.dto.response.RoomResponse;
-import com.lowes.entity.Room;
+import com.lowes.dto.response.RoomResponseDTO;
+import com.lowes.mapper.RoomMapper;
 import com.lowes.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -19,42 +19,46 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    public Room createRoom(@RequestBody RoomRequestDTO dto) {
-        return roomService.createRoom(dto);
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@projectSecurity.isProjectOwner(#dto.projectExposedId, authentication.principal.exposedId)")
+    public RoomResponseDTO createRoom(
+            @RequestBody RoomRequestDTO dto,
+            Authentication authentication
+    ) {
+        return RoomMapper.toDTO(roomService.createRoom(dto));
     }
 
-    @PutMapping("/{id}")
-    public Room updateRoom(@PathVariable UUID id, @RequestBody RoomRequestDTO dto) {
-        return roomService.updateRoom(id, dto);
+    @PutMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@roomSecurity.isRoomOwner(#exposedId, authentication.principal.exposedId)")
+    public RoomResponseDTO updateRoom(
+            @PathVariable UUID exposedId,
+            @RequestBody RoomRequestDTO dto
+    ) {
+        return RoomMapper.toDTO(roomService.updateRoom(exposedId, dto));
     }
 
-    @GetMapping("/{id}")
-    public RoomResponse getRoom(@PathVariable UUID id) {
-        Room room = roomService.getRoomById(id);
+    @GetMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@roomSecurity.isRoomOwner(#exposedId, authentication.principal.exposedId)")
+    public RoomResponseDTO getRoom(@PathVariable UUID exposedId) {
+        return RoomMapper.toDTO(roomService.getRoomById(exposedId));
+    }
 
-        List<PhaseResponseDTO> phaseDTOs = room.getPhases().stream()
-                .map(PhaseResponseDTO::new)
+    @GetMapping("/project/{projectExposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@projectSecurity.isProjectOwner(#projectExposedId, authentication.principal.exposedId)")
+    public List<RoomResponseDTO> getProjectRooms(@PathVariable UUID projectExposedId) {
+        return roomService.getRoomsByProject(projectExposedId).stream()
+                .map(RoomMapper::toDTO)
                 .toList();
-
-        return new RoomResponse(
-                room.getExposedId(),
-                room.getName(),
-                room.getRenovationType(),
-                phaseDTOs,
-                room.getTotalCost()
-        );
     }
 
-
-    @GetMapping("/project/{projectId}")
-    public List<Room> getProjectRooms(@PathVariable UUID projectId) {
-        return roomService.getRoomsByProject(projectId);
+    @DeleteMapping("/{exposedId}")
+    @PreAuthorize("hasRole('CUSTOMER') and " +
+            "@roomSecurity.isRoomOwner(#exposedId, authentication.principal.exposedId)")
+    public void deleteRoom(@PathVariable UUID exposedId) {
+        roomService.deleteRoom(exposedId);
     }
-
-    @DeleteMapping("/{id}")
-    public void deleteRoom(@PathVariable UUID id) {
-        roomService.deleteRoom(id);
-    }
-
-
 }
+

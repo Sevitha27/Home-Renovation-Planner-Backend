@@ -1,6 +1,7 @@
 package com.lowes.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.RenovationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,8 +23,9 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+
     @Column(nullable = false, unique = true, updatable = false)
-    private UUID exposedId;
+    private UUID exposedId; // Public-facing ID
 
     private String name;
 
@@ -47,20 +49,20 @@ public class Room {
             exposedId = UUID.randomUUID();
         }
     }
+    @PreUpdate
+    public void calculateTotalCost() {
+        if (phases == null || phases.isEmpty()) {
+            this.totalCost = 0;
+            return;
+        }
 
-//  @PreUpdate
-//@PrePersist
-//public void calculateTotalCost() {
-//    if (phases == null) {
-//        this.totalCost = 0;
-//        return;
-//    }
-//
-//    this.totalCost = phases.stream()
-//        .mapToInt(phase ->
-//            (phase.getTotalPhaseMaterialCost() != null ? phase.getTotalPhaseMaterialCost() : 0) +
-//            (phase.getVendorCost() != null ? phase.getVendorCost() : 0)
-//        )
-//        .sum();
-//}
+        this.totalCost = phases.stream()
+                .mapToInt(phase -> phase.getTotalPhaseCost() != null ? phase.getTotalPhaseCost() : 0)
+                .sum();
+    }
+
+    // Add this accessor for query method
+    public Project getProject() {
+        return project;
+    }
 }
