@@ -16,9 +16,6 @@ public class VendorAssignmentService {
     public void setAvailability(UUID vendorId, boolean availability) {
         Vendor vendor = vendorRepository.findByExposedId(vendorId);
 
-
-        vendor.setAvailable(false); // mark unavailable
-        vendorRepository.save(vendor);
     }
 
 }

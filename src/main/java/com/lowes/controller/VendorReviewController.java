@@ -24,7 +24,6 @@ public class VendorReviewController {
         List<VendorReviewDTO> vendors = vendorReviewService.getVendorsBySkill(phaseType);  // Still calling with phaseType
         return ResponseEntity.ok(vendors);
     }
-
     @PostMapping("/reviews")
     public ResponseEntity<String> addReview(@RequestBody VendorReviewRequestDTO dto) {
         System.out.println(dto);
