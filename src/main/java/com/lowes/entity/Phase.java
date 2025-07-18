@@ -6,16 +6,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -26,12 +26,17 @@ public class Phase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID Id;
+    private UUID id;
+
 
     @ManyToOne
-    @JoinColumn(name = "project_id")
-    @JsonBackReference("project-phase")
-    private Project project;
+    @JoinColumn(name = "skill_id")
+    private Skill requiredSkill;
+
+    @ManyToOne
+    @JoinColumn(name="room_id")
+    @JsonBackReference("room-phase")
+    private Room room;
 
     @ManyToOne
     @JoinColumn(name="vendor_id")
@@ -50,13 +55,9 @@ public class Phase {
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;
 
-    @ManyToOne
-    @JoinColumn(name = "skill_id")
-    private Skill requiredSkill;
-
     private Integer totalPhaseCost = 0;
-    private Integer totalPhaseMaterialCost = 0;
     private Integer vendorCost;
+    private Integer totalPhaseMaterialCost = 0;
 
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
     @JsonIgnore
@@ -65,7 +66,8 @@ public class Phase {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PhaseStatus phaseStatus=PhaseStatus.NOTSTARTED;
+    private PhaseStatus phaseStatus;
+
+
 
 }
-

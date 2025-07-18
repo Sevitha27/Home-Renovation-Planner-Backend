@@ -1,18 +1,23 @@
-package com.lowes.dto.request;
-
+package com.lowes.dto;
 import com.lowes.entity.enums.ServiceType;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectRequestDTO {
+@Builder
+public class ProjectResponseDTO {
+    private UUID id;
     private String name;
     private ServiceType serviceType;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer estimatedBudget;
+    private Double estimatedBudget;
+    private Long ownerId;
+    private List<String> roomNames;
+
+
 }

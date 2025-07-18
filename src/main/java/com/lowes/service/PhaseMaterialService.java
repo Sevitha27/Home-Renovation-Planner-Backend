@@ -89,7 +89,7 @@ public class PhaseMaterialService {
 
 
         }
-        phaseService.updateTotalCost(phaseId);
+        phaseService.calculateTotalCost(phaseId);
         return phaseMaterialUserResponseList;
     }
 
@@ -106,7 +106,7 @@ public class PhaseMaterialService {
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
-        phaseService.updateTotalCost(phaseMaterial.getPhase().getId());
+        phaseService.calculateTotalCost(phaseMaterial.getPhase().getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(updatedPhaseMaterial);
         return phaseMaterialUserResponse;
     }
@@ -126,7 +126,7 @@ public class PhaseMaterialService {
         material.getPhaseMaterialList().remove(phaseMaterial);
 
         phaseMaterialRepository.deleteByExposedId(id);
-        phaseService.updateTotalCost(phase.getId());
+        phaseService.calculateTotalCost(phase.getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
         return phaseMaterialUserResponse;
     }

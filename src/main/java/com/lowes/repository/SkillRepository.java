@@ -14,9 +14,8 @@ import java.util.UUID;
 
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, UUID> {
-    
-    Optional<Skill> findByNameAndBasePrice(SkillType name, Double base_price);
 
+    Optional<Skill> findByNameAndBasePrice(SkillType name, Double base_price);
     @Query("SELECT s FROM Skill s WHERE s.vendors IS EMPTY")
     List<Skill> findSkillsWithNoVendors();
 

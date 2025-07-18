@@ -19,15 +19,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-
     @Column(nullable = false, unique = true, updatable = false)
-    private UUID exposedId; // Public-facing ID
+    private UUID exposedId;
 
     private String name;
 
@@ -38,18 +38,18 @@ public class Project {
     private LocalDate endDate;
     private Integer estimatedBudget;
 
-    @Transient
+    @Transient  // Will be calculated dynamically
     public Integer getTotalCost() {
         return rooms.stream()
-                .mapToInt(room -> room.getTotalCost() != null ? room.getTotalCost() : 0)
-                .sum();
+            .mapToInt(room -> room.getTotalCost() != null ? room.getTotalCost() : 0)
+            .sum();
     }
-
-    private Integer TotalCost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    private Integer TotalCost;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -57,6 +57,7 @@ public class Project {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -67,6 +68,7 @@ public class Project {
             exposedId = UUID.randomUUID();
         }
     }
-
-
 }
+
+
+

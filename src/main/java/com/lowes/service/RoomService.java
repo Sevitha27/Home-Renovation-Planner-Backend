@@ -1,5 +1,6 @@
 package com.lowes.service;
 
+import com.lowes.GlobalExceptionHandler;
 import com.lowes.dto.request.RoomRequestDTO;
 import com.lowes.dto.response.RoomResponseDTO;
 import com.lowes.entity.Project;
@@ -61,5 +62,8 @@ public class RoomService {
     }
 
 
-
+    public Room findByExposedId(UUID exposedId) {
+        return roomRepository.findByExposedId(exposedId)
+                .orElseThrow(() -> new ElementNotFoundException("Room not found"));
+    }
 }

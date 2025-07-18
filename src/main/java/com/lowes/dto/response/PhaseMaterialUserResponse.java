@@ -30,8 +30,8 @@ public class PhaseMaterialUserResponse {
 
     int totalPrice;
 
+    PhaseResponseDTO phaseResponseDTO;
     MaterialUserResponse materialUserResponse;
 
-    PhaseResponse phaseResponse;
 
 }
