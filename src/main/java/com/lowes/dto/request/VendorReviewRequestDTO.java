@@ -7,7 +7,7 @@ import java.util.UUID;
 public class VendorReviewRequestDTO {
     private UUID vendorId;
     private UUID userId;
-    private UUID phaseId; // optional if linked to a phase
+
     private String comment;
     private double rating;
 }
