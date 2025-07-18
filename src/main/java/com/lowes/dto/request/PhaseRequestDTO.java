@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,8 +21,8 @@ import java.util.List;
 public class PhaseRequestDTO {
 
 
-    private Vendor vendor;
-    private Room room;
+    private UUID vendorId;
+    private UUID roomId;
     private String phaseName;
     private String description;
 
@@ -32,3 +33,4 @@ public class PhaseRequestDTO {
 
 
 }
+

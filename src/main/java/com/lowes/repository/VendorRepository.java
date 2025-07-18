@@ -16,6 +16,7 @@ import java.util.UUID;
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
     Vendor findByExposedId(UUID exposedId);
 
+
     Page<Vendor> findByApproved(Boolean approved, Pageable pageable);
     Page<Vendor> findByApprovedIsNull(Pageable pageable);
 

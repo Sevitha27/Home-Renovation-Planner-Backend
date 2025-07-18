@@ -67,9 +67,9 @@ public class PhaseController {
 
     //working
 
-    @GetMapping("/room/{roomId}")
-    public List<PhaseResponseDTO> getPhasesByRoom(@PathVariable UUID roomId) {
-        return phaseService.getPhasesByRoom(roomId);
+    @GetMapping("/room/{roomExposedId}")
+    public List<PhaseResponseDTO> getPhasesByRoom(@PathVariable UUID roomExposedId) {
+        return phaseService.getPhasesByRoomExposedId(roomExposedId);
     }
     //working
     @GetMapping("/{id}/total-cost")
@@ -96,12 +96,10 @@ public class PhaseController {
 
 
     @GetMapping("/phase/exists")
-    public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam String phaseType) {
+    public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam PhaseType phaseType) {
 
-        Room room = new Room();
-        room.setId(roomId);
 
-        return phaseRepository.existsByRoomAndPhaseType(room, PhaseType.valueOf(phaseType));
+        return phaseRepository.existsByRoomIdAndPhaseType(roomId, phaseType);
     }
 
     @DeleteMapping("delete/{id}")

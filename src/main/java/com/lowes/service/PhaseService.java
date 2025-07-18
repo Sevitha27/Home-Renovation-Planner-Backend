@@ -6,10 +6,14 @@ import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.Room;
+import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
+import com.lowes.mapper.PhaseMapper;
 import com.lowes.repository.PhaseRepository;
 import com.lowes.repository.RoomRepository;
+import com.lowes.repository.VendorRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +34,32 @@ public class PhaseService {
 
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    VendorRepository vendorRepository;
 
 
     private final Map<RenovationType, List<PhaseType>> renovationPhaseMap = new HashMap<>();
 
     public void createPhase(PhaseRequestDTO phaseRequestDTO) {
-        boolean exists = phaseRepository.existsByRoomAndPhaseType(
-                phaseRequestDTO.getRoom(), phaseRequestDTO.getPhaseType());
 
+        Room room = roomRepository.findByExposedId(phaseRequestDTO.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+
+
+        Vendor vendor = vendorRepository.findByExposedId(phaseRequestDTO.getVendorId());
+
+
+        if (phaseRepository.existsByRoomIdAndPhaseType(phaseRequestDTO.getRoomId(), phaseRequestDTO.getPhaseType())) {
+            throw new IllegalArgumentException("Phase of type " + phaseRequestDTO.getPhaseType() + " already exists for this room");
+        }
 
         Phase phase = new Phase();
         phase.setPhaseType(phaseRequestDTO.getPhaseType());
         phase.setDescription(phaseRequestDTO.getDescription());
         phase.setStartDate(phaseRequestDTO.getStartDate());
         phase.setEndDate(phaseRequestDTO.getEndDate());
-        phase.setVendor(phaseRequestDTO.getVendor());
-        phase.setRoom(phaseRequestDTO.getRoom());
+        phase.setRoom(room);
+        phase.setVendor(vendor);
         phase.setPhaseName(phaseRequestDTO.getPhaseName());
         phase.setPhaseStatus(phaseRequestDTO.getPhaseStatus());
 
@@ -86,12 +100,6 @@ public class PhaseService {
 
         if (updatedPhase.getPhaseType() != null)
             phase.setPhaseType(updatedPhase.getPhaseType());
-
-        if (updatedPhase.getVendor() != null)
-            phase.setVendor(updatedPhase.getVendor());
-
-        if (updatedPhase.getRoom() != null)
-            phase.setRoom(updatedPhase.getRoom());
 
         if (updatedPhase.getPhaseName() != null)
             phase.setPhaseName(updatedPhase.getPhaseName());
@@ -147,51 +155,59 @@ public class PhaseService {
         return totalCost;
     }
 
-    public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
-        return renovationPhaseMap.getOrDefault(renovationType, List.of());
+        public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
+            return renovationPhaseMap.getOrDefault(renovationType, List.of());
+        }
+
+        @PostConstruct
+        public void initRenovationPhaseMap() {
+            renovationPhaseMap.put(RenovationType.KITCHEN_RENOVATION, List.of(
+                    values()
+            ));
+
+            renovationPhaseMap.put(RenovationType.BATHROOM_RENOVATION, List.of(
+                    PLUMBING, ELECTRICAL, TILING, PAINTING,CIVIL
+            ));
+
+            renovationPhaseMap.put(RenovationType.BEDROOM_RENOVATION, List.of(
+                    ELECTRICAL, PAINTING, CIVIL,
+                    TILING, CARPENTRY
+            ));
+
+            renovationPhaseMap.put(RenovationType.FULL_HOME_RENOVATION, List.of(
+                    values()
+            ));
+
+            renovationPhaseMap.put(RenovationType.EXTERIOR_RENOVATION, List.of(
+                    CIVIL, PAINTING
+            ));
+
+            renovationPhaseMap.put(RenovationType.GARAGE_RENOVATION, List.of(
+                    values()
+            ));
+
+            renovationPhaseMap.put(RenovationType.ATTIC_CONVERSION, List.of(
+                    CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
+            ));
+
+            renovationPhaseMap.put(RenovationType.BASEMENT_FINISHING, List.of(
+                    CIVIL, ELECTRICAL,TILING, CARPENTRY, PAINTING
+            ));
+
+            renovationPhaseMap.put(RenovationType.LIVING_ROOM_REMODEL, List.of(
+                    CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
+            ));
+
+            renovationPhaseMap.put(RenovationType.BALCONY_RENOVATION, List.of(
+                    CIVIL, ELECTRICAL, TILING, PAINTING
+            ));
+        }
+
+    public List<PhaseResponseDTO> getPhasesByRoomExposedId(UUID exposedId) {
+        List<Phase> phases = phaseRepository.findAllByRoom_ExposedId(exposedId);
+        return phases.stream()
+                .map(PhaseMapper::toDTO) // assuming you have a mapper
+                .collect(Collectors.toList());
     }
 
-    @PostConstruct
-    public void initRenovationPhaseMap() {
-        renovationPhaseMap.put(RenovationType.KITCHEN_RENOVATION, List.of(
-                values()
-        ));
-
-        renovationPhaseMap.put(RenovationType.BATHROOM_RENOVATION, List.of(
-                PLUMBING, ELECTRICAL, TILING, PAINTING,CIVIL
-        ));
-
-        renovationPhaseMap.put(RenovationType.BEDROOM_RENOVATION, List.of(
-                ELECTRICAL, PAINTING, CIVIL,
-                TILING, CARPENTRY
-        ));
-
-        renovationPhaseMap.put(RenovationType.FULL_HOME_RENOVATION, List.of(
-                values()
-        ));
-
-        renovationPhaseMap.put(RenovationType.EXTERIOR_RENOVATION, List.of(
-                CIVIL, PAINTING
-        ));
-
-        renovationPhaseMap.put(RenovationType.GARAGE_RENOVATION, List.of(
-                values()
-        ));
-
-        renovationPhaseMap.put(RenovationType.ATTIC_CONVERSION, List.of(
-                CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
-        ));
-
-        renovationPhaseMap.put(RenovationType.BASEMENT_FINISHING, List.of(
-                CIVIL, ELECTRICAL,TILING, CARPENTRY, PAINTING
-        ));
-
-        renovationPhaseMap.put(RenovationType.LIVING_ROOM_REMODEL, List.of(
-                CIVIL, ELECTRICAL, TILING, CARPENTRY, PAINTING
-        ));
-
-        renovationPhaseMap.put(RenovationType.BALCONY_RENOVATION, List.of(
-                CIVIL, ELECTRICAL, TILING, PAINTING
-        ));
-    }
 }
