@@ -52,9 +52,9 @@ public class PhaseController {
     }
 
     //working
-    @PostMapping("/vendor/{vendorId}/phase/{phaseId}/cost")
-    public String setVendorCost(@PathVariable UUID vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
-        phaseService.setVendorCostForPhase(vendorId, phaseId, cost);
+    @PostMapping("/vendor/phase/{phaseId}/quote")
+    public String setVendorCost(@PathVariable UUID phaseId, @RequestParam Integer cost) {
+        phaseService.setVendorCostForPhase(phaseId, cost);
         return "Cost updated successfully";
     }
 

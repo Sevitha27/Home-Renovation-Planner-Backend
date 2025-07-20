@@ -111,11 +111,9 @@ public class PhaseService {
         phaseRepository.delete(getPhaseById(id));
     }
 
-    public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
+    public void setVendorCostForPhase(UUID phaseId, Integer cost) {
         Phase phase = getPhaseById(phaseId);
-        if (phase.getVendor() == null || !phase.getVendor().getExposedId().equals(vendorId)) {
-            throw new RuntimeException("Unauthorized: Vendor mismatch");
-        }
+
         phase.setVendorCost(cost);
         phaseRepository.save(phase);
     }
@@ -147,6 +145,7 @@ public class PhaseService {
         }
 
         int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
+
         int totalCost = vendorCost + materialCost;
 
         phase.setTotalPhaseCost(totalCost);
