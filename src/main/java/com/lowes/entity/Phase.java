@@ -1,7 +1,6 @@
 package com.lowes.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
@@ -55,12 +54,14 @@ public class Phase {
     @Enumerated(EnumType.STRING)
     private PhaseType phaseType;
 
-    private Integer totalPhaseCost = 0;
-    private Integer vendorCost;
-    private Integer totalPhaseMaterialCost = 0;
 
+    private Integer totalPhaseCost = 0;
+    private Integer totalPhaseMaterialCost = 0;
+    private Integer vendorCost;
+
+    @Builder.Default
     @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonManagedReference("phase-material")
     @OrderBy("id ASC")
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();
 
@@ -70,4 +71,7 @@ public class Phase {
 
 
 
+
+
 }
+
