@@ -47,7 +47,7 @@ public class PhaseController {
     //working
 
     @GetMapping("/{id}")
-    public Phase getPhaseById(@PathVariable UUID id) {
+    public PhaseResponseDTO getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);
     }
 
@@ -61,7 +61,7 @@ public class PhaseController {
     //working
 
     @PutMapping("/{id}")
-    public Phase updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
+    public PhaseResponseDTO updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
         return phaseService.updatePhase(id, updatedPhaseRequestDTO);
     }
 
@@ -99,7 +99,7 @@ public class PhaseController {
     public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam PhaseType phaseType) {
 
 
-        return phaseRepository.existsByRoomIdAndPhaseType(roomId, phaseType);
+        return phaseRepository.existsByRoomExposedIdAndPhaseType(roomId,  phaseType);
     }
 
     @DeleteMapping("delete/{id}")

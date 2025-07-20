@@ -21,7 +21,7 @@ public interface  PhaseRepository extends JpaRepository<Phase, UUID> {
     List<Phase> findByStartDate(LocalDate date);
 
 
-    boolean existsByRoomIdAndPhaseType(UUID roomId, PhaseType phaseType);
+    boolean existsByRoomExposedIdAndPhaseType(UUID roomExposedId, PhaseType phaseType);
 
     List<Phase> findAllByRoom_Id(UUID roomId);
 

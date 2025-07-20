@@ -50,10 +50,10 @@ public class PhaseService {
         Vendor vendor = vendorRepository.findByExposedId(phaseRequestDTO.getVendorId());
 
 
-        if (phaseRepository.existsByRoomIdAndPhaseType(phaseRequestDTO.getRoomId(), phaseRequestDTO.getPhaseType())) {
+        if (phaseRepository.existsByRoomExposedIdAndPhaseType(phaseRequestDTO.getRoomId(),  phaseRequestDTO.getPhaseType())) {
             throw new IllegalArgumentException("Phase of type " + phaseRequestDTO.getPhaseType() + " already exists for this room");
         }
-
+System.out.println("db"+phaseRequestDTO.getRoomId());
         Phase phase = new Phase();
         phase.setPhaseType(phaseRequestDTO.getPhaseType());
         phase.setDescription(phaseRequestDTO.getDescription());
@@ -69,9 +69,10 @@ public class PhaseService {
 
 
     @Transactional(readOnly = true)
-    public Phase getPhaseById(UUID id) {
-        return phaseRepository.findById(id)
+    public PhaseResponseDTO getPhaseById(UUID id) {
+        Phase phase=phaseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
+        return PhaseResponseDTO.toDTO(phase);
     }
 
     @Transactional(readOnly = true)
@@ -88,48 +89,72 @@ public class PhaseService {
 
 
     @Transactional
-    public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
-        Phase phase = getPhaseById(id);
+    public PhaseResponseDTO updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
+        // 1. Get the existing Phase entity (not DTO)
+        Phase existingPhase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
 
-        if (updatedPhase.getDescription() != null)
-            phase.setDescription(updatedPhase.getDescription());
+        // 2. Update only the non-null fields from DTO to Entity
+        if (updatedPhase.getDescription() != null) {
+            existingPhase.setDescription(updatedPhase.getDescription());
+        }
 
-        if (updatedPhase.getPhaseStatus() != null)
-            phase.setPhaseStatus(updatedPhase.getPhaseStatus());
+        if (updatedPhase.getPhaseStatus() != null) {
+            existingPhase.setPhaseStatus(updatedPhase.getPhaseStatus());
+        }
 
-        if (updatedPhase.getStartDate() != null)
-            phase.setStartDate(updatedPhase.getStartDate());
+        if (updatedPhase.getStartDate() != null) {
+            existingPhase.setStartDate(updatedPhase.getStartDate());
+        }
 
-        if (updatedPhase.getEndDate() != null)
-            phase.setEndDate(updatedPhase.getEndDate());
+        if (updatedPhase.getEndDate() != null) {
+            existingPhase.setEndDate(updatedPhase.getEndDate());
+        }
 
-        if (updatedPhase.getPhaseType() != null)
-            phase.setPhaseType(updatedPhase.getPhaseType());
+        if (updatedPhase.getPhaseType() != null) {
+            existingPhase.setPhaseType(updatedPhase.getPhaseType());
+        }
 
-        if (updatedPhase.getPhaseName() != null)
-            phase.setPhaseName(updatedPhase.getPhaseName());
+        if (updatedPhase.getPhaseName() != null) {
+            existingPhase.setPhaseName(updatedPhase.getPhaseName());
+        }
 
-        return phaseRepository.save(phase);
+        // 3. Save the updated entity and return as DTO
+        Phase updatedEntity = phaseRepository.save(existingPhase);
+        return new PhaseResponseDTO(updatedEntity);
     }
-
     @Transactional
     public void deletePhase(UUID id) {
-        phaseRepository.delete(getPhaseById(id));
+        // Get the entity first to ensure it exists
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
+
+        phaseRepository.delete(phase);
     }
 
     @Transactional
-    public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
-        Phase phase = getPhaseById(phaseId);
+    public PhaseResponseDTO setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
+        // Get the phase entity
+        Phase phase = phaseRepository.findById(phaseId)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + phaseId));
+
+        // Verify vendor exists and matches
         if (phase.getVendor() == null || !phase.getVendor().getExposedId().equals(vendorId)) {
-            throw new RuntimeException("Unauthorized: Vendor mismatch");
+            throw new RuntimeException("Unauthorized: Vendor mismatch or vendor not assigned");
         }
+
+        // Set the cost and save
         phase.setVendorCost(cost);
-        phaseRepository.save(phase);
+        Phase updatedPhase = phaseRepository.save(phase);
+
+        // Return the updated phase as DTO
+        return new PhaseResponseDTO(updatedPhase);
     }
 
     @Transactional(readOnly = true)
     public List<PhaseMaterialUserResponse> getAllPhaseMaterialsByPhaseId(UUID id) {
-        Phase phase = getPhaseById(id);
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
 
         List<PhaseMaterialUserResponse> responseList = new ArrayList<>();
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
@@ -145,7 +170,8 @@ public class PhaseService {
 
     @Transactional
     public int calculateTotalCost(UUID id) {
-        Phase phase = getPhaseById(id);
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
         int materialCost = 0;
 
