@@ -14,14 +14,14 @@ import java.util.UUID;
 @AllArgsConstructor
 public class VendorDTO {
     private UUID exposedId;
-    private String companyName;
+    private String name;
     // Add any other vendor fields you want to expose to the frontend (e.g., contactPerson, email)
 
     // Constructor to convert a Vendor entity to VendorDTO
     public VendorDTO(Vendor vendor) {
         if (vendor != null) {
             this.exposedId = vendor.getExposedId();
-            this.companyName = vendor.getCompanyName(); // Assuming your Vendor entity has getCompanyName()
+            this.name = vendor.getUser().getName();; // Assuming your Vendor entity has getCompanyName()
             // Map other fields as needed
         }
     }
