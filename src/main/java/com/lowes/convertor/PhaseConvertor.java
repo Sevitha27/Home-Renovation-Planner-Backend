@@ -16,6 +16,7 @@ public class PhaseConvertor {
                 .phaseType(phase.getPhaseType())
                 .phaseStatus(phase.getPhaseStatus())
                 .id(phase.getId())
+                .vendor(phase.getVendor() != null ? new com.lowes.dto.VendorDTO(phase.getVendor()) : null)
                 .build();
         return phaseResponseDTO;
     }

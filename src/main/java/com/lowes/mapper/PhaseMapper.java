@@ -13,6 +13,7 @@ public class PhaseMapper {
                 .startDate(phase.getStartDate())
                 .endDate(phase.getEndDate())
                 .totalPhaseCost(phase.getTotalPhaseCost())
+                .vendor(phase.getVendor() != null ? new com.lowes.dto.VendorDTO(phase.getVendor()) : null)
                 .build();
     }
 

@@ -47,21 +47,21 @@ public class PhaseController {
     //working
 
     @GetMapping("/{id}")
-    public Phase getPhaseById(@PathVariable UUID id) {
+    public PhaseResponseDTO getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);
     }
 
     //working
-    @PostMapping("/vendor/phase/{phaseId}/quote")
-    public String setVendorCost(@PathVariable UUID phaseId, @RequestParam Integer cost) {
-        phaseService.setVendorCostForPhase(phaseId, cost);
+    @PostMapping("/vendor/{vendorId}/phase/{phaseId}/cost")
+    public String setVendorCost(@PathVariable UUID vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
+        phaseService.setVendorCostForPhase(vendorId, phaseId, cost);
         return "Cost updated successfully";
     }
 
     //working
 
     @PutMapping("/{id}")
-    public Phase updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
+    public PhaseResponseDTO updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
         return phaseService.updatePhase(id, updatedPhaseRequestDTO);
     }
 
@@ -99,7 +99,7 @@ public class PhaseController {
     public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam PhaseType phaseType) {
 
 
-        return phaseRepository.existsByRoomExposedIdAndPhaseType(roomId, phaseType);
+        return phaseRepository.existsByRoomExposedIdAndPhaseType(roomId,  phaseType);
     }
 
     @DeleteMapping("delete/{id}")
