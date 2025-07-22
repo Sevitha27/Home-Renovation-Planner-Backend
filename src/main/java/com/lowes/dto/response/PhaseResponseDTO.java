@@ -28,14 +28,14 @@ public class PhaseResponseDTO {
     private Integer totalPhaseCost;
 
     public PhaseResponseDTO(Phase phase) {
-        this.description = phase.getDescription();
-        this.phaseName = phase.getPhaseName();
-        this.startDate = phase.getStartDate();
-        this.endDate = phase.getEndDate();
-        this.phaseType = phase.getPhaseType();
-        this.phaseStatus = phase.getPhaseStatus();
-        this.totalPhaseCost = phase.getTotalPhaseCost();
-        this.id = phase.getId();
+        this.description=phase.getDescription();
+        this.phaseName=phase.getPhaseName();
+        this.startDate=phase.getStartDate();
+        this.endDate=phase.getEndDate();
+        this.phaseType=phase.getPhaseType();
+        this.phaseStatus=phase.getPhaseStatus();
+        this.totalPhaseCost=phase.getTotalPhaseCost();
+        this.id=phase.getId();
     }
 
     public static PhaseResponseDTO toDTO(Phase phase) {
