@@ -49,7 +49,7 @@ public class PhaseService {
         Vendor vendor = vendorRepository.findByExposedId(phaseRequestDTO.getVendorId());
 
 
-        if (phaseRepository.existsByRoomIdAndPhaseType(phaseRequestDTO.getRoomId(), phaseRequestDTO.getPhaseType())) {
+        if (phaseRepository.existsByRoomExposedIdAndPhaseType(phaseRequestDTO.getRoomId(), phaseRequestDTO.getPhaseType())) {
             throw new IllegalArgumentException("Phase of type " + phaseRequestDTO.getPhaseType() + " already exists for this room");
         }
 

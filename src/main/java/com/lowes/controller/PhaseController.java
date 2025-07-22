@@ -99,7 +99,7 @@ public class PhaseController {
     public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam PhaseType phaseType) {
 
 
-        return phaseRepository.existsByRoomIdAndPhaseType(roomId, phaseType);
+        return phaseRepository.existsByRoomExposedIdAndPhaseType(roomId, phaseType);
     }
 
     @DeleteMapping("delete/{id}")
