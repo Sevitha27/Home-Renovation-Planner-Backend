@@ -20,6 +20,7 @@ public class PhaseConvertor {
                 .endDate(phase.getEndDate())
                 .phaseType(phase.getPhaseType())
                 .phaseStatus(phase.getPhaseStatus())
+                .totalPhaseCost(phase.getTotalPhaseCost())
                 .id(phase.getId())
                 .build();
 

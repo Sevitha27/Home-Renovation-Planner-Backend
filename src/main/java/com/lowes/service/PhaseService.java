@@ -1,5 +1,6 @@
 package com.lowes.service;
 
+import com.lowes.convertor.PhaseConvertor;
 import com.lowes.convertor.PhaseMaterialConvertor;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
@@ -73,7 +74,8 @@ public class PhaseService {
         Phase phase=phaseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
 
-        return PhaseMapper.toDTO(phase);
+        return PhaseConvertor.phaseToPhaseResponse(phase);
+        //return PhaseMapper.toDTO(phase);
     }
 
     public List<PhaseResponseDTO> getPhasesByRoom(UUID roomId) {
@@ -166,20 +168,27 @@ public class PhaseService {
 
         Phase phase = optionalPhase.get();
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-
+System.out.println(phaseMaterialList.size());
         int materialCost = 0;
-        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
-            materialCost = phaseMaterialList.stream()
-                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
-                    .sum();
+//        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+//            materialCost = phaseMaterialList.stream()
+//                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+//                    .sum();
+//        }
+
+        if(!phaseMaterialList.isEmpty()){
+            for (PhaseMaterial phaseMaterial : phaseMaterialList) {
+                System.out.println(phaseMaterial.getName()+phaseMaterial.getTotalPrice());
+                materialCost+=phaseMaterial.getTotalPrice();
+            }
         }
 
         phase.setTotalPhaseMaterialCost(materialCost);
-
+        System.out.println(materialCost);
         int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
         int totalCost = vendorCost + materialCost;
         phase.setTotalPhaseCost(totalCost);
-
+        System.out.println(totalCost);
         phaseRepository.save(phase);
 
         return totalCost;
