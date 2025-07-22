@@ -122,6 +122,7 @@ class PhaseControllerTest {
 
     @Test
     void getPhasesByRoomExposedId_shouldReturnList() throws Exception {
+        UUID roomId = UUID.randomUUID();
         PhaseResponseDTO responseDTO = new PhaseResponseDTO();
         responseDTO.setPhaseName("Demo Phase");
 
@@ -130,6 +131,8 @@ class PhaseControllerTest {
         mockMvc.perform(get("/phase/room/{roomExposedId}", roomId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].phaseName", is("Demo Phase")));
+
+        verify(phaseService, times(1)).getPhasesByRoomExposedId(roomId);
     }
 
     @Test

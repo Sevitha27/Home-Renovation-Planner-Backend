@@ -60,7 +60,7 @@ public class Phase {
     private Integer vendorCost;
 
     @Builder.Default
-    @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "phase",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     @JsonManagedReference("phase-material")
     @OrderBy("id ASC")
     private List<PhaseMaterial> phaseMaterialList = new ArrayList<>();

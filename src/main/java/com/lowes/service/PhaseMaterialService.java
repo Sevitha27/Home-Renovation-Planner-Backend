@@ -13,6 +13,8 @@ import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -30,6 +32,9 @@ public class PhaseMaterialService {
     private final PhaseMaterialRepository phaseMaterialRepository;
     private final PhaseRepository phaseRepository;
     private final MaterialRepository materialRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(UUID phaseId){
 
@@ -92,6 +97,8 @@ public class PhaseMaterialService {
 
 
         }
+        entityManager.flush();
+        entityManager.clear();
         phaseService.calculateTotalCost(phaseId);
         return phaseMaterialUserResponseList;
     }
