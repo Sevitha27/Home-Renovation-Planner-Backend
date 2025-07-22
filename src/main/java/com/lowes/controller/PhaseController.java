@@ -1,6 +1,7 @@
 package com.lowes.controller;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
+import com.lowes.dto.response.PhaseResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
@@ -47,7 +48,7 @@ public class PhaseController {
     //working
 
     @GetMapping("/{id}")
-    public Phase getPhaseById(@PathVariable UUID id) {
+    public PhaseResponse getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);
     }
 
@@ -68,7 +69,7 @@ public class PhaseController {
     //working
 
     @GetMapping("/room/{roomExposedId}")
-    public List<PhaseResponseDTO> getPhasesByRoom(@PathVariable UUID roomExposedId) {
+    public List<PhaseResponse> getPhasesByRoom(@PathVariable UUID roomExposedId) {
         return phaseService.getPhasesByRoomExposedId(roomExposedId);
     }
     //working

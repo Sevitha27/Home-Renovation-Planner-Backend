@@ -19,7 +19,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.lowes.dto.response.PhaseResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,9 +68,12 @@ public class PhaseService {
         phaseRepository.save(phase);
     }
 
-    public Phase getPhaseById(UUID id) {
-        return phaseRepository.findById(id)
+    @Transactional(readOnly = true)
+    public PhaseResponse getPhaseById(UUID id) {
+        Phase phase=phaseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
+
+        return PhaseMapper.toDTO(phase);
     }
 
     public List<PhaseResponseDTO> getPhasesByRoom(UUID roomId) {
@@ -84,7 +89,8 @@ public class PhaseService {
 
 
     public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
-        Phase phase = getPhaseById(id);
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
 
         if (updatedPhase.getDescription() != null)
             phase.setDescription(updatedPhase.getDescription());
@@ -107,21 +113,37 @@ public class PhaseService {
         return phaseRepository.save(phase);
     }
 
+    @Transactional
     public void deletePhase(UUID id) {
-        phaseRepository.delete(getPhaseById(id));
+        // Get the entity first to ensure it exists
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
+
+        phaseRepository.delete(phase);
     }
 
-    public void setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
-        Phase phase = getPhaseById(phaseId);
+    @Transactional
+    public PhaseResponseDTO setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
+        // Get the phase entity
+        Phase phase = phaseRepository.findById(phaseId)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + phaseId));
+
+        // Verify vendor exists and matches
         if (phase.getVendor() == null || !phase.getVendor().getExposedId().equals(vendorId)) {
-            throw new RuntimeException("Unauthorized: Vendor mismatch");
+            throw new RuntimeException("Unauthorized: Vendor mismatch or vendor not assigned");
         }
+
+        // Set the cost and save
         phase.setVendorCost(cost);
-        phaseRepository.save(phase);
+        Phase updatedPhase = phaseRepository.save(phase);
+
+        // Return the updated phase as DTO
+        return new PhaseResponseDTO(updatedPhase);
     }
 
     public List<PhaseMaterialUserResponse> getAllPhaseMaterialsByPhaseId(UUID id) {
-        Phase phase = getPhaseById(id);
+        Phase phase = phaseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
 
         List<PhaseMaterialUserResponse> responseList = new ArrayList<>();
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
@@ -135,27 +157,36 @@ public class PhaseService {
         return responseList;
     }
 
+    @Transactional
     public int calculateTotalCost(UUID id) {
-        Phase phase = getPhaseById(id);
-        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-        int materialCost = 0;
+        Optional<Phase> optionalPhase = phaseRepository.findById(id);
+        if (optionalPhase.isEmpty()) {
+            throw new RuntimeException("Phase Not Found To Calculate Total Cost");
+        }
 
+        Phase phase = optionalPhase.get();
+        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+
+        int materialCost = 0;
         if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
             materialCost = phaseMaterialList.stream()
                     .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
                     .sum();
         }
 
+        phase.setTotalPhaseMaterialCost(materialCost);
+
         int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
         int totalCost = vendorCost + materialCost;
-
         phase.setTotalPhaseCost(totalCost);
+
         phaseRepository.save(phase);
 
         return totalCost;
     }
 
-        public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
+
+    public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
             return renovationPhaseMap.getOrDefault(renovationType, List.of());
         }
 
@@ -203,10 +234,10 @@ public class PhaseService {
             ));
         }
 
-    public List<PhaseResponseDTO> getPhasesByRoomExposedId(UUID exposedId) {
+    public List<PhaseResponse> getPhasesByRoomExposedId(UUID exposedId) {
         List<Phase> phases = phaseRepository.findAllByRoom_ExposedId(exposedId);
         return phases.stream()
-                .map(PhaseMapper::toDTO) // assuming you have a mapper
+                .map(PhaseMapper::toDTO) // Uses the PhaseMapper
                 .collect(Collectors.toList());
     }
 

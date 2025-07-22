@@ -27,9 +27,10 @@ public class PhaseResponse {
     private LocalDate startDate;
     private LocalDate endDate;
 
-
+    private Integer totalPhaseCost;
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
+
 
     private List<PhaseMaterialUserResponse> phaseMaterialUserResponseList;
 }
