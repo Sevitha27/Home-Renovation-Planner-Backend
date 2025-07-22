@@ -1,16 +1,17 @@
 package com.lowes.service;
 
+import com.lowes.convertor.PhaseConvertor;
 import com.lowes.convertor.PhaseMaterialConvertor;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
-import com.lowes.dto.response.PhaseResponseDTO; // Ensure this import is correct
+import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
 import com.lowes.entity.Room;
 import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
-import com.lowes.mapper.PhaseMapper; // Ensure this import is correct
+import com.lowes.mapper.PhaseMapper;
 import com.lowes.repository.PhaseRepository;
 import com.lowes.repository.RoomRepository;
 import com.lowes.repository.VendorRepository;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.lowes.dto.response.PhaseResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,7 +55,7 @@ public class PhaseService {
         if (phaseRepository.existsByRoomExposedIdAndPhaseType(phaseRequestDTO.getRoomId(),  phaseRequestDTO.getPhaseType())) {
             throw new IllegalArgumentException("Phase of type " + phaseRequestDTO.getPhaseType() + " already exists for this room");
         }
-System.out.println("db"+phaseRequestDTO.getRoomId());
+
         Phase phase = new Phase();
         phase.setPhaseType(phaseRequestDTO.getPhaseType());
         phase.setDescription(phaseRequestDTO.getDescription());
@@ -67,12 +69,13 @@ System.out.println("db"+phaseRequestDTO.getRoomId());
         phaseRepository.save(phase);
     }
 
-
     @Transactional(readOnly = true)
-    public PhaseResponseDTO getPhaseById(UUID id) {
+    public PhaseResponse getPhaseById(UUID id) {
         Phase phase=phaseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Phase not found"));
-        return PhaseResponseDTO.toDTO(phase);
+
+        return PhaseConvertor.phaseToPhaseResponse(phase);
+        //return PhaseMapper.toDTO(phase);
     }
 
     @Transactional(readOnly = true)
@@ -83,46 +86,36 @@ System.out.println("db"+phaseRequestDTO.getRoomId());
 
         List<Phase> phases = phaseRepository.findAllByRoom_Id(roomId);
         return phases.stream()
-                .map(PhaseResponseDTO::new) // Uses the PhaseResponseDTO constructor
+                .map(PhaseResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
 
-    @Transactional
-    public PhaseResponseDTO updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
-        // 1. Get the existing Phase entity (not DTO)
-        Phase existingPhase = phaseRepository.findById(id)
+    public Phase updatePhase(UUID id, PhaseRequestDTO updatedPhase) {
+        Phase phase = phaseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
 
-        // 2. Update only the non-null fields from DTO to Entity
-        if (updatedPhase.getDescription() != null) {
-            existingPhase.setDescription(updatedPhase.getDescription());
-        }
+        if (updatedPhase.getDescription() != null)
+            phase.setDescription(updatedPhase.getDescription());
 
-        if (updatedPhase.getPhaseStatus() != null) {
-            existingPhase.setPhaseStatus(updatedPhase.getPhaseStatus());
-        }
+        if (updatedPhase.getPhaseStatus() != null)
+            phase.setPhaseStatus(updatedPhase.getPhaseStatus());
 
-        if (updatedPhase.getStartDate() != null) {
-            existingPhase.setStartDate(updatedPhase.getStartDate());
-        }
+        if (updatedPhase.getStartDate() != null)
+            phase.setStartDate(updatedPhase.getStartDate());
 
-        if (updatedPhase.getEndDate() != null) {
-            existingPhase.setEndDate(updatedPhase.getEndDate());
-        }
+        if (updatedPhase.getEndDate() != null)
+            phase.setEndDate(updatedPhase.getEndDate());
 
-        if (updatedPhase.getPhaseType() != null) {
-            existingPhase.setPhaseType(updatedPhase.getPhaseType());
-        }
+        if (updatedPhase.getPhaseType() != null)
+            phase.setPhaseType(updatedPhase.getPhaseType());
 
-        if (updatedPhase.getPhaseName() != null) {
-            existingPhase.setPhaseName(updatedPhase.getPhaseName());
-        }
+        if (updatedPhase.getPhaseName() != null)
+            phase.setPhaseName(updatedPhase.getPhaseName());
 
-        // 3. Save the updated entity and return as DTO
-        Phase updatedEntity = phaseRepository.save(existingPhase);
-        return new PhaseResponseDTO(updatedEntity);
+        return phaseRepository.save(phase);
     }
+
     @Transactional
     public void deletePhase(UUID id) {
         // Get the entity first to ensure it exists
@@ -170,30 +163,43 @@ System.out.println("db"+phaseRequestDTO.getRoomId());
 
     @Transactional
     public int calculateTotalCost(UUID id) {
-        Phase phase = phaseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Phase not found with id: " + id));
-        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-        int materialCost = 0;
-
-        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
-            materialCost = phaseMaterialList.stream()
-                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
-                    .sum();
+        Optional<Phase> optionalPhase = phaseRepository.findById(id);
+        if (optionalPhase.isEmpty()) {
+            throw new RuntimeException("Phase Not Found To Calculate Total Cost");
         }
 
+        Phase phase = optionalPhase.get();
+        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+System.out.println(phaseMaterialList.size());
+        int materialCost = 0;
+//        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+//            materialCost = phaseMaterialList.stream()
+//                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+//                    .sum();
+//        }
+
+        if(!phaseMaterialList.isEmpty()){
+            for (PhaseMaterial phaseMaterial : phaseMaterialList) {
+                System.out.println(phaseMaterial.getName()+phaseMaterial.getTotalPrice());
+                materialCost+=phaseMaterial.getTotalPrice();
+            }
+        }
+
+        phase.setTotalPhaseMaterialCost(materialCost);
+        System.out.println(materialCost);
         int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
         int totalCost = vendorCost + materialCost;
-
         phase.setTotalPhaseCost(totalCost);
+        System.out.println(totalCost);
         phaseRepository.save(phase);
 
         return totalCost;
     }
 
-    @Transactional
+
     public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
-        return renovationPhaseMap.getOrDefault(renovationType, List.of());
-    }
+            return renovationPhaseMap.getOrDefault(renovationType, List.of());
+        }
 
     @PostConstruct
     public void initRenovationPhaseMap() {
@@ -239,10 +245,11 @@ System.out.println("db"+phaseRequestDTO.getRoomId());
         ));
     }
 
-    public List<PhaseResponseDTO> getPhasesByRoomExposedId(UUID exposedId) {
+    public List<PhaseResponse> getPhasesByRoomExposedId(UUID exposedId) {
         List<Phase> phases = phaseRepository.findAllByRoom_ExposedId(exposedId);
         return phases.stream()
                 .map(PhaseMapper::toDTO) // Uses the PhaseMapper
                 .collect(Collectors.toList());
     }
+
 }

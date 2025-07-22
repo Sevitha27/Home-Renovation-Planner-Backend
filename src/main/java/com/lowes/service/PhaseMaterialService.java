@@ -58,6 +58,9 @@ public class PhaseMaterialService {
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
         }
         for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
+            if(phaseMaterialUserRequest.getQuantity()<=0){
+                throw new OperationNotAllowedException("Quantity of phase material has to be greater than 0");
+            }
             PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase,phaseMaterialUserRequest);
 
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(phaseMaterialUserRequest.getMaterialExposedId());

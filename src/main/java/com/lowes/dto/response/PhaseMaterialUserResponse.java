@@ -1,6 +1,9 @@
 package com.lowes.dto.response;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
 import lombok.*;
@@ -30,8 +33,8 @@ public class PhaseMaterialUserResponse {
 
     int totalPrice;
 
-    PhaseResponseDTO phaseResponseDTO;
-    MaterialUserResponse materialUserResponse;
+    UUID materialExposedId;
 
+    UUID phaseId;
 
 }
