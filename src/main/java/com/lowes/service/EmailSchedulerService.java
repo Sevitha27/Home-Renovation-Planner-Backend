@@ -22,17 +22,17 @@ public class EmailSchedulerService {
     @Autowired
     JavaMailSender mailSender;
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 49 0 * * *")
     public void sendPhaseReminders() {
         LocalDate today = LocalDate.now();
 
-        List<Phase> upcoming = phaseRepository.findByStartDate(today.plusDays(3));
+        List<Phase> upcoming = phaseRepository.findByStartDateWithDetails(today.plusDays(3));
         for (Phase phase : upcoming) {
             String html = buildUpcomingPhaseEmail(phase);
             sendHtmlEmail(phase.getRoom().getProject().getOwner().getEmail(), "Phase Starts in 3 Days", html);
         }
 
-        List<Phase> overdue = phaseRepository.findByEndDateBeforeAndPhaseStatusNot(today, PhaseStatus.COMPLETED);
+        List<Phase> overdue = phaseRepository.findByEndDateBeforeAndPhaseStatusNotWithDetails(today, PhaseStatus.COMPLETED);
         for (Phase phase : overdue) {
             String html = buildOverduePhaseEmail(phase);
             sendHtmlEmail(phase.getRoom().getProject().getOwner().getEmail(), "Phase Overdue Alert", html);
