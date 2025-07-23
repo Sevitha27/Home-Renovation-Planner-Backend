@@ -16,6 +16,7 @@ import com.lowes.repository.RoomRepository;
 import com.lowes.repository.VendorRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -135,27 +136,63 @@ public class PhaseService {
         return responseList;
     }
 
-    public int calculateTotalCost(UUID id) {
-        Phase phase = getPhaseById(id);
-        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-        int materialCost = 0;
+//    public int calculateTotalCost(UUID id) {
+//        Phase phase = getPhaseById(id);
+//        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+//        int materialCost = 0;
+//
+//        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+//            materialCost = phaseMaterialList.stream()
+//                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+//                    .sum();
+//        }
+//
+//        int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
+//        int totalCost = vendorCost + materialCost;
+//
+//        phase.setTotalPhaseCost(totalCost);
+//        phaseRepository.save(phase);
+//
+//        return totalCost;
+//    }
 
-        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
-            materialCost = phaseMaterialList.stream()
-                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
-                    .sum();
+    @Transactional
+    public int calculateTotalCost(UUID id) {
+        Optional<Phase> optionalPhase = phaseRepository.findById(id);
+        if (optionalPhase.isEmpty()) {
+            throw new RuntimeException("Phase Not Found To Calculate Total Cost");
         }
 
+        Phase phase = optionalPhase.get();
+        List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
+        System.out.println(phaseMaterialList.size());
+        int materialCost = 0;
+//        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
+//            materialCost = phaseMaterialList.stream()
+//                    .mapToInt(pm -> Objects.nonNull(pm.getTotalPrice()) ? pm.getTotalPrice() : 0)
+//                    .sum();
+//        }
+
+        if(!phaseMaterialList.isEmpty()){
+            for (PhaseMaterial phaseMaterial : phaseMaterialList) {
+                System.out.println(phaseMaterial.getName()+phaseMaterial.getTotalPrice());
+                materialCost+=phaseMaterial.getTotalPrice();
+            }
+        }
+
+        phase.setTotalPhaseMaterialCost(materialCost);
+        System.out.println(materialCost);
         int vendorCost = phase.getVendorCost() != null ? phase.getVendorCost() : 0;
         int totalCost = vendorCost + materialCost;
-
         phase.setTotalPhaseCost(totalCost);
+        System.out.println(totalCost);
         phaseRepository.save(phase);
 
         return totalCost;
     }
 
-        public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
+
+    public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
             return renovationPhaseMap.getOrDefault(renovationType, List.of());
         }
 

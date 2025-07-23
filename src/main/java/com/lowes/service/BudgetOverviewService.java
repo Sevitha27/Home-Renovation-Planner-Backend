@@ -34,18 +34,12 @@ public class BudgetOverviewService {
         }
 
         double estimatedBudget = project.getEstimatedBudget() != null ? project.getEstimatedBudget() : 0;
-        double totalProjectCost = project.getTotalCost() != null ? project.getTotalCost() : 0;
+//      double totalProjectCost = project.getTotalCost() != null ? project.getTotalCost() : 0;
 
         // 2. Prepare room-wise cost split
        List<Room> rooms = roomRepo.findByProjectExposedId(projectId);
-//        List<RoomCostDTO> roomDTOs = rooms.stream()
-//                .map(room -> new RoomCostDTO(
-//                        room.getId(),
-//                        room.getName(),
-//                        room.calculateTotalCost() != null ? room.calculateTotalCost() : 0
-//                ))
-//                .collect(Collectors.toList());
-
+        double totalProjectCost = project.getTotalCost() ;
+//
         List<RoomCostDTO> roomDTOs = rooms.stream()
                 .peek(Room::calculateTotalCost)
                 .map(room -> new RoomCostDTO(
@@ -97,7 +91,8 @@ public class BudgetOverviewService {
                 projectId,
                 project.getName(),
                 estimatedBudget,
-                totalProjectCost,
+//                totalProjectCost,
+                project.getTotalCost(),
                 roomDTOs,
                 phaseDTOs
         );
