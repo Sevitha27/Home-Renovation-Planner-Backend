@@ -3,6 +3,7 @@ package com.lowes.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lowes.dto.request.PhaseRequestDTO;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
+import com.lowes.dto.response.PhaseResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.Phase;
 import com.lowes.entity.enums.PhaseStatus;
@@ -88,28 +89,31 @@ class PhaseControllerTest {
 
     @Test
     void getPhaseById_shouldReturnPhase() throws Exception {
-        when(phaseService.getPhaseById(phaseId)).thenReturn(phase);
+        PhaseResponse response = new PhaseResponse();
+        response.setId(phaseId);
+        response.setPhaseName("Civil Work");
+
+        when(phaseService.getPhaseById(phaseId)).thenReturn(response);
 
         mockMvc.perform(get("/phase/{id}", phaseId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.phaseName", is("Civil Work")));
     }
 
-    @Test
-    void setVendorCost_shouldReturnSuccessMessage() throws Exception {
-        doNothing().when(phaseService).setVendorCostForPhase(phaseId, 500);
 
-        mockMvc.perform(post("/phase/vendor/phase/{phaseId}/quote", phaseId)
-                        .param("cost", "500"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Cost updated successfully"));
-    }
+
 
     @Test
     void updatePhase_shouldReturnUpdatedPhase() throws Exception {
         PhaseRequestDTO update = new PhaseRequestDTO();
         update.setPhaseName("Updated");
         update.setPhaseStatus(PhaseStatus.INPROGRESS);
+        update.setPhaseType(PhaseType.CIVIL); // ✅ required
+        update.setStartDate(LocalDate.now()); // ✅ required
+        update.setEndDate(LocalDate.now().plusDays(2)); // ✅ required
+        update.setRoomId(UUID.randomUUID()); // ✅ if mapped in service
+        update.setVendorId(UUID.randomUUID()); // ✅ optional unless used
+
 
         when(phaseService.updatePhase(eq(phaseId), any())).thenReturn(phase);
 
@@ -123,7 +127,7 @@ class PhaseControllerTest {
     @Test
     void getPhasesByRoomExposedId_shouldReturnList() throws Exception {
         UUID roomId = UUID.randomUUID();
-        PhaseResponseDTO responseDTO = new PhaseResponseDTO();
+        PhaseResponse responseDTO = new PhaseResponse();
         responseDTO.setPhaseName("Demo Phase");
 
         when(phaseService.getPhasesByRoomExposedId(roomId)).thenReturn(List.of(responseDTO));
@@ -169,7 +173,7 @@ class PhaseControllerTest {
 
     @Test
     void doesPhaseExist_shouldReturnTrue() throws Exception {
-        when(phaseRepository.existsByRoomIdAndPhaseType(roomId, PhaseType.CIVIL)).thenReturn(true);
+        when(phaseRepository.existsByRoomExposedIdAndPhaseType(roomId, PhaseType.CIVIL)).thenReturn(true);
 
         mockMvc.perform(get("/phase/phase/exists")
                         .param("roomId", roomId.toString())

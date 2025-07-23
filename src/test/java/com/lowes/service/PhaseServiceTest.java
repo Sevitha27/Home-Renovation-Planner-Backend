@@ -1,6 +1,8 @@
 package com.lowes.service;
 
+import com.lowes.convertor.PhaseConvertor;
 import com.lowes.dto.request.PhaseRequestDTO;
+import com.lowes.dto.response.PhaseResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.*;
 import com.lowes.entity.enums.PhaseStatus;
@@ -18,6 +20,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class PhaseServiceTest {
@@ -46,10 +50,12 @@ class PhaseServiceTest {
         room.setId(UUID.randomUUID());
         room.setExposedId(UUID.randomUUID());
 
+        User user = new User();
+        user.setName("Test Vendor");
         vendor = new Vendor();
         vendor.setId(12345);
         vendor.setExposedId(UUID.randomUUID());
-
+        vendor.setUser(user);
         phase = new Phase();
         phase.setId(UUID.randomUUID());
         phase.setRoom(room);
@@ -73,7 +79,7 @@ class PhaseServiceTest {
 
         when(roomRepository.findByExposedId(dto.getRoomId())).thenReturn(Optional.of(room));
         when(vendorRepository.findByExposedId(dto.getVendorId())).thenReturn(vendor);
-        when(phaseRepository.existsByRoomIdAndPhaseType(dto.getRoomId(), dto.getPhaseType())).thenReturn(false);
+        when(phaseRepository.existsByRoomExposedIdAndPhaseType(dto.getRoomId(), dto.getPhaseType())).thenReturn(false);
 
         phaseService.createPhase(dto);
 
@@ -81,13 +87,26 @@ class PhaseServiceTest {
     }
 
     @Test
-    void getPhaseById_shouldReturnPhase() {
-        UUID id = phase.getId();
-        when(phaseRepository.findById(id)).thenReturn(Optional.of(phase));
+    void getPhaseById_shouldReturnPhaseResponse() {
+        // Arrange
+        when(phaseRepository.findById(phase.getId())).thenReturn(Optional.of(phase));
 
-        Phase result = phaseService.getPhaseById(id);
+        PhaseResponse expectedResponse = new PhaseResponse();
+        expectedResponse.setId(phase.getId());
+        expectedResponse.setPhaseName("Civil Work");
 
-        assertThat(result).isEqualTo(phase);
+        mockStatic(PhaseConvertor.class);
+        when(PhaseConvertor.phaseToPhaseResponse(phase)).thenReturn(expectedResponse);
+
+        // Act
+        PhaseResponse actual = phaseService.getPhaseById(phase.getId());
+
+        // Assert
+        assertNotNull(actual);
+        assertEquals("Civil Work", actual.getPhaseName());
+        assertEquals(phase.getId(), actual.getId());
+
+        verify(phaseRepository).findById(phase.getId());
     }
 
     @Test
@@ -102,7 +121,7 @@ class PhaseServiceTest {
 
     @Test
     void getPhasesByRoom_shouldReturnList() {
-        UUID roomId = room.getId();
+        UUID roomId = room.getExposedId();
         when(roomRepository.existsById(roomId)).thenReturn(true);
         when(phaseRepository.findAllByRoom_Id(roomId)).thenReturn(List.of(phase));
 
