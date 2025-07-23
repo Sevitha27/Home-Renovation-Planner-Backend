@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,6 +61,15 @@ public class MaterialControllerTests {
                     filterChain.doFilter(request, response);
                 }
             };
+        }
+    }
+
+    @TestConfiguration
+    static class MockMailSenderConfig {
+        @Bean
+        @Primary
+        public JavaMailSender javaMailSender() {
+            return Mockito.mock(JavaMailSender.class);
         }
     }
 

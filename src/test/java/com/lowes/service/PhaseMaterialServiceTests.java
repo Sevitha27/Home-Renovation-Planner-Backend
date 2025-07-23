@@ -14,13 +14,17 @@ import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,12 +49,15 @@ public class PhaseMaterialServiceTests {
     @Mock
     PhaseService phaseService;
 
+    @Mock
+    private EntityManager entityManager;
+
     @InjectMocks
     PhaseMaterialService phaseMaterialService;
 
     private Phase getPhase(){
         Phase phase = Phase.builder()
-                .Id(UUID.fromString("4dcb69c2-c5b9-4f8d-89e2-2ccf4ec5b808"))
+                .id(UUID.fromString("4dcb69c2-c5b9-4f8d-89e2-2ccf4ec5b808"))
                 .phaseName("Foundation Work")
                 .description("Phase involves laying the foundation")
                 .startDate(LocalDate.of(2024, 1, 1))
@@ -60,7 +67,7 @@ public class PhaseMaterialServiceTests {
                 .vendorCost(50000)
                 .totalPhaseMaterialCost(0)
                 .phaseStatus(PhaseStatus.NOTSTARTED)
-                .project(null)
+                .room(null)
                 .vendor(null)
                 .build();
 
@@ -116,6 +123,8 @@ public class PhaseMaterialServiceTests {
     @Test
     public void addPhaseMaterialsToPhaseByPhaseId(){
 
+        ReflectionTestUtils.setField(phaseMaterialService, "entityManager", entityManager);
+
         PhaseMaterialUserRequest phaseMaterialUserRequest = getPhaseMaterialUserRequest();
 
         Phase phase = getPhase();
@@ -131,7 +140,7 @@ public class PhaseMaterialServiceTests {
         Mockito.when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
         Mockito.when(materialRepository.save(any(Material.class))).thenReturn(material);
         Mockito.when(phaseMaterialRepository.save(any(PhaseMaterial.class))).thenReturn(phaseMaterial);
-        Mockito.when(phaseService.updateTotalCost(phase.getId())).thenReturn(1);
+        Mockito.when(phaseService.calculateTotalCost(phase.getId())).thenReturn(1);
 
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phase.getId(),List.of(phaseMaterialUserRequest));
 
@@ -239,7 +248,7 @@ public class PhaseMaterialServiceTests {
 
         Mockito.when(phaseMaterialRepository.findByExposedId(phaseMaterial.getExposedId())).thenReturn(Optional.of(phaseMaterial));
         Mockito.when(phaseMaterialRepository.save(any(PhaseMaterial.class))).thenReturn(phaseMaterial);
-        Mockito.when(phaseService.updateTotalCost(phase.getId())).thenReturn(1);
+        Mockito.when(phaseService.calculateTotalCost(phase.getId())).thenReturn(1);
 
         PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityByExposedId(phaseMaterial.getExposedId(),100);
 

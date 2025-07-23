@@ -24,6 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -67,6 +68,15 @@ public class PhaseMaterialControllerTests {
         }
     }
 
+    @TestConfiguration
+    static class MockMailSenderConfig {
+        @Bean
+        @Primary
+        public JavaMailSender javaMailSender() {
+            return Mockito.mock(JavaMailSender.class);
+        }
+    }
+
     private PhaseMaterialUserRequest getPhaseMaterialUserRequest(){
 
         PhaseMaterialUserRequest phaseMaterialUserRequest = PhaseMaterialUserRequest.builder()
@@ -79,24 +89,6 @@ public class PhaseMaterialControllerTests {
 
     private PhaseMaterialUserResponse getPhaseMaterialUserResponse(){
 
-        MaterialUserResponse materialUserResponse = MaterialUserResponse.builder()
-                .exposedId(UUID.fromString("4f12010a-f273-46b5-b9f7-31df7a747944"))
-                .name("Cement")
-                .unit(Unit.KG)
-                .phaseType(PhaseType.CIVIL)
-                .pricePerQuantity(400)
-                .build();
-
-        PhaseResponse phaseResponse = PhaseResponse.builder()
-                .id(UUID.fromString("8e8541b7-7120-4001-98ef-36746489c809"))
-                .phaseName("Foundation Phase")
-                .description("Initial groundwork")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 7, 20))
-                .phaseType(PhaseType.CIVIL)
-                .phaseStatus(PhaseStatus.NOTSTARTED)
-                .build();
-
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialUserResponse.builder()
                 .exposedId(UUID.fromString("6fc3b98b-d6f1-4828-8aae-1df2dc0a061c"))
                 .name("Cement")
@@ -105,8 +97,8 @@ public class PhaseMaterialControllerTests {
                 .phaseType(PhaseType.CIVIL)
                 .quantity(25)
                 .totalPrice(25 * 400)
-                .materialUserResponse(materialUserResponse)
-                .phaseResponse(phaseResponse)
+                .materialExposedId(UUID.randomUUID())
+                .phaseId(UUID.randomUUID())
                 .build();
 
         return phaseMaterialUserResponse;
