@@ -33,6 +33,8 @@ public class PhaseResponse {
     private Integer totalPhaseCost;
     private PhaseType phaseType;
     private PhaseStatus phaseStatus;
+    private Integer vendorCost;
+    private Integer totalPhaseMaterialCost;
     private VendorDTO vendor;
     private UUID vendorId;
 

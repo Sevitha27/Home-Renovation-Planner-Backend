@@ -21,6 +21,8 @@ public class PhaseConvertor {
                 .phaseType(phase.getPhaseType())
                 .phaseStatus(phase.getPhaseStatus())
                 .totalPhaseCost(phase.getTotalPhaseCost())
+                .totalPhaseMaterialCost(phase.getTotalPhaseMaterialCost())
+                .vendorCost(phase.getVendorCost())
                 .id(phase.getId())
                 .vendor(phase.getVendor() != null ? new com.lowes.dto.VendorDTO(phase.getVendor()) : null)
                 .build();
