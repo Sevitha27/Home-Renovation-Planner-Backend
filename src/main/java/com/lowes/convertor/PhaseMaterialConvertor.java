@@ -2,10 +2,12 @@ package com.lowes.convertor;
 
 
 import com.lowes.dto.request.PhaseMaterialUserRequest;
+import com.lowes.dto.response.MaterialUserResponse;
 import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
 import lombok.experimental.UtilityClass;
+
 import java.util.UUID;
 
 
@@ -23,8 +25,8 @@ public class PhaseMaterialConvertor {
                 .unit(phaseMaterial.getUnit())
                 .pricePerQuantity(phaseMaterial.getPricePerQuantity())
                 .totalPrice(phaseMaterial.getTotalPrice())
-                .materialUserResponse(MaterialConvertor.materialToMaterialUserResponse(phaseMaterial.getMaterial()))
-                .phaseResponseDTO(PhaseConvertor.phaseToPhaseResponse(phaseMaterial.getPhase()))
+                .materialExposedId(phaseMaterial.getMaterial().getExposedId())
+                .phaseId(phaseMaterial.getPhase().getId())
                 .build();
 
         return phaseMaterialUserResponse;
