@@ -27,6 +27,7 @@ public class Phase {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+
     @ManyToOne
     @JoinColumn(name = "skill_id")
     private Skill requiredSkill;
