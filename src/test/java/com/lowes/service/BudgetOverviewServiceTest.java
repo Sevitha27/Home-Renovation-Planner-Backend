@@ -12,6 +12,7 @@ import com.lowes.repository.PhaseRepository;
 import com.lowes.repository.ProjectRepository;
 import com.lowes.repository.RoomRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,13 +26,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import org.springframework.test.util.ReflectionTestUtils;
 import static org.mockito.Mockito.*;
 import org.mockito.Mockito;
 
 
+@Nested
 @ExtendWith(MockitoExtension.class)
-class BudgetOverviewServiceTest {
+class budgetOverviewServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
@@ -157,4 +158,196 @@ class BudgetOverviewServiceTest {
                 budgetOverviewService.getBudgetOverview(projectId, userId)
         );
     }
+
+    @Test
+    void testGetBudgetOverview_NoPhasesForRooms() {
+        // Rooms without phases
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("Empty Room");
+        room.setTotalCost(0);
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        assertNotNull(response);
+        assertEquals(1, response.getRooms().size());
+        assertEquals(0, response.getPhases().size());
+    }
+
+    @Test
+    void testGetBudgetOverview_ProjectTotalCostNull() {
+        // Project with null total cost
+        mockProject.setTotalCost(null);
+
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("Test Room");
+        room.setTotalCost(5000);
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        assertNotNull(response);
+        assertEquals(0, response.getTotalActualCost()); // should default to 0 if null
+    }
+
+    @Test
+    void testGetBudgetOverview_NoRooms() {
+        // No rooms returned
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        assertNotNull(response);
+        assertEquals(0, response.getRooms().size());
+        assertEquals(0, response.getPhases().size());
+    }
+
+    @Test
+    void testGetBudgetOverview_MixedRoomsWithAndWithoutPhases() {
+        // Room 1 has phases, Room 2 has none
+        Room room1 = new Room();
+        room1.setId(UUID.randomUUID());
+        room1.setName("Kitchen");
+        room1.setTotalCost(10000);
+
+        Room room2 = new Room();
+        room2.setId(UUID.randomUUID());
+        room2.setName("Empty Room");
+        room2.setTotalCost(5000);
+
+        Phase phase = new Phase();
+        phase.setId(UUID.randomUUID());
+        phase.setPhaseName("Wiring");
+        phase.setPhaseType(PhaseType.ELECTRICAL);
+        phase.setVendorCost(2000);
+        phase.setTotalPhaseMaterialCost(1000);
+        phase.setTotalPhaseCost(3000);
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Arrays.asList(room1, room2));
+        when(phaseRepository.findAllByRoom_Id(room1.getId())).thenReturn(Collections.singletonList(phase));
+        when(phaseRepository.findAllByRoom_Id(room2.getId())).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        assertNotNull(response);
+        assertEquals(2, response.getRooms().size()); // both rooms
+        assertEquals(1, response.getPhases().size()); // only one phase from room1
+    }
+
+    @Test
+    void testGetBudgetOverview_RoomTotalCostNull() {
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("NullCostRoom");
+        room.setTotalCost(null); // triggers branch
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+        assertEquals(0, response.getRooms().get(0).getTotalRoomCost());
+    }
+
+    @Test
+    void testGetBudgetOverview_PhaseCostsNull() {
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("RoomWithNullPhase");
+
+        Phase phase = new Phase();
+        phase.setId(UUID.randomUUID());
+        phase.setPhaseName("Wiring");
+        phase.setPhaseType(PhaseType.ELECTRICAL);
+        phase.setVendorCost(null); // triggers branch
+        phase.setTotalPhaseMaterialCost(null); // triggers branch
+        phase.setTotalPhaseCost(null); // triggers branch
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.singletonList(phase));
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        assertEquals(0, response.getPhases().get(0).getVendorCost());
+        assertEquals(0, response.getPhases().get(0).getMaterialCost());
+        assertEquals(0, response.getPhases().get(0).getTotalPhaseCost());
+    }
+
+    @Test
+    void testGetBudgetOverview_ProjectBudgetAndTotalCostNullTogether() {
+        // estimatedBudget and totalCost null
+        mockProject.setEstimatedBudget(null);
+        mockProject.setTotalCost(null);
+
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("NullBudgetRoom");
+        room.setTotalCost(1000);
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        // Both should default to 0
+        assertEquals(0, response.getEstimatedBudget());
+        assertEquals(0, response.getTotalActualCost());
+    }
+
+    @Test
+    void testGetBudgetOverview_PhaseTotalCostFallback() {
+        Room room = new Room();
+        room.setId(UUID.randomUUID());
+        room.setName("FallbackRoom");
+
+        Phase phase = new Phase();
+        phase.setId(UUID.randomUUID());
+        phase.setPhaseName("FallbackPhase");
+        phase.setPhaseType(PhaseType.PLUMBING);
+        phase.setVendorCost(2000);
+        phase.setTotalPhaseMaterialCost(3000);
+        phase.setTotalPhaseCost(null); // triggers fallback vendor+material sum
+
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.singletonList(room));
+        when(phaseRepository.findAllByRoom_Id(room.getId())).thenReturn(Collections.singletonList(phase));
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        // Should calculate 2000 + 3000 = 5000
+        assertEquals(5000, response.getPhases().get(0).getTotalPhaseCost());
+    }
+
+    @Test
+    void testGetBudgetOverview_NoRoomsAndBudgetCostNull() {
+        // Both estimatedBudget and totalCost null
+        mockProject.setEstimatedBudget(null);
+        mockProject.setTotalCost(null);
+
+        // No rooms
+        when(projectRepository.findByExposedId(projectId)).thenReturn(Optional.of(mockProject));
+        when(roomRepository.findByProjectExposedId(projectId)).thenReturn(Collections.emptyList());
+
+        BudgetOverviewResponseDTO response = budgetOverviewService.getBudgetOverview(projectId, userId);
+
+        // Verify
+        assertEquals(0, response.getEstimatedBudget());
+        assertEquals(0, response.getTotalActualCost());
+        assertEquals(0, response.getRooms().size());
+        assertEquals(0, response.getPhases().size());
+    }
+
+
 }
