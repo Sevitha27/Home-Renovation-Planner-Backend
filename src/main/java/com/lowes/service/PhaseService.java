@@ -170,7 +170,7 @@ public class PhaseService {
 
         Phase phase = optionalPhase.get();
         List<PhaseMaterial> phaseMaterialList = phase.getPhaseMaterialList();
-System.out.println(phaseMaterialList.size());
+        System.out.println(phaseMaterialList.size());
         int materialCost = 0;
 //        if (phaseMaterialList != null && !phaseMaterialList.isEmpty()) {
 //            materialCost = phaseMaterialList.stream()
@@ -198,8 +198,8 @@ System.out.println(phaseMaterialList.size());
 
 
     public List<PhaseType> getPhasesByRenovationType(RenovationType renovationType) {
-            return renovationPhaseMap.getOrDefault(renovationType, List.of());
-        }
+        return renovationPhaseMap.getOrDefault(renovationType, List.of());
+    }
 
     @PostConstruct
     public void initRenovationPhaseMap() {
