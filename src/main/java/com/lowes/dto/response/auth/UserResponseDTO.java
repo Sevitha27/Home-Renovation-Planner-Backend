@@ -2,6 +2,8 @@ package com.lowes.dto.response.auth;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -19,5 +21,6 @@ public class UserResponseDTO {
     private String accessToken;
 
     private String url;
+    private UUID exposedId;
 
 }
