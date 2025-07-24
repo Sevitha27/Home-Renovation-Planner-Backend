@@ -13,6 +13,8 @@ import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -30,6 +32,9 @@ public class PhaseMaterialService {
     private final PhaseMaterialRepository phaseMaterialRepository;
     private final PhaseRepository phaseRepository;
     private final MaterialRepository materialRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(UUID phaseId){
 
@@ -58,6 +63,9 @@ public class PhaseMaterialService {
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
         }
         for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
+            if(phaseMaterialUserRequest.getQuantity()<=0){
+                throw new OperationNotAllowedException("Quantity of phase material has to be greater than 0");
+            }
             PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase,phaseMaterialUserRequest);
 
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(phaseMaterialUserRequest.getMaterialExposedId());
@@ -89,7 +97,9 @@ public class PhaseMaterialService {
 
 
         }
-        phaseService.updateTotalCost(phaseId);
+        entityManager.flush();
+        entityManager.clear();
+        phaseService.calculateTotalCost(phaseId);
         return phaseMaterialUserResponseList;
     }
 
@@ -106,7 +116,7 @@ public class PhaseMaterialService {
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
-        phaseService.updateTotalCost(phaseMaterial.getPhase().getId());
+        phaseService.calculateTotalCost(phaseMaterial.getPhase().getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(updatedPhaseMaterial);
         return phaseMaterialUserResponse;
     }
@@ -126,7 +136,7 @@ public class PhaseMaterialService {
         material.getPhaseMaterialList().remove(phaseMaterial);
 
         phaseMaterialRepository.deleteByExposedId(id);
-        phaseService.updateTotalCost(phase.getId());
+        phaseService.calculateTotalCost(phase.getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
         return phaseMaterialUserResponse;
     }

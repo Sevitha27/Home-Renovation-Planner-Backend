@@ -39,10 +39,10 @@ public class RoomController {
     }
 
     @GetMapping("/{exposedId}")
-    @PreAuthorize("hasRole('CUSTOMER') and " +
-            "@roomSecurity.isRoomOwner(#exposedId, authentication.principal.exposedId)")
+//    @PreAuthorize("hasRole('CUSTOMER') and " +
+//            "@roomSecurity.isRoomOwner(#exposedId, authentication.principal.exposedId)")
     public RoomResponseDTO getRoom(@PathVariable UUID exposedId) {
-        return RoomMapper.toDTO(roomService.getRoomById(exposedId));
+        return RoomMapper.toDTO(roomService.findByExposedId(exposedId));
     }
 
     @GetMapping("/project/{projectExposedId}")
