@@ -80,7 +80,7 @@ class PhaseRepositoryTest {
 
     @Test
     void testExistsByRoomIdAndPhaseType() {
-        boolean exists = phaseRepository.existsByRoomIdAndPhaseType(room.getId(), PhaseType.PLUMBING);
+        boolean exists = phaseRepository.existsByRoomExposedIdAndPhaseType(room.getExposedId(), PhaseType.PLUMBING);
         assertThat(exists).isTrue();
     }
 

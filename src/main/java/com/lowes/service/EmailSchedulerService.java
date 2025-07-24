@@ -22,7 +22,7 @@ public class EmailSchedulerService {
     @Autowired
     JavaMailSender mailSender;
 
-    @Scheduled(cron = "0 49 0 * * *")
+    @Scheduled(cron = "0 24 21 * * *")
     public void sendPhaseReminders() {
         LocalDate today = LocalDate.now();
 

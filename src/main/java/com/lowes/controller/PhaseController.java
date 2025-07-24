@@ -35,7 +35,7 @@ public class PhaseController {
 
 
     @PostMapping
-    public String createPhase(@RequestBody PhaseRequestDTO phaseRequestDTO) {
+    public String createPhase(@Valid @RequestBody PhaseRequestDTO phaseRequestDTO) {
         try {
             phaseService.createPhase(phaseRequestDTO);
             return "Phase created successfully";
