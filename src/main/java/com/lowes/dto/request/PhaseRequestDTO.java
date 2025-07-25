@@ -5,10 +5,8 @@ import com.lowes.entity.Room;
 import com.lowes.entity.Vendor;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,12 +21,21 @@ public class PhaseRequestDTO {
 
     private UUID vendorId;
     private UUID roomId;
+
+    @NonNull
     private String phaseName;
     private String description;
 
+    @NonNull
     private LocalDate startDate;
+
+    @NonNull
     private LocalDate endDate;
+
+    @NonNull
     private PhaseType phaseType;
+
+    @NonNull
     private PhaseStatus phaseStatus;
 
 
