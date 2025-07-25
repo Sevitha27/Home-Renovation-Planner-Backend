@@ -31,7 +31,7 @@ public class ProjectServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ✅ CREATE PROJECT
+
     @Test
     void testCreateProject_success() {
         UUID userId = UUID.randomUUID();
@@ -53,7 +53,7 @@ public class ProjectServiceTest {
         verify(projectRepository).save(any(Project.class));
     }
 
-    // ✅ UPDATE PROJECT - success
+
     @Test
     void testUpdateProject_success() {
         UUID projectId = UUID.randomUUID();
@@ -74,7 +74,6 @@ public class ProjectServiceTest {
         verify(projectRepository).save(existingProject);
     }
 
-    // ❌ UPDATE PROJECT - not found
     @Test
     void testUpdateProject_notFound() {
         UUID projectId = UUID.randomUUID();
@@ -87,7 +86,7 @@ public class ProjectServiceTest {
         });
     }
 
-    // ✅ GET PROJECT BY ID - success
+
     @Test
     void testGetProjectById_success() {
         UUID id = UUID.randomUUID();
@@ -98,7 +97,7 @@ public class ProjectServiceTest {
         assertNotNull(result);
     }
 
-    // ❌ GET PROJECT BY ID - not found
+
     @Test
     void testGetProjectById_notFound() {
         UUID id = UUID.randomUUID();
@@ -109,7 +108,7 @@ public class ProjectServiceTest {
         });
     }
 
-    // ✅ GET PROJECTS BY USER
+
     @Test
     void testGetProjectsByUser_success() {
         Long userId = 1L;
@@ -120,7 +119,7 @@ public class ProjectServiceTest {
         assertEquals(1, result.size());
     }
 
-    // ✅ DELETE PROJECT - success
+
     @Test
     void testDeleteProject_success() {
         UUID id = UUID.randomUUID();
@@ -132,7 +131,7 @@ public class ProjectServiceTest {
         verify(projectRepository).delete(mockProject);
     }
 
-    // ❌ DELETE PROJECT - not found
+
     @Test
     void testDeleteProject_notFound() {
         UUID id = UUID.randomUUID();

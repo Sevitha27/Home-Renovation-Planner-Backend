@@ -1,90 +1,144 @@
 package com.lowes.repository;
 
-import com.lowes.entity.*;
+import com.lowes.entity.Project;
+import com.lowes.entity.Room;
+import com.lowes.entity.User;
 import com.lowes.entity.enums.RenovationType;
+import com.lowes.entity.enums.Role;
 import com.lowes.entity.enums.ServiceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.annotation.Rollback;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class RoomRepositoryTest {
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+class RoomRepositoryTest {
 
     @Autowired
     private RoomRepository roomRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private TestEntityManager entityManager;
 
-    @Autowired
-    private UserRepository userRepository;
-
+    private User user;
+    private Project project;
+    private Room room;
     private UUID roomExposedId;
-    private UUID userExposedId;
     private UUID projectExposedId;
-    private Long userId;
 
     @BeforeEach
-    public void setUp() {
-        // Create user
-        User owner = new User();
-        owner.setName("Muskan");
-        owner.setEmail("muskan@example.com");
-        owner.setExposedId(UUID.randomUUID());
-        userExposedId = owner.getExposedId();
-        owner = userRepository.save(owner); // Save and reassign
-        userId = owner.getId();
+    void setUp() {
+        user = new User();
+        user.setEmail("test@example.com");
+        user.setRole(Role.CUSTOMER);
+        user.setExposedId(UUID.randomUUID());
+        entityManager.persistAndFlush(user);
 
-        // Create project
-        Project project = new Project();
-        project.setName("Test Project");
-        project.setExposedId(UUID.randomUUID());
-        project.setOwner(owner);
-        project = projectRepository.save(project); // Save and reassign
-        projectExposedId = project.getExposedId();
+        projectExposedId = UUID.randomUUID();
 
-        // Create room
-        Room room = new Room();
-        room.setName("Living Room");
-        room.setExposedId(UUID.randomUUID());
-        room.setRenovationType(RenovationType.BEDROOM_RENOVATION);
-        room.setProject(project);
-        room = roomRepository.save(room); // Save and reassign
-        roomExposedId = room.getExposedId();
+        project = Project.builder()
+                .name("Test Project")
+                .exposedId(projectExposedId)
+                .serviceType(ServiceType.ROOM_WISE)
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusMonths(2))
+                .estimatedBudget(10000)
+                .owner(user)
+                .build();
+        entityManager.persistAndFlush(project);
+
+        roomExposedId = UUID.randomUUID();
+
+        room = Room.builder()
+                .name("Living Room")
+                .exposedId(roomExposedId)
+                .renovationType(RenovationType.LIVING_ROOM_REMODEL)
+
+                .project(project)
+                .build();
+        entityManager.persistAndFlush(room);
     }
 
     @Test
-    void testExistsByExposedIdAndProjectOwnerExposedId() {
-        boolean exists = roomRepository.existsByExposedIdAndProjectOwnerExposedId(roomExposedId, userExposedId);
-        assertThat(exists).isTrue();
+    @Rollback
+    void whenFindByExposedId_thenReturnRoom() {
+        Optional<Room> found = roomRepository.findByExposedId(roomExposedId);
+        assertTrue(found.isPresent());
+        assertEquals("Living Room", found.get().getName());
     }
 
     @Test
-    void testFindByProjectExposedId() {
+    @Rollback
+    void whenFindByInvalidExposedId_thenReturnEmpty() {
+        Optional<Room> found = roomRepository.findByExposedId(UUID.randomUUID());
+        assertTrue(found.isEmpty());
+    }
+
+    @Test
+    @Rollback
+    void whenFindByProjectExposedId_thenReturnRooms() {
         List<Room> rooms = roomRepository.findByProjectExposedId(projectExposedId);
-        assertThat(rooms).isNotEmpty();
-        assertThat(rooms.get(0).getProject().getExposedId()).isEqualTo(projectExposedId);
+        assertEquals(1, rooms.size());
+        assertEquals("Living Room", rooms.get(0).getName());
     }
 
     @Test
-    void testFindByExposedId() {
-        Optional<Room> room = roomRepository.findByExposedId(roomExposedId);
-        assertThat(room).isPresent();
-        assertThat(room.get().getExposedId()).isEqualTo(roomExposedId);
+    @Rollback
+    void whenFindByInvalidProjectExposedId_thenReturnEmptyList() {
+        List<Room> rooms = roomRepository.findByProjectExposedId(UUID.randomUUID());
+        assertTrue(rooms.isEmpty());
     }
 
     @Test
-    void testFindByExposedIdAndProject_Owner_Id() {
+    @Rollback
+    void whenExistsByExposedIdAndOwnerExposedId_thenReturnTrue() {
+        boolean exists = roomRepository.existsByExposedIdAndProjectOwnerExposedId(
+                roomExposedId,
+                user.getExposedId()
+        );
+        assertTrue(exists);
+    }
 
-        Optional<Room> room = roomRepository.findByExposedId(roomExposedId);
-        assertThat(room).isPresent();
-        assertThat(room.get().getProject().getOwner().getId()).isEqualTo(userId);
+    @Test
+    @Rollback
+    void whenNotExistsByExposedIdAndOwnerExposedId_thenReturnFalse() {
+        boolean exists = roomRepository.existsByExposedIdAndProjectOwnerExposedId(
+                UUID.randomUUID(),
+                user.getExposedId()
+        );
+        assertFalse(exists);
+    }
+
+    @Test
+    @Rollback
+    void whenFindByExposedIdAndOwnerId_thenReturnRoom() {
+        Optional<Room> found = roomRepository.findByExposedIdAndOwnerId(
+                roomExposedId,
+                user.getId()
+        );
+        assertTrue(found.isPresent());
+        assertEquals("Living Room", found.get().getName());
+    }
+
+    @Test
+    @Rollback
+    void whenFindByExposedIdAndInvalidOwnerId_thenReturnEmpty() {
+        Optional<Room> found = roomRepository.findByExposedIdAndOwnerId(
+                roomExposedId,
+                999L
+        );
+        assertTrue(found.isEmpty());
     }
 }
