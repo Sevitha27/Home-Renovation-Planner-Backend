@@ -150,21 +150,6 @@ public class PhaseMaterialRepositoryTests {
 //    }
 
     @Test
-    public void findByPhaseId(){
-        PhaseMaterial phaseMaterial = getPhaseMaterial();
-
-        UUID phaseId = phaseMaterial.getPhase().getId();
-
-        phaseMaterialRepository.save(phaseMaterial);
-
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
-
-        Assertions.assertNotNull(phaseMaterialList);
-        Assertions.assertEquals(1,phaseMaterialList.size());
-        Assertions.assertEquals("Cement",phaseMaterialList.getFirst().getName());
-    }
-
-    @Test
     public void getMaterialByExposedId(){
         PhaseMaterial phaseMaterial1 = getPhaseMaterial();
         UUID exposedId = phaseMaterial1.getExposedId();

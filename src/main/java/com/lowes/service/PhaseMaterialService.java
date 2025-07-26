@@ -36,20 +36,6 @@ public class PhaseMaterialService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(UUID phaseId){
-
-        if(!phaseRepository.existsById(phaseId)){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
-
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
-        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
-        for(PhaseMaterial phaseMaterial : phaseMaterialList){
-            phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
-        }
-        return phaseMaterialUserResponseList;
-    }
-
     @Transactional
     public List<PhaseMaterialUserResponse> addPhaseMaterialsToPhaseByPhaseId(UUID phaseId, List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
 
