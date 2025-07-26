@@ -103,7 +103,7 @@ class AdminIntegrationTest {
         // Create test vendors
         Vendor vendor1 = createTestVendor("vendor1@test.com", "Vendor1");
         Vendor vendor2 = createTestVendor("vendor2@test.com", "Vendor2");
-        
+
         // Save users first, then vendors
         userRepository.save(vendor1.getUser());
         userRepository.save(vendor2.getUser());
@@ -269,7 +269,7 @@ class AdminIntegrationTest {
         user.setPassword(passwordEncoder.encode("password123"));
         user.setRole(Role.VENDOR);
         user.setContact("1234567890");
-        
+
         // Create the Vendor entity
         Vendor vendor = new Vendor();
         vendor.setCompanyName(name + " Company");
@@ -278,7 +278,7 @@ class AdminIntegrationTest {
         vendor.setApproved(true);
         vendor.setUser(user);
         vendor.setSkills(new ArrayList<>()); // Initialize empty skills list
-        
+
         return vendor;
     }
 
@@ -292,4 +292,4 @@ class AdminIntegrationTest {
         material.setDeleted(false);
         return material;
     }
-} 
+}
