@@ -20,7 +20,7 @@ target/
 *.ipr
 
 # Test Reports
-.htmlReport
+htmlReport
 
 ### NetBeans ###
 /nbproject/private/
