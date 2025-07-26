@@ -108,11 +108,11 @@ class PhaseControllerTest {
         PhaseRequestDTO update = new PhaseRequestDTO();
         update.setPhaseName("Updated");
         update.setPhaseStatus(PhaseStatus.INPROGRESS);
-        update.setPhaseType(PhaseType.CIVIL); // ✅ required
-        update.setStartDate(LocalDate.now()); // ✅ required
-        update.setEndDate(LocalDate.now().plusDays(2)); // ✅ required
-        update.setRoomId(UUID.randomUUID()); // ✅ if mapped in service
-        update.setVendorId(UUID.randomUUID()); // ✅ optional unless used
+        update.setPhaseType(PhaseType.CIVIL);
+        update.setStartDate(LocalDate.now());
+        update.setEndDate(LocalDate.now().plusDays(2));
+        update.setRoomId(UUID.randomUUID());
+        update.setVendorId(UUID.randomUUID());
 
 
         when(phaseService.updatePhase(eq(phaseId), any())).thenReturn(phase);
