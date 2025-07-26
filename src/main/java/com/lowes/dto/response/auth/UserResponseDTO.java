@@ -2,6 +2,8 @@ package com.lowes.dto.response.auth;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @AllArgsConstructor

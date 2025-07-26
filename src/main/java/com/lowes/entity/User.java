@@ -55,6 +55,7 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -68,5 +69,7 @@ public class User {
     // One-to-Many: A user can write many reviews
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
     private List<VendorReview> vendorReviews;
+
+
 
 }

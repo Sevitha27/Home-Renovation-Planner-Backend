@@ -31,6 +31,7 @@ public class VendorService {
     private final VendorRepository vendorRepository;
     private final PhaseRepository phaseRepository;
     private final VendorMapper vendorMapper;
+    private final PhaseService phaseService;
 
     public ResponseEntity<?> getAssignedPhases() {
         try
@@ -54,6 +55,7 @@ public class VendorService {
             Phase phase=phaseOpt.get();
             phase.setVendorCost(dto.getVendorCost());
             phaseRepository.save(phase);
+            phaseService.calculateTotalCost(phaseId);
             return ResponseEntity.status(HttpStatus.OK).body(AdminToastDTO.builder().message("SUCCESS").build());
         }catch(Exception e)
         {

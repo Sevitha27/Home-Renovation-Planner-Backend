@@ -7,6 +7,7 @@ import java.util.UUID;
 public class VendorReviewRequestDTO {
     private UUID vendorId;
     private UUID userId;
+
     private String comment;
     private double rating;
 }

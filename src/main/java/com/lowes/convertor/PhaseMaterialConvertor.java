@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 import java.util.UUID;
 
 
+
 @UtilityClass
 public class PhaseMaterialConvertor {
 
@@ -24,8 +25,8 @@ public class PhaseMaterialConvertor {
                 .unit(phaseMaterial.getUnit())
                 .pricePerQuantity(phaseMaterial.getPricePerQuantity())
                 .totalPrice(phaseMaterial.getTotalPrice())
-                .materialUserResponse(MaterialConvertor.materialToMaterialUserResponse(phaseMaterial.getMaterial()))
-                .phaseResponse(PhaseConvertor.phaseToPhaseResponse(phaseMaterial.getPhase()))
+                .materialExposedId(phaseMaterial.getMaterial().getExposedId())
+                .phaseId(phaseMaterial.getPhase().getId())
                 .build();
 
         return phaseMaterialUserResponse;

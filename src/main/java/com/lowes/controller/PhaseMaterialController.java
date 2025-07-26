@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,22 +27,7 @@ public class PhaseMaterialController {
 
     Logger logger = LoggerFactory.getLogger(PhaseMaterialController.class);
 
-    @GetMapping("/user/phase/{phase-id}/phase-materials")
-    public ResponseEntity getPhaseMaterialsByPhaseId(@PathVariable("phase-id") UUID phaseId){
-        try{
-            List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = phaseMaterialService.getPhaseMaterialsByPhaseId(phaseId);
-            return new ResponseEntity(phaseMaterialUserResponseList, HttpStatus.OK);
-        }
-        catch(ElementNotFoundException exception){
-            logger.error(exception.toString());
-            return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
-        }
-        catch(Exception exception){
-            logger.error("Exception",exception);
-            return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping("/user/phase/{phase-id}/phase-materials")
     public ResponseEntity addPhaseMaterialsToPhaseByPhaseId(@PathVariable("phase-id") UUID phaseId, @RequestBody List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
         try{
@@ -66,6 +52,7 @@ public class PhaseMaterialController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PatchMapping("/user/phase-materials/{phase-material-id}")
     public ResponseEntity updatePhaseMaterialQuantityByExposedId(@PathVariable("phase-material-id") UUID id, @RequestParam("quantity") int quantity){
         try{
@@ -80,6 +67,10 @@ public class PhaseMaterialController {
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
+        catch(OperationNotAllowedException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
+        }
         catch (Exception exception){
             logger.error("Exception",exception);
             return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
@@ -87,6 +78,7 @@ public class PhaseMaterialController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @DeleteMapping("/user/phase-materials/{phase-material-id}")
     public ResponseEntity deletePhaseMaterialByExposedId(@PathVariable("phase-material-id") UUID id){
         try{
@@ -96,6 +88,10 @@ public class PhaseMaterialController {
         catch(ElementNotFoundException exception){
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(OperationNotAllowedException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
         }
         catch(Exception exception){
             logger.error("Exception",exception);

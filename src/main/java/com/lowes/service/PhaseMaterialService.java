@@ -7,12 +7,15 @@ import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.EmptyException;
 import com.lowes.exception.OperationNotAllowedException;
 import com.lowes.repository.MaterialRepository;
 import com.lowes.repository.PhaseMaterialRepository;
 import com.lowes.repository.PhaseRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -31,19 +34,8 @@ public class PhaseMaterialService {
     private final PhaseRepository phaseRepository;
     private final MaterialRepository materialRepository;
 
-    public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(UUID phaseId){
-
-        if(!phaseRepository.existsById(phaseId)){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
-
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
-        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
-        for(PhaseMaterial phaseMaterial : phaseMaterialList){
-            phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
-        }
-        return phaseMaterialUserResponseList;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public List<PhaseMaterialUserResponse> addPhaseMaterialsToPhaseByPhaseId(UUID phaseId, List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
@@ -53,11 +45,17 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Not Found To Add Phase Materials");
         }
         Phase phase = optionalPhase.get();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Add Phase Materials To A Phase That Is NOTSTARTED or COMPLETED");
+        }
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         if(phaseMaterialUserRequestList.isEmpty()){
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
         }
         for(PhaseMaterialUserRequest phaseMaterialUserRequest : phaseMaterialUserRequestList){
+            if(phaseMaterialUserRequest.getQuantity()<=0){
+                throw new OperationNotAllowedException("Quantity of phase material has to be greater than 0");
+            }
             PhaseMaterial phaseMaterial = PhaseMaterialConvertor.phaseMaterialUserRequestToPhaseMaterial(phase,phaseMaterialUserRequest);
 
             Optional<Material> optionalMaterial = materialRepository.findByExposedId(phaseMaterialUserRequest.getMaterialExposedId());
@@ -89,7 +87,9 @@ public class PhaseMaterialService {
 
 
         }
-        phaseService.updateTotalCost(phaseId);
+        entityManager.flush();
+        entityManager.clear();
+        phaseService.calculateTotalCost(phaseId);
         return phaseMaterialUserResponseList;
     }
 
@@ -103,10 +103,14 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Material Not Found To Update Quantity");
         }
         PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
+        Phase phase = phaseMaterial.getPhase();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Update Quantities Of Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED");
+        }
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
-        phaseService.updateTotalCost(phaseMaterial.getPhase().getId());
+        phaseService.calculateTotalCost(phaseMaterial.getPhase().getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(updatedPhaseMaterial);
         return phaseMaterialUserResponse;
     }
@@ -120,13 +124,16 @@ public class PhaseMaterialService {
         PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
 
         Phase phase = phaseMaterial.getPhase();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Delete Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED");
+        }
         phase.getPhaseMaterialList().remove(phaseMaterial);
 
         Material material = phaseMaterial.getMaterial();
         material.getPhaseMaterialList().remove(phaseMaterial);
 
         phaseMaterialRepository.deleteByExposedId(id);
-        phaseService.updateTotalCost(phase.getId());
+        phaseService.calculateTotalCost(phase.getId());
         PhaseMaterialUserResponse phaseMaterialUserResponse = PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial);
         return phaseMaterialUserResponse;
     }

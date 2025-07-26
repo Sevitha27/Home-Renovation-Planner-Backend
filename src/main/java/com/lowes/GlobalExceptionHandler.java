@@ -1,4 +1,4 @@
-package com.lowes.exception;
+package com.lowes;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
