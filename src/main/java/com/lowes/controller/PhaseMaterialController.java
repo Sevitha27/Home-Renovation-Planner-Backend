@@ -67,6 +67,10 @@ public class PhaseMaterialController {
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
         }
+        catch(OperationNotAllowedException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
+        }
         catch (Exception exception){
             logger.error("Exception",exception);
             return new ResponseEntity("Internal Server Error : "+exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
@@ -84,6 +88,10 @@ public class PhaseMaterialController {
         catch(ElementNotFoundException exception){
             logger.error(exception.toString());
             return new ResponseEntity(exception.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(OperationNotAllowedException exception){
+            logger.error(exception.toString());
+            return new ResponseEntity(exception.getMessage(),HttpStatus.BAD_REQUEST);
         }
         catch(Exception exception){
             logger.error("Exception",exception);

@@ -247,6 +247,20 @@ public class PhaseMaterialControllerTests {
 
     @Test
     @WithMockUser(username = "testuser", roles = {"CUSTOMER"})
+    public void updatePhaseMaterialQuantity_OperationNotAllowedException_Returns400() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        Mockito.when(phaseMaterialService.updatePhaseMaterialQuantityByExposedId(eq(id), anyInt()))
+                .thenThrow(new OperationNotAllowedException("Cannot Update Quantities Of Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED"));
+
+        mockMvc.perform(patch("/api/user/phase-materials/{phase-material-id}", id)
+                        .param("quantity", "10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Cannot Update Quantities Of Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED"));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"CUSTOMER"})
     public void updatePhaseMaterialQuantity_GenericException_Returns500() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -270,6 +284,19 @@ public class PhaseMaterialControllerTests {
         mockMvc.perform(delete("/api/user/phase-materials/{phase-material-id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("Not found"));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"CUSTOMER"})
+    public void deletePhaseMaterial_OperationNotAllowed_Returns400() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        Mockito.when(phaseMaterialService.deletePhaseMaterialByExposedId(eq(id)))
+                .thenThrow(new OperationNotAllowedException("Cannot Delete Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED"));
+
+        mockMvc.perform(delete("/api/user/phase-materials/{phase-material-id}", id))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Cannot Delete Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED"));
     }
 
     @Test

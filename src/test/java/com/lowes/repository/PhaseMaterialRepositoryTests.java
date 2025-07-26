@@ -59,7 +59,7 @@ public class PhaseMaterialRepositoryTests {
                 .requiredSkill(null)
                 .vendorCost(50000)
                 .totalPhaseMaterialCost(0)
-                .phaseStatus(PhaseStatus.NOTSTARTED)
+                .phaseStatus(PhaseStatus.INPROGRESS)
                 .room(null)
                 .vendor(null)
                 .build();

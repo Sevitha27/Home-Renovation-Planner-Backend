@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +67,7 @@ public class PhaseMaterialServiceTests {
                 .requiredSkill(null)
                 .vendorCost(50000)
                 .totalPhaseMaterialCost(0)
-                .phaseStatus(PhaseStatus.NOTSTARTED)
+                .phaseStatus(PhaseStatus.INPROGRESS)
                 .room(null)
                 .vendor(null)
                 .build();
@@ -203,6 +204,21 @@ public class PhaseMaterialServiceTests {
     }
 
     @Test
+    void addPhaseMaterialsToPhaseByPhaseId_ShouldThrowExceptionWhenPhaseStatusIsNotStartedOrCompleted() {
+
+        Phase phase = getPhase();
+        phase.setPhaseStatus(PhaseStatus.COMPLETED);
+        UUID phaseId = phase.getId();
+
+        PhaseMaterialUserRequest request = getPhaseMaterialUserRequest();
+
+        Mockito.when(phaseRepository.findById(phaseId)).thenReturn(Optional.of(phase));
+
+        Assertions.assertThrows(OperationNotAllowedException.class, () ->
+                phaseMaterialService.addPhaseMaterialsToPhaseByPhaseId(phaseId, List.of(request)));
+    }
+
+    @Test
     void addPhaseMaterialsToPhaseByPhaseId_ShouldThrowExceptionWhenMaterialNotFound() {
         Phase phase = getPhase();
         UUID phaseId = phase.getId();
@@ -217,7 +233,7 @@ public class PhaseMaterialServiceTests {
     }
 
     @Test
-    void addPhaseMaterialsToPhaseByPhaseId_ShouldThrowExceptionWhenMaterialPhaseTypeDoesNotMatchPhase() {
+    public void addPhaseMaterialsToPhaseByPhaseId_ShouldThrowExceptionWhenMaterialPhaseTypeDoesNotMatchPhase() {
         Phase phase = getPhase();
         UUID phaseId = phase.getId();
 
@@ -303,6 +319,25 @@ public class PhaseMaterialServiceTests {
     }
 
     @Test
+    public void updatePhaseMaterialQuantityByExposedId_ShouldThrowExceptionWhenPhaseStatusIsNotStartedOrCompleted() {
+
+        Phase phase = getPhase();
+        phase.setPhaseStatus(PhaseStatus.COMPLETED);
+        Material material = getMaterial();
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        material.getPhaseMaterialList().add(phaseMaterial);
+        phase.getPhaseMaterialList().add(phaseMaterial);
+        phaseMaterial.setMaterial(material);
+        phaseMaterial.setPhase(phase);
+
+        Mockito.when(phaseMaterialRepository.findByExposedId(phaseMaterial.getExposedId())).thenReturn(Optional.of(phaseMaterial));
+
+        Assertions.assertThrows(OperationNotAllowedException.class,()->{
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.updatePhaseMaterialQuantityByExposedId(phaseMaterial.getExposedId(),100);
+        });
+    }
+
+    @Test
     public void deletePhaseMaterialByExposedId(){
 
         Phase phase = getPhase();
@@ -314,7 +349,8 @@ public class PhaseMaterialServiceTests {
         phaseMaterial.setPhase(phase);
 
         Mockito.when(phaseMaterialRepository.findByExposedId(phaseMaterial.getExposedId())).thenReturn(Optional.of(phaseMaterial));
-
+        Mockito.doNothing().when(phaseMaterialRepository).deleteByExposedId(phaseMaterial.getExposedId());
+        Mockito.when(phaseService.calculateTotalCost(phase.getId())).thenReturn(1);
         PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialByExposedId(phaseMaterial.getExposedId());
 
         Assertions.assertNotNull(phaseMaterialUserResponse);
@@ -329,6 +365,26 @@ public class PhaseMaterialServiceTests {
         Assertions.assertThrows(ElementNotFoundException.class,()->{
             PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialByExposedId(UUID.randomUUID());
         });
+    }
+
+    @Test
+    public void deletePhaseMaterialByExposedId_ShouldThrowExceptionWhenPhaseStatusIsNotStartedOrCompleted() {
+
+        Phase phase = getPhase();
+        phase.setPhaseStatus(PhaseStatus.COMPLETED);
+        Material material = getMaterial();
+        PhaseMaterial phaseMaterial = getPhaseMaterial();
+        material.getPhaseMaterialList().add(phaseMaterial);
+        phase.getPhaseMaterialList().add(phaseMaterial);
+        phaseMaterial.setMaterial(material);
+        phaseMaterial.setPhase(phase);
+
+        Mockito.when(phaseMaterialRepository.findByExposedId(phaseMaterial.getExposedId())).thenReturn(Optional.of(phaseMaterial));
+
+        Assertions.assertThrows(OperationNotAllowedException.class,()->{
+            PhaseMaterialUserResponse phaseMaterialUserResponse = phaseMaterialService.deletePhaseMaterialByExposedId(phaseMaterial.getExposedId());
+        });
+
     }
 
 
