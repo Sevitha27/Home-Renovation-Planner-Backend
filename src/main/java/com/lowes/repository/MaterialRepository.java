@@ -27,4 +27,5 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
     Page<Material> findByPhaseTypeAndDeleted(PhaseType phaseType, Boolean deleted, Pageable pageable);
     Page<Material> findByPhaseType(PhaseType phaseType, Pageable pageable);
     Page<Material> findByDeleted(Boolean deleted, Pageable pageable);
+    Page<Material> findAll(Pageable pageable);
 }
