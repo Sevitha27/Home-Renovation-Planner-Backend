@@ -33,6 +33,8 @@ public class VendorServiceTest {
     private PhaseRepository phaseRepository;
     @Mock
     private VendorMapper vendorMapper;
+    @Mock
+    private PhaseService phaseService;
     @InjectMocks
     private VendorService vendorService;
 
@@ -69,8 +71,10 @@ public class VendorServiceTest {
         QuoteUpdateRequestDTO dto = new QuoteUpdateRequestDTO();
         dto.setVendorCost(100);
         Phase phase = new Phase();
+        phase.setPhaseMaterialList(new ArrayList<>()); // Ensure non-null list
         when(phaseRepository.findById(eq(phaseId))).thenReturn(Optional.of(phase));
         when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
+        when(phaseService.calculateTotalCost(any(UUID.class))).thenReturn(0); // Mock cost calculation
         ResponseEntity<?> response = vendorService.submitQuote(phaseId, dto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Object body = response.getBody();
@@ -110,6 +114,28 @@ public class VendorServiceTest {
         } else {
             assertTrue(body.toString().contains("ERROR"));
         }
+    }
+
+    @Test
+    void testGetVendorApprovalStatus_success() {
+        User user = new User();
+        Vendor vendor = new Vendor();
+        vendor.setApproved(true);
+        mockSecurityContext(user);
+        when(vendorRepository.findByUser(user)).thenReturn(vendor);
+        ResponseEntity<?> response = vendorService.getVendorApprovalStatus();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(((Map<?, ?>) response.getBody()).containsKey("approval"));
+        assertEquals(true, ((Map<?, ?>) response.getBody()).get("approval"));
+    }
+
+    @Test
+    void testGetVendorApprovalStatus_exception() {
+        mockSecurityContext(null);
+        when(vendorRepository.findByUser(any())).thenThrow(new RuntimeException());
+        ResponseEntity<?> response = vendorService.getVendorApprovalStatus();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Internal Server Error!", response.getBody());
     }
 
     // Helper to mock SecurityContext

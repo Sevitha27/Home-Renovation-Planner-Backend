@@ -100,7 +100,9 @@ public class AuthServiceTest {
         user.setRole(Role.CUSTOMER);
         when(userConverter.authRegisterDTOtoUser(any(AuthRegisterDTO.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(anyString()))
+            .thenReturn(Optional.empty()) // First call: user does not exist
+            .thenReturn(Optional.of(user)); // Second call: user exists after save
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("access");
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refresh");
         ResponseEntity<?> response = authService.register(dto);
@@ -119,7 +121,9 @@ public class AuthServiceTest {
         when(skillRepository.save(any(Skill.class))).thenReturn(new Skill());
         when(userConverter.authRegisterDTOtoVendor(any(AuthRegisterDTO.class), any(User.class), anyList())).thenReturn(new Vendor());
         when(vendorRepository.save(any(Vendor.class))).thenReturn(new Vendor());
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(anyString()))
+            .thenReturn(Optional.empty()) // First call: user does not exist
+            .thenReturn(Optional.of(user)); // Second call: user exists after save
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("access");
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refresh");
         ResponseEntity<?> response = authService.register(dto);

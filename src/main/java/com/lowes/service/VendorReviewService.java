@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-
-
 @Service
 public class VendorReviewService {
 
@@ -135,8 +133,4 @@ public class VendorReviewService {
     public void deleteReview(UUID reviewId) {
         vendorReviewRepository.deleteById(reviewId);
     }
-
-
-
-
 }
