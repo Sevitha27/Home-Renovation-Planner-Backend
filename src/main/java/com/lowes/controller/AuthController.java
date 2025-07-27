@@ -50,26 +50,4 @@ public class AuthController {
     public ResponseEntity<?> updateProfile(@ModelAttribute UpdateUserProfileDTO dto) {
         return authService.updateProfile(dto);
     }
-
-    // vendor role authorization testing
-    @PreAuthorize("hasRole('ROLE_VENDOR')")
-    @GetMapping("/vendor-authz")
-    public ResponseEntity<?> testingForVendorAuthorization(){
-        return ResponseEntity.ok("Vendor Working");
-    }
-
-    // customer role authorization testing
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
-    @GetMapping("/customer-authz")
-    public ResponseEntity<?> testingForCustomerAuthorization(){
-        return ResponseEntity.ok("Customer Working");
-    }
-
-    // admin role authorization testing
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/admin-authz")
-    public ResponseEntity<?> testingForAdminAuthorization(){
-        return ResponseEntity.ok("Admin Working");
-    }
-
 }

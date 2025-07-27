@@ -33,7 +33,7 @@ public class PhaseController {
     PhaseRepository phaseRepository;
     //working
 
-
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping
     public String createPhase(@Valid @RequestBody PhaseRequestDTO phaseRequestDTO) {
         try {
@@ -53,6 +53,7 @@ public class PhaseController {
     }
 
     //working
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping("/vendor/{vendorId}/phase/{phaseId}/cost")
     public String setVendorCost(@PathVariable UUID vendorId, @PathVariable UUID phaseId, @RequestParam Integer cost) {
         phaseService.setVendorCostForPhase(vendorId, phaseId, cost);
@@ -62,6 +63,7 @@ public class PhaseController {
     //working
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public Phase updatePhase(@PathVariable UUID id, @RequestBody PhaseRequestDTO updatedPhaseRequestDTO) {
         return phaseService.updatePhase(id, updatedPhaseRequestDTO);
     }
@@ -69,11 +71,13 @@ public class PhaseController {
     //working
 
     @GetMapping("/room/{roomExposedId}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public List<PhaseResponse> getPhasesByRoom(@PathVariable UUID roomExposedId) {
         return phaseService.getPhasesByRoomExposedId(roomExposedId);
     }
     //working
     @GetMapping("/{id}/total-cost")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public Integer calculatePhaseTotalCost(@PathVariable UUID id) {
         return phaseService.calculateTotalCost(id);
     }
@@ -81,12 +85,14 @@ public class PhaseController {
 
 
     @GetMapping("/materials")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public List<PhaseMaterialUserResponse> getMaterilsById(@RequestParam UUID id){
         return phaseService.getAllPhaseMaterialsByPhaseId(id);
     }
 
 
     @GetMapping("/phases/by-renovation-type/{type}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public List<PhaseType> getPhasesByRenovationType(@PathVariable RenovationType type) {
         List<PhaseType> phases = phaseService.getPhasesByRenovationType(type);
         if (phases == null) {
@@ -97,6 +103,7 @@ public class PhaseController {
 
 
     @GetMapping("/phase/exists")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public boolean doesPhaseExist(@RequestParam UUID roomId, @RequestParam PhaseType phaseType) {
 
 
@@ -104,6 +111,7 @@ public class PhaseController {
     }
 
     @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public void deletePhase(@PathVariable UUID id){
         phaseService.deletePhase(id);
     }

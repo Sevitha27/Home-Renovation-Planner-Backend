@@ -126,7 +126,7 @@ public class PhaseService {
     }
 
     @Transactional
-    public PhaseResponseDTO setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
+    public PhaseResponse setVendorCostForPhase(UUID vendorId, UUID phaseId, Integer cost) {
         // Get the phase entity
         Phase phase = phaseRepository.findById(phaseId)
                 .orElseThrow(() -> new RuntimeException("Phase not found with id: " + phaseId));
@@ -141,7 +141,7 @@ public class PhaseService {
         Phase updatedPhase = phaseRepository.save(phase);
 
         // Return the updated phase as DTO
-        return new PhaseResponseDTO(updatedPhase);
+        return PhaseMapper.toDTO(updatedPhase);
     }
 
     @Transactional(readOnly = true)

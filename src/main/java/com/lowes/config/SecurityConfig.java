@@ -40,20 +40,17 @@ public class SecurityConfig {
 
     // Public API POST Endpoints to be Added here
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/register", "/auth/login", "/auth/refreshAccessToken","/api/**","/projects/**","/phase",
-            "/phase/vendor/{vendorId}/phase/{phaseId}/cost",
+            "/auth/register", "/auth/login", "/auth/refreshAccessToken","/api/**","/projects/**",
     };
 
 //For testing without authentication: you may uncomment the required methods below as needed.
 
     // Public API DELETE Endpoints to be Added here
     private final String[] PUBLIC_DELETE_ENDPOINTS = {
-            "/phase/delete/{id}"
     };
     //
     // Public API PUT Endpoints to be Added here
     private final String[] PUBLIC_PUT_ENDPOINTS = {
-            "/phase/{id}"
     };
 //
 //    // Public API PATCH Endpoints to be Added here
