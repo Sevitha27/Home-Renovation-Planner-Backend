@@ -1,31 +1,20 @@
 package com.lowes.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lowes.config.JWTAuthenticationFilter;
 import com.lowes.dto.response.MaterialUserResponse;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.Unit;
-import com.lowes.repository.UserRepository;
-import com.lowes.repository.VendorReviewRepository;
 import com.lowes.service.MaterialService;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -60,6 +49,15 @@ public class MaterialControllerTests {
                     filterChain.doFilter(request, response);
                 }
             };
+        }
+    }
+
+    @TestConfiguration
+    static class MockMailSenderConfig {
+        @Bean
+        @Primary
+        public JavaMailSender javaMailSender() {
+            return Mockito.mock(JavaMailSender.class);
         }
     }
 

@@ -46,7 +46,7 @@ public class PhaseController {
     }
 
     //working
-
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @GetMapping("/{id}")
     public PhaseResponse getPhaseById(@PathVariable UUID id) {
         return phaseService.getPhaseById(id);

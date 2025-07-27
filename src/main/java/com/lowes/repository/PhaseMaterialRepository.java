@@ -15,7 +15,5 @@ public interface PhaseMaterialRepository extends JpaRepository<PhaseMaterial, In
 
     Optional<PhaseMaterial> findByExposedId(UUID id);
 
-    List<PhaseMaterial> findByPhaseId(UUID phaseId, Sort sort);
-
     void deleteByExposedId(UUID id);
 }

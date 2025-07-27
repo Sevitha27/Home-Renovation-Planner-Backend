@@ -7,6 +7,7 @@ import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.entity.Material;
 import com.lowes.entity.Phase;
 import com.lowes.entity.PhaseMaterial;
+import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.exception.ElementNotFoundException;
 import com.lowes.exception.EmptyException;
 import com.lowes.exception.OperationNotAllowedException;
@@ -36,20 +37,6 @@ public class PhaseMaterialService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<PhaseMaterialUserResponse> getPhaseMaterialsByPhaseId(UUID phaseId){
-
-        if(!phaseRepository.existsById(phaseId)){
-            throw new ElementNotFoundException("Phase Not Found To Fetch Phase Materials");
-        }
-
-        List<PhaseMaterial> phaseMaterialList = phaseMaterialRepository.findByPhaseId(phaseId, Sort.by(Sort.Direction.ASC,"id"));
-        List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
-        for(PhaseMaterial phaseMaterial : phaseMaterialList){
-            phaseMaterialUserResponseList.add(PhaseMaterialConvertor.phaseMaterialToPhaseMaterialUserResponse(phaseMaterial));
-        }
-        return phaseMaterialUserResponseList;
-    }
-
     @Transactional
     public List<PhaseMaterialUserResponse> addPhaseMaterialsToPhaseByPhaseId(UUID phaseId, List<PhaseMaterialUserRequest> phaseMaterialUserRequestList){
 
@@ -58,6 +45,9 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Not Found To Add Phase Materials");
         }
         Phase phase = optionalPhase.get();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Add Phase Materials To A Phase That Is NOTSTARTED or COMPLETED");
+        }
         List<PhaseMaterialUserResponse> phaseMaterialUserResponseList = new ArrayList<>();
         if(phaseMaterialUserRequestList.isEmpty()){
             throw new EmptyException("List Of Phase Materials To Add To Phase Is Empty");
@@ -113,6 +103,10 @@ public class PhaseMaterialService {
             throw new ElementNotFoundException("Phase Material Not Found To Update Quantity");
         }
         PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
+        Phase phase = phaseMaterial.getPhase();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Update Quantities Of Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED");
+        }
         phaseMaterial.setQuantity(quantity);
         phaseMaterial.setTotalPrice(quantity*phaseMaterial.getPricePerQuantity());
         PhaseMaterial updatedPhaseMaterial = phaseMaterialRepository.save(phaseMaterial);
@@ -130,6 +124,9 @@ public class PhaseMaterialService {
         PhaseMaterial phaseMaterial = optionalPhaseMaterial.get();
 
         Phase phase = phaseMaterial.getPhase();
+        if(phase.getPhaseStatus() == PhaseStatus.NOTSTARTED || phase.getPhaseStatus() == PhaseStatus.COMPLETED){
+            throw new OperationNotAllowedException("Cannot Delete Phase Materials Of A Phase That Is NOTSTARTED or COMPLETED");
+        }
         phase.getPhaseMaterialList().remove(phaseMaterial);
 
         Material material = phaseMaterial.getMaterial();
