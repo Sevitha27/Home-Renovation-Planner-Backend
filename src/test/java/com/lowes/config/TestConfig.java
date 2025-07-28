@@ -7,10 +7,10 @@ import com.lowes.service.JwtService;
 
 @TestConfiguration
 public class TestConfig {
-    
+
     @MockBean
     private JWTAuthenticationFilter jwtAuthenticationFilter;
-    
+
     @MockBean
     private JwtService jwtService;
-} 
+}

@@ -1,5 +1,6 @@
 package com.lowes.integration;
 
+import com.lowes.config.TestConfig;
 import com.lowes.entity.*;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import com.lowes.config.TestConfig;
 
 import java.time.LocalDate;
 import java.util.UUID;
