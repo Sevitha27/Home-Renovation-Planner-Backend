@@ -50,6 +50,16 @@ public class AuthService {
     @Transactional
     public ResponseEntity<?> register(AuthRegisterDTO request) {
         try {
+            // Check if a user already exists with the email
+            Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+            if (existingUser.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(UserResponseDTO.builder()
+                                .message("User already exists with this email")
+                                .email(request.getEmail())
+                                .build());
+            }
+
             User user = userConverter.authRegisterDTOtoUser(request);
             userRepository.save(user);
             System.out.println("After user save");
