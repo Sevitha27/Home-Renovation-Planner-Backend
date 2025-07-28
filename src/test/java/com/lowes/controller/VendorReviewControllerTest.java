@@ -61,4 +61,30 @@ class VendorReviewControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof Iterable);
     }
+    @Test
+    void testUpdateReview() {
+        UUID reviewId = UUID.randomUUID();
+        VendorReviewRequestDTO dto = new VendorReviewRequestDTO();
+        dto.setComment("Updated comment");
+        dto.setRating(5.0);
+
+        ResponseEntity<String> response = vendorReviewController.updateReview(reviewId, dto);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Review updated successfully.", response.getBody());
+        verify(vendorReviewService, times(1)).updateReview(reviewId, dto);
+    }
+
+
+    // Optional: test getVendorsBySkill with unexpected input (e.g. empty string)
+    @Test
+    void testGetVendorsBySkill_emptyPhaseType() {
+        when(vendorReviewService.getVendorsBySkill("")).thenReturn(Collections.emptyList());
+
+        ResponseEntity<?> response = vendorReviewController.getVendorsBySkill("");
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof Iterable);
+    }
+
 }
