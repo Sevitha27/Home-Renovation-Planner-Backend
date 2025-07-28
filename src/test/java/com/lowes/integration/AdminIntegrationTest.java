@@ -287,4 +287,4 @@ class AdminIntegrationTest {
         material.setDeleted(false);
         return material;
     }
-}
+} 

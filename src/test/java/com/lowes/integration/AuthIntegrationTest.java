@@ -165,4 +165,4 @@ class AuthIntegrationTest {
         user.setContact("1234567890");
         return user;
     }
-}
+} 

@@ -2,12 +2,14 @@ package com.lowes.service;
 
 import com.lowes.convertor.PhaseConvertor;
 import com.lowes.dto.request.PhaseRequestDTO;
+import com.lowes.dto.response.PhaseMaterialUserResponse;
 import com.lowes.dto.response.PhaseResponse;
 import com.lowes.dto.response.PhaseResponseDTO;
 import com.lowes.entity.*;
 import com.lowes.entity.enums.PhaseStatus;
 import com.lowes.entity.enums.PhaseType;
 import com.lowes.entity.enums.RenovationType;
+import com.lowes.mapper.PhaseMapper;
 import com.lowes.repository.PhaseRepository;
 import com.lowes.repository.RoomRepository;
 import com.lowes.repository.VendorRepository;
@@ -64,6 +66,7 @@ class PhaseServiceTest {
         phase.setPhaseName("Civil Work");
         phase.setPhaseStatus(PhaseStatus.NOTSTARTED);
     }
+
 
     @Test
     void createPhase_shouldCreatePhaseSuccessfully() {
@@ -175,6 +178,259 @@ class PhaseServiceTest {
         assertThat(totalCost).isEqualTo(1000);
         verify(phaseRepository).save(phase);
     }
+    @Test
+    void updatePhase_shouldUpdateStartAndEndDate() {
+        UUID id = phase.getId();
+        LocalDate start = LocalDate.now().plusDays(1);
+        LocalDate end = LocalDate.now().plusDays(5);
+
+        when(phaseRepository.findById(id)).thenReturn(Optional.of(phase));
+        when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
+
+        PhaseRequestDTO update = new PhaseRequestDTO();
+        update.setStartDate(start);
+        update.setEndDate(end);
+
+        Phase updated = phaseService.updatePhase(id, update);
+
+        assertEquals(start, updated.getStartDate());
+        assertEquals(end, updated.getEndDate());
+    }
+    @Test
+    void updatePhase_shouldUpdatePhaseType() {
+        UUID id = phase.getId();
+        when(phaseRepository.findById(id)).thenReturn(Optional.of(phase));
+        when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
+
+        PhaseRequestDTO update = new PhaseRequestDTO();
+        update.setPhaseType(PhaseType.ELECTRICAL);
+
+        Phase updated = phaseService.updatePhase(id, update);
+
+        assertEquals(PhaseType.ELECTRICAL, updated.getPhaseType());
+    }
+    @Test
+    void getAllPhaseMaterialsByPhaseId_shouldReturnEmptyListIfMaterialListIsNull() {
+        phase.setPhaseMaterialList(null);
+
+        when(phaseRepository.findById(phase.getId())).thenReturn(Optional.of(phase));
+
+        List<PhaseMaterialUserResponse> result = phaseService.getAllPhaseMaterialsByPhaseId(phase.getId());
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void updatePhase_shouldUpdatePhaseStatus() {
+        UUID id = phase.getId();
+        when(phaseRepository.findById(id)).thenReturn(Optional.of(phase));
+        when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
+
+        PhaseRequestDTO update = new PhaseRequestDTO();
+        update.setPhaseStatus(PhaseStatus.COMPLETED);
+
+        Phase updated = phaseService.updatePhase(id, update);
+
+        assertEquals(PhaseStatus.COMPLETED, updated.getPhaseStatus());
+    }
+
+    @Test
+    void setVendorCostForPhase_shouldSetCostIfVendorMatches() {
+        UUID phaseId = phase.getId();
+        UUID vendorId = vendor.getExposedId();
+        phase.setVendorCost(null);
+
+        when(phaseRepository.findById(phaseId)).thenReturn(Optional.of(phase));
+        when(phaseRepository.save(any(Phase.class))).thenReturn(phase);
+
+        PhaseResponse expectedResponse = new PhaseResponse();
+        expectedResponse.setVendorCost(800);
+        expectedResponse.setId(phaseId);
+        expectedResponse.setPhaseName(phase.getPhaseName());
+
+        try (MockedStatic<PhaseMapper> mockedMapper = mockStatic(PhaseMapper.class)) {
+            mockedMapper.when(() -> PhaseMapper.toDTO(phase)).thenReturn(expectedResponse);
+
+            PhaseResponse result = phaseService.setVendorCostForPhase(vendorId, phaseId, 800);
+
+            assertEquals(800, result.getVendorCost());
+            assertEquals(phaseId, result.getId());
+            verify(phaseRepository).save(phase);
+        }
+    }
+
+    @Test
+    void getAllPhaseMaterialsByPhaseId_shouldReturnMaterialResponses() {
+
+        Material material = new Material();
+        material.setExposedId(UUID.randomUUID());
+
+        PhaseMaterial pm = new PhaseMaterial();
+        pm.setName("Bricks");
+        pm.setTotalPrice(100);
+        pm.setMaterial(material);
+        pm.setPhase(phase);
+
+        phase.setPhaseMaterialList(List.of(pm));
+
+        pm.setName("Bricks");
+        pm.setTotalPrice(100);
+
+        phase.setPhaseMaterialList(List.of(pm));
+        when(phaseRepository.findById(phase.getId())).thenReturn(Optional.of(phase));
+
+        List<PhaseMaterialUserResponse> result = phaseService.getAllPhaseMaterialsByPhaseId(phase.getId());
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("Bricks");
+    }
+    @Test
+    void getPhasesByRoomExposedId_shouldReturnMappedPhases() {
+        UUID roomExposedId = room.getExposedId();
+        when(phaseRepository.findAllByRoom_ExposedId(roomExposedId)).thenReturn(List.of(phase));
+
+        PhaseResponse mappedResponse = new PhaseResponse();
+        mappedResponse.setId(phase.getId());
+
+        try (MockedStatic<PhaseMapper> mocked = mockStatic(PhaseMapper.class)) {
+            mocked.when(() -> PhaseMapper.toDTO(phase)).thenReturn(mappedResponse);
+
+            List<PhaseResponse> result = phaseService.getPhasesByRoomExposedId(roomExposedId);
+
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getId()).isEqualTo(phase.getId());
+        }
+    }
+    @Test
+    void getPhasesByRoom_shouldThrowIfRoomNotFound() {
+        UUID roomId = UUID.randomUUID();
+        when(roomRepository.existsById(roomId)).thenReturn(false);
+
+        assertThatThrownBy(() -> phaseService.getPhasesByRoom(roomId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Room not found");
+    }
+    @Test
+    void calculateTotalCost_shouldThrowIfPhaseNotFound() {
+        UUID id = UUID.randomUUID();
+        when(phaseRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> phaseService.calculateTotalCost(id))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Phase Not Found");
+    }
+    @Test
+    void updatePhase_shouldThrowIfPhaseNotFound() {
+        UUID id = UUID.randomUUID();
+        when(phaseRepository.findById(id)).thenReturn(Optional.empty());
+
+        PhaseRequestDTO update = new PhaseRequestDTO();
+        update.setPhaseName("Updated");
+
+        assertThatThrownBy(() -> phaseService.updatePhase(id, update))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Phase not found with id");
+    }
+    @Test
+    void getPhasesByRenovationType_shouldReturnEmptyListIfUnknownType() {
+        List<PhaseType> result = phaseService.getPhasesByRenovationType(null);
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void deletePhase_shouldThrowIfPhaseNotFound() {
+        UUID id = UUID.randomUUID();
+        when(phaseRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> phaseService.deletePhase(id))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Phase not found with id");
+    }
+
+    @Test
+    void getAllPhaseMaterialsByPhaseId_shouldThrowIfPhaseNotFound() {
+        UUID id = UUID.randomUUID();
+        when(phaseRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> phaseService.getAllPhaseMaterialsByPhaseId(id))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Phase not found");
+    }
+
+    @Test
+    void calculateTotalCost_shouldHandleEmptyMaterialsAndNullVendorCost() {
+        phase.setPhaseMaterialList(new ArrayList<>());
+        phase.setVendorCost(null);
+
+        when(phaseRepository.findById(phase.getId())).thenReturn(Optional.of(phase));
+
+        int totalCost = phaseService.calculateTotalCost(phase.getId());
+
+        assertThat(totalCost).isEqualTo(0);
+        verify(phaseRepository).save(phase);
+    }
+    @Test
+    void getPhasesByRoom_shouldThrowIfRoomDoesNotExist() {
+        UUID roomId = UUID.randomUUID();
+        when(roomRepository.existsById(roomId)).thenReturn(false);
+
+        assertThatThrownBy(() -> phaseService.getPhasesByRoom(roomId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Room not found with ID");
+    }
+
+    @Test
+    void createPhase_shouldThrowIfDuplicatePhaseTypeExists() {
+        PhaseRequestDTO dto = new PhaseRequestDTO();
+        dto.setRoomId(room.getExposedId());
+        dto.setVendorId(vendor.getExposedId());
+        dto.setPhaseType(PhaseType.CIVIL);
+
+        when(roomRepository.findByExposedId(dto.getRoomId())).thenReturn(Optional.of(room));
+        when(vendorRepository.findByExposedId(dto.getVendorId())).thenReturn(vendor);
+        when(phaseRepository.existsByRoomExposedIdAndPhaseType(dto.getRoomId(), dto.getPhaseType())).thenReturn(true);
+
+        assertThatThrownBy(() -> phaseService.createPhase(dto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("already exists for this room");
+    }
+
+    @Test
+    void setVendorCostForPhase_shouldThrowIfVendorMismatch() {
+        UUID phaseId = phase.getId();
+        UUID differentVendorId = UUID.randomUUID(); // Not matching
+
+        when(phaseRepository.findById(phaseId)).thenReturn(Optional.of(phase));
+
+        assertThatThrownBy(() -> phaseService.setVendorCostForPhase(differentVendorId, phaseId, 500))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Unauthorized");
+    }
+    @Test
+    void calculateTotalCost_shouldHandleNoMaterialsAndNullVendorCost() {
+        phase.setVendorCost(null);
+        phase.setPhaseMaterialList(Collections.emptyList());
+
+        when(phaseRepository.findById(phase.getId())).thenReturn(Optional.of(phase));
+
+        int total = phaseService.calculateTotalCost(phase.getId());
+
+        assertEquals(0, total);
+        verify(phaseRepository).save(phase);
+    }
+
+    @Test
+    void setVendorCostForPhase_shouldThrowIfVendorIsNull() {
+        phase.setVendor(null);
+        UUID phaseId = phase.getId();
+
+        when(phaseRepository.findById(phaseId)).thenReturn(Optional.of(phase));
+
+        assertThatThrownBy(() -> phaseService.setVendorCostForPhase(UUID.randomUUID(), phaseId, 500))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Unauthorized");
+    }
+
 
     @Test
     void getPhasesByRenovationType_shouldReturnMappedList() {
